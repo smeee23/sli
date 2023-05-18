@@ -1,3 +1,5 @@
+# Ethereum Slashing Insurance (SLI) Protocol
+
 This repository contains the smart contract code and front-end React dapp for Ethereum Slashing Insurance protocol SLI (v1). The app uses Truffle as a development environment for testing and deployment tasks.
 
 This project is part of the Chainlink 2023 Spring Hackathon. Our goal is to deploy a Proof of Concept on the Matic Mumbai network. Our project uses AWS to host the API and Chainlink Functions to make the data available to our contracts.
@@ -18,7 +20,7 @@ There are several actions that can trigger slashing, including double-signing (s
 
 Ideally, validators who maintain a proper setup and do not engage in malicious behavior should not have to be concerned about facing slashing penalties. However, in practice, a notable number of honest validators have experienced slashing incidents (outnumbering those who intentionally engage in malicious activities). This can be attributed to various factors, including human error, software bugs, and the effectiveness and security of backup systems. The slashing of well-intentioned validators, highlights the need for continuous vigilance and thorough preparations to ensure the security of staked assets.
 
-# SLashing Insurance (SLI) Protocol
+# SLI Protocol
 
 SLI leverages the power of decentralized finance (DeFi) to allow validators to protect themselves from the losses associated with slashing penalties at no cost to themselves.
 
