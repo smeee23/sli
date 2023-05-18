@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@aave/protocol-js": "^4.0.2",
+    "@chainlink/contracts": "^0.6.1",
+    "@coinbase/wallet-sdk": "^3.4.0",
+    "@fleekhq/fleek-storage-js": "^1.0.21",
+    "@openzeppelin/contracts": "^4.4.2",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "@truffle/hdwallet-provider": "^1.5.0",
+    "@walletconnect/web3-provider": "^1.7.8",
+    "authereum": "^0.1.14",
+    "axios": "^0.21.4",
+    "bignumber.js": "^9.0.2",
+    "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
+    "chai-bn": "^0.3.1",
+    "dotenv": "^10.0.0",
+    "ethers": "^5.4.6",
+    "got": "^12.0.1",
+    "node": "^16.11.1",
+    "nodejs": "^0.0.0",
+    "web3modal": "^1.9.8"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "gh-pages": "^3.2.3"
+  }
+}
