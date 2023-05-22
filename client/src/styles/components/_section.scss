@@ -1,0 +1,54 @@
+$baseclass: 'page-section';
+
+.#{$baseclass} {
+  @include verticalPadding(($rem-base * 10));
+	position: relative;
+	overflow: hidden;
+	height: auto;
+
+  display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+
+  background-size: cover;
+	background-position: center;
+
+	transition: background-color $easing2 $duration-long;
+  border-bottom: solid $rem-base / 3;
+
+  &:first-child {
+    margin-top: ($rem-base * 8);
+  }
+
+  &--center {
+    text-align: center;
+    align-items: center;
+  }
+}
+
+.#{$baseclass}_no_vert_padding {
+	position: relative;
+	overflow: hidden;
+	height: auto;
+
+  display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+
+  background-size: cover;
+	background-position: center;
+
+	transition: background-color $easing2 $duration-long;
+  border-bottom: solid $rem-base / 2;
+
+  &:first-child {
+    margin-top: ($rem-base * 8);
+  }
+
+  &--center {
+    text-align: center;
+    align-items: center;
+  }
+}

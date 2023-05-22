@@ -1,0 +1,54 @@
+$goldenRatio: 1.61803398875;
+
+$bp-xxlarge: 1366px;
+$bp-xlarge: 1280px;
+$bp-large: 1024px;
+$bp-medium: 800px;
+$bp-small: 480px;
+$bp-xsmall: 320px;
+
+$rem-base: 8px;
+
+$brand-red: #CE3232;
+$brand-yellow: #E0C723;
+$brand-green: #80CE32;
+$brand-pink: #D991BA;
+$brand-blue: #3FA7D6;
+
+$brand-black: #121311;
+$brand-grey-dark: #1E1F1D;
+$brand-grey-medium: #545454;
+$brand-grey-light: #A8A8A8;
+$brand-alt-back: #313131;
+
+$brand-white: #FFFFFF;
+
+// rem spacing
+$letter-spacing-xxs: px-to-rem(-1.6px);
+$letter-spacing-xs: px-to-rem(-1.2px);
+$letter-spacing-sm: px-to-rem(-0.8px);
+$letter-spacing-md: px-to-rem(0px);
+$letter-spacing-lg: px-to-rem(0.2px);
+$letter-spacing-xl: px-to-rem(0.4px);
+$letter-spacing-xxl: px-to-rem(1.6px);
+
+$easing1: cubic-bezier(0.215, 0.61, 0.355, 1);
+$easing2: cubic-bezier(.19,1,.22,1);
+$easing3: cubic-bezier(0.86, 0, 0.07, 1);
+$easing4: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$easing5: cubic-bezier(0.7, 0, 0.3, 1);
+$easing6: cubic-bezier(.77,0,.175,1);
+
+$duration-shorter: 0.2s;
+$duration-short: 0.4s;
+$duration-medium: 0.8s;
+$duration-long: 1.2s;
+$duration-longer: 2s;
+$duration-longest: 2.8s;
+
+$delay-short: 0.06s;
+$delay-medium: 0.09s;
+$delay-long: 0.12s;
+$delay-longer: 0.18s;
+$delay-longest: 0.24s;
+

@@ -66,7 +66,6 @@ contract Reserve is ReentrancyGuard {
 
     //maps validator index to Beneficiary obj
     mapping(uint => Beneficiary) beneficiaries;
-    //mapping(address => uint) claims;
 
     address generatorPool;
 

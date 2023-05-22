@@ -1,0 +1,1083 @@
+{
+  "contractName": "IWETHGateway",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "onBehalfOf",
+          "type": "address"
+        },
+        {
+          "internalType": "uint16",
+          "name": "referralCode",
+          "type": "uint16"
+        }
+      ],
+      "name": "depositETH",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "onBehalfOf",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawETH",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rateMode",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "onBehalfOf",
+          "type": "address"
+        }
+      ],
+      "name": "repayETH",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "interesRateMode",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint16",
+          "name": "referralCode",
+          "type": "uint16"
+        }
+      ],
+      "name": "borrowETH",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deadline",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint8",
+          "name": "permitV",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "permitR",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "permitS",
+          "type": "bytes32"
+        }
+      ],
+      "name": "withdrawETHWithPermit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWETHAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interesRateMode\",\"type\":\"uint256\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"borrowETH\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"depositETH\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getWETHAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rateMode\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"}],\"name\":\"repayETH\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"}],\"name\":\"withdrawETH\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"permitV\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"permitR\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"permitS\",\"type\":\"bytes32\"}],\"name\":\"withdrawETHWithPermit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"borrowETH(address,uint256,uint256,uint16)\":{\"details\":\"borrow WETH, unwraps to ETH and send both the ETH and DebtTokens to msg.sender, via `approveDelegation` and onBehalf argument in `Pool.borrow`.\",\"params\":{\"amount\":\"the amount of ETH to borrow\",\"interesRateMode\":\"the interest rate mode\",\"pool\":\"address of the targeted underlying pool\",\"referralCode\":\"integrators are assigned a referral code and can potentially receive rewards\"}},\"depositETH(address,address,uint16)\":{\"details\":\"deposits WETH into the reserve, using native ETH. A corresponding amount of the overlying asset (aTokens) is minted.\",\"params\":{\"onBehalfOf\":\"address of the user who will receive the aTokens representing the deposit\",\"pool\":\"address of the targeted underlying pool\",\"referralCode\":\"integrators are assigned a referral code and can potentially receive rewards.*\"}},\"repayETH(address,uint256,uint256,address)\":{\"details\":\"repays a borrow on the WETH reserve, for the specified amount (or for the whole amount, if uint256(-1) is specified).\",\"params\":{\"amount\":\"the amount to repay, or uint256(-1) if the user wants to repay everything\",\"onBehalfOf\":\"the address for which msg.sender is repaying\",\"pool\":\"address of the targeted underlying pool\",\"rateMode\":\"the rate mode to repay\"}},\"withdrawETH(address,uint256,address)\":{\"details\":\"withdraws the WETH _reserves of msg.sender.\",\"params\":{\"amount\":\"amount of aWETH to withdraw and receive native ETH\",\"onBehalfOf\":\"address of the user who will receive native ETH\",\"pool\":\"address of the targeted underlying pool\"}},\"withdrawETHWithPermit(address,uint256,address,uint256,uint8,bytes32,bytes32)\":{\"details\":\"withdraws the WETH _reserves of msg.sender.\",\"params\":{\"amount\":\"amount of aWETH to withdraw and receive native ETH\",\"deadline\":\"validity deadline of permit and so depositWithPermit signature\",\"permitR\":\"R parameter of ERC712 permit sig\",\"permitS\":\"S parameter of ERC712 permit sig\",\"permitV\":\"V parameter of ERC712 permit sig\",\"pool\":\"address of the targeted underlying pool\",\"to\":\"address of the user who will receive native ETH\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/contracts/interfaces/aave/IWETHGateway.sol\":\"IWETHGateway\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/contracts/interfaces/aave/IWETHGateway.sol\":{\"keccak256\":\"0x6d10729f1d6946ec483196b415e11336932d1af3a59f0e056b9a060e8007a36c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ad48f9d665b7e3567e15669f8305e727aedaa329ca0f4c7f4fbd4b22ac08418f\",\"dweb:/ipfs/QmaZqSx76VnMSkMc5GdaEtQzNXppvJ1mUqthQ3QE9Wn5Gv\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.9;\n\ninterface IWETHGateway {\n\n  /**\n   * @dev deposits WETH into the reserve, using native ETH. A corresponding amount of the overlying asset (aTokens)\n   * is minted.\n   * @param pool address of the targeted underlying pool\n   * @param onBehalfOf address of the user who will receive the aTokens representing the deposit\n   * @param referralCode integrators are assigned a referral code and can potentially receive rewards.\n   **/\n  function depositETH(\n    address pool,\n    address onBehalfOf,\n    uint16 referralCode\n  ) external payable;\n\n  /**\n   * @dev withdraws the WETH _reserves of msg.sender.\n   * @param pool address of the targeted underlying pool\n   * @param amount amount of aWETH to withdraw and receive native ETH\n   * @param onBehalfOf address of the user who will receive native ETH\n   */\n  function withdrawETH(\n    address pool,\n    uint256 amount,\n    address onBehalfOf\n  ) external;\n\n  /**\n   * @dev repays a borrow on the WETH reserve, for the specified amount (or for the whole amount, if uint256(-1) is specified).\n   * @param pool address of the targeted underlying pool\n   * @param amount the amount to repay, or uint256(-1) if the user wants to repay everything\n   * @param rateMode the rate mode to repay\n   * @param onBehalfOf the address for which msg.sender is repaying\n   */\n  function repayETH(\n    address pool,\n    uint256 amount,\n    uint256 rateMode,\n    address onBehalfOf\n  ) external payable;\n\n  /**\n   * @dev borrow WETH, unwraps to ETH and send both the ETH and DebtTokens to msg.sender, via `approveDelegation` and onBehalf argument in `Pool.borrow`.\n   * @param pool address of the targeted underlying pool\n   * @param amount the amount of ETH to borrow\n   * @param interesRateMode the interest rate mode\n   * @param referralCode integrators are assigned a referral code and can potentially receive rewards\n   */\n  function borrowETH(\n    address pool,\n    uint256 amount,\n    uint256 interesRateMode,\n    uint16 referralCode\n  ) external;\n\n  /**\n   * @dev withdraws the WETH _reserves of msg.sender.\n   * @param pool address of the targeted underlying pool\n   * @param amount amount of aWETH to withdraw and receive native ETH\n   * @param to address of the user who will receive native ETH\n   * @param deadline validity deadline of permit and so depositWithPermit signature\n   * @param permitV V parameter of ERC712 permit sig\n   * @param permitR R parameter of ERC712 permit sig\n   * @param permitS S parameter of ERC712 permit sig\n   */\n  function withdrawETHWithPermit(\n    address pool,\n    uint256 amount,\n    address to,\n    uint256 deadline,\n    uint8 permitV,\n    bytes32 permitR,\n    bytes32 permitS\n  ) external;\n  function getWETHAddress() external view returns (address);\n}",
+  "sourcePath": "/home/smeee/projects/slashing_insurance/contracts/contracts/interfaces/aave/IWETHGateway.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/contracts/interfaces/aave/IWETHGateway.sol",
+    "exportedSymbols": {
+      "IWETHGateway": [
+        4974
+      ]
+    },
+    "id": 4975,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4906,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:22:17"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IWETHGateway",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 4974,
+        "linearizedBaseContracts": [
+          4974
+        ],
+        "name": "IWETHGateway",
+        "nameLocation": "66:12:17",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "documentation": {
+              "id": 4907,
+              "nodeType": "StructuredDocumentation",
+              "src": "84:399:17",
+              "text": " @dev deposits WETH into the reserve, using native ETH. A corresponding amount of the overlying asset (aTokens)\n is minted.\n @param pool address of the targeted underlying pool\n @param onBehalfOf address of the user who will receive the aTokens representing the deposit\n @param referralCode integrators are assigned a referral code and can potentially receive rewards.*"
+            },
+            "functionSelector": "474cf53d",
+            "id": 4916,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "depositETH",
+            "nameLocation": "495:10:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4914,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4909,
+                  "mutability": "mutable",
+                  "name": "pool",
+                  "nameLocation": "519:4:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4916,
+                  "src": "511:12:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4908,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "511:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4911,
+                  "mutability": "mutable",
+                  "name": "onBehalfOf",
+                  "nameLocation": "537:10:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4916,
+                  "src": "529:18:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4910,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "529:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4913,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "560:12:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4916,
+                  "src": "553:19:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 4912,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "553:6:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "505:71:17"
+            },
+            "returnParameters": {
+              "id": 4915,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "593:0:17"
+            },
+            "scope": 4974,
+            "src": "486:108:17",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 4917,
+              "nodeType": "StructuredDocumentation",
+              "src": "598:261:17",
+              "text": " @dev withdraws the WETH _reserves of msg.sender.\n @param pool address of the targeted underlying pool\n @param amount amount of aWETH to withdraw and receive native ETH\n @param onBehalfOf address of the user who will receive native ETH"
+            },
+            "functionSelector": "80500d20",
+            "id": 4926,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawETH",
+            "nameLocation": "871:11:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4924,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4919,
+                  "mutability": "mutable",
+                  "name": "pool",
+                  "nameLocation": "896:4:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4926,
+                  "src": "888:12:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4918,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "888:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4921,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "914:6:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4926,
+                  "src": "906:14:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4920,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "906:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4923,
+                  "mutability": "mutable",
+                  "name": "onBehalfOf",
+                  "nameLocation": "934:10:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4926,
+                  "src": "926:18:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4922,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "926:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "882:66:17"
+            },
+            "returnParameters": {
+              "id": 4925,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "957:0:17"
+            },
+            "scope": 4974,
+            "src": "862:96:17",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 4927,
+              "nodeType": "StructuredDocumentation",
+              "src": "962:399:17",
+              "text": " @dev repays a borrow on the WETH reserve, for the specified amount (or for the whole amount, if uint256(-1) is specified).\n @param pool address of the targeted underlying pool\n @param amount the amount to repay, or uint256(-1) if the user wants to repay everything\n @param rateMode the rate mode to repay\n @param onBehalfOf the address for which msg.sender is repaying"
+            },
+            "functionSelector": "02c5fcf8",
+            "id": 4938,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "repayETH",
+            "nameLocation": "1373:8:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4936,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4929,
+                  "mutability": "mutable",
+                  "name": "pool",
+                  "nameLocation": "1395:4:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4938,
+                  "src": "1387:12:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4928,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1387:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4931,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "1413:6:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4938,
+                  "src": "1405:14:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4930,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1405:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4933,
+                  "mutability": "mutable",
+                  "name": "rateMode",
+                  "nameLocation": "1433:8:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4938,
+                  "src": "1425:16:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4932,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1425:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4935,
+                  "mutability": "mutable",
+                  "name": "onBehalfOf",
+                  "nameLocation": "1455:10:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4938,
+                  "src": "1447:18:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4934,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1447:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1381:88:17"
+            },
+            "returnParameters": {
+              "id": 4937,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1486:0:17"
+            },
+            "scope": 4974,
+            "src": "1364:123:17",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 4939,
+              "nodeType": "StructuredDocumentation",
+              "src": "1491:420:17",
+              "text": " @dev borrow WETH, unwraps to ETH and send both the ETH and DebtTokens to msg.sender, via `approveDelegation` and onBehalf argument in `Pool.borrow`.\n @param pool address of the targeted underlying pool\n @param amount the amount of ETH to borrow\n @param interesRateMode the interest rate mode\n @param referralCode integrators are assigned a referral code and can potentially receive rewards"
+            },
+            "functionSelector": "66514c97",
+            "id": 4950,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "borrowETH",
+            "nameLocation": "1923:9:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4948,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4941,
+                  "mutability": "mutable",
+                  "name": "pool",
+                  "nameLocation": "1946:4:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4950,
+                  "src": "1938:12:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4940,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1938:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4943,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "1964:6:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4950,
+                  "src": "1956:14:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4942,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1956:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4945,
+                  "mutability": "mutable",
+                  "name": "interesRateMode",
+                  "nameLocation": "1984:15:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4950,
+                  "src": "1976:23:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4944,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1976:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4947,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "2012:12:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4950,
+                  "src": "2005:19:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 4946,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2005:6:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1932:96:17"
+            },
+            "returnParameters": {
+              "id": 4949,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2037:0:17"
+            },
+            "scope": 4974,
+            "src": "1914:124:17",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 4951,
+              "nodeType": "StructuredDocumentation",
+              "src": "2042:496:17",
+              "text": " @dev withdraws the WETH _reserves of msg.sender.\n @param pool address of the targeted underlying pool\n @param amount amount of aWETH to withdraw and receive native ETH\n @param to address of the user who will receive native ETH\n @param deadline validity deadline of permit and so depositWithPermit signature\n @param permitV V parameter of ERC712 permit sig\n @param permitR R parameter of ERC712 permit sig\n @param permitS S parameter of ERC712 permit sig"
+            },
+            "functionSelector": "d4c40b6c",
+            "id": 4968,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawETHWithPermit",
+            "nameLocation": "2550:21:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4966,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4953,
+                  "mutability": "mutable",
+                  "name": "pool",
+                  "nameLocation": "2585:4:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4968,
+                  "src": "2577:12:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4952,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2577:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4955,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "2603:6:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4968,
+                  "src": "2595:14:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4954,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2595:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4957,
+                  "mutability": "mutable",
+                  "name": "to",
+                  "nameLocation": "2623:2:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4968,
+                  "src": "2615:10:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4956,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2615:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4959,
+                  "mutability": "mutable",
+                  "name": "deadline",
+                  "nameLocation": "2639:8:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4968,
+                  "src": "2631:16:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4958,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2631:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4961,
+                  "mutability": "mutable",
+                  "name": "permitV",
+                  "nameLocation": "2659:7:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4968,
+                  "src": "2653:13:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 4960,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2653:5:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4963,
+                  "mutability": "mutable",
+                  "name": "permitR",
+                  "nameLocation": "2680:7:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4968,
+                  "src": "2672:15:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 4962,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2672:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4965,
+                  "mutability": "mutable",
+                  "name": "permitS",
+                  "nameLocation": "2701:7:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4968,
+                  "src": "2693:15:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 4964,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2693:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2571:141:17"
+            },
+            "returnParameters": {
+              "id": 4967,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2721:0:17"
+            },
+            "scope": 4974,
+            "src": "2541:181:17",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "affa8817",
+            "id": 4973,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getWETHAddress",
+            "nameLocation": "2734:14:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4969,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2748:2:17"
+            },
+            "returnParameters": {
+              "id": 4972,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4971,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4973,
+                  "src": "2774:7:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4970,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2774:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2773:9:17"
+            },
+            "scope": 4974,
+            "src": "2725:58:17",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4975,
+        "src": "56:2729:17",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:2753:17"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2023-05-19T16:24:41.313Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "borrowETH(address,uint256,uint256,uint16)": {
+        "details": "borrow WETH, unwraps to ETH and send both the ETH and DebtTokens to msg.sender, via `approveDelegation` and onBehalf argument in `Pool.borrow`.",
+        "params": {
+          "amount": "the amount of ETH to borrow",
+          "interesRateMode": "the interest rate mode",
+          "pool": "address of the targeted underlying pool",
+          "referralCode": "integrators are assigned a referral code and can potentially receive rewards"
+        }
+      },
+      "depositETH(address,address,uint16)": {
+        "details": "deposits WETH into the reserve, using native ETH. A corresponding amount of the overlying asset (aTokens) is minted.",
+        "params": {
+          "onBehalfOf": "address of the user who will receive the aTokens representing the deposit",
+          "pool": "address of the targeted underlying pool",
+          "referralCode": "integrators are assigned a referral code and can potentially receive rewards.*"
+        }
+      },
+      "repayETH(address,uint256,uint256,address)": {
+        "details": "repays a borrow on the WETH reserve, for the specified amount (or for the whole amount, if uint256(-1) is specified).",
+        "params": {
+          "amount": "the amount to repay, or uint256(-1) if the user wants to repay everything",
+          "onBehalfOf": "the address for which msg.sender is repaying",
+          "pool": "address of the targeted underlying pool",
+          "rateMode": "the rate mode to repay"
+        }
+      },
+      "withdrawETH(address,uint256,address)": {
+        "details": "withdraws the WETH _reserves of msg.sender.",
+        "params": {
+          "amount": "amount of aWETH to withdraw and receive native ETH",
+          "onBehalfOf": "address of the user who will receive native ETH",
+          "pool": "address of the targeted underlying pool"
+        }
+      },
+      "withdrawETHWithPermit(address,uint256,address,uint256,uint8,bytes32,bytes32)": {
+        "details": "withdraws the WETH _reserves of msg.sender.",
+        "params": {
+          "amount": "amount of aWETH to withdraw and receive native ETH",
+          "deadline": "validity deadline of permit and so depositWithPermit signature",
+          "permitR": "R parameter of ERC712 permit sig",
+          "permitS": "S parameter of ERC712 permit sig",
+          "permitV": "V parameter of ERC712 permit sig",
+          "pool": "address of the targeted underlying pool",
+          "to": "address of the user who will receive native ETH"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

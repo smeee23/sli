@@ -1,0 +1,37 @@
+$colors: (
+  brand-red: $brand-red,
+  brand-yellow: $brand-yellow,
+  brand-green: $brand-green,
+  brand-pink: $brand-pink,
+  brand-blue: $brand-blue
+);
+
+/*
+create color utility classes in the format
+
+.inherit--brand-[COLOR]
+.inherit-bg--brand-[COLOR]
+.inherit-outline--brand-[COLOR]
+*/
+
+.inherit {
+  @each $key, $val in $colors {
+    &--#{$key} {
+      color: $val;
+
+      .outline {
+        -webkit-text-stroke-color: $val;
+      }
+    }
+    &-bg--#{$key} {
+      background-color: $val;
+    }
+  }
+}
+
+/* Create CSS Variables */
+:root {
+  @each $key, $val in $colors {
+    --#{$key}: #{$val};
+  }
+}

@@ -11,8 +11,6 @@ var PremiumGeneratorAaveV2 = artifacts.require("PremiumGeneratorAaveV2");
 var LendingPoolAddressesProviderMock = artifacts.require("LendingPoolAddressesProviderMock");
 var ProtocolDataProviderMock = artifacts.require("ProtocolDataProviderMock");
 
-var ValidatorOracleClaim = artifacts.require("ValidatorOracleClaim");
-
 require("dotenv").config({path: "../.env"});
 
 module.exports = async function(deployer, network, accounts){
@@ -22,8 +20,23 @@ module.exports = async function(deployer, network, accounts){
   console.log('network', network);
 
   if(["matic_mumbai"].includes(network) ){
+
+    const premiumDeposit = web3.utils.toWei("0.1", "ether");
+    const minimumProvide = web3.utils.toWei("0.5", "ether");
+    const minimumReserve = web3.utils.toWei("0.01", "ether");
+    const maxClaim = web3.utils.toWei("4", "ether");
+
+    const lendingPoolAddressesProvider = "0x178113104fEcbcD7fF8669a0150721e231F0FD4B";
+    const protocolDataProvider = "0xFA3bD19110d986c5e5E9DD5F69362d05035D045B";
+    wethGatewayAddr = "0xee9eE614Ad26963bEc1Bec0D2c92879ae1F209fA";
+    let chainlinkFunctionsConsumer = "0xC9d89400B007699EC7Cf1223acd478c13F1bD85B";
     multiSig = "0x78726673245fdb56425c8bd782f6FaA3E447625A";
-    await deployer.deploy(ValidatorOracleClaim, multiSig);
+
+
+    await deployer.deploy(PremiumGeneratorAaveV2, lendingPoolAddressesProvider, protocolDataProvider, multiSig, wethGatewayAddr, premiumDeposit);
+    premiumGeneratorAaveV2 = await PremiumGeneratorAaveV2.deployed();
+    
+    await deployer.deploy(Reserve, multiSig, premiumGeneratorAaveV2.address, wethGatewayAddr, minimumProvide, minimumReserve, maxClaim, chainlinkFunctionsConsumer);
   }
   else if(["goerli", "goerli-fork"].includes(network) ){
     multiSig = "0x78726673245fdb56425c8bd782f6FaA3E447625A";

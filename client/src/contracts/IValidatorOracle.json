@@ -1,0 +1,213 @@
+{
+  "contractName": "IValidatorOracle",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_index",
+          "type": "string"
+        }
+      ],
+      "name": "getStatusAndAddrResponse",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawLink",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_index\",\"type\":\"string\"}],\"name\":\"getStatusAndAddrResponse\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawLink\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/contracts/interfaces/protocol/IValidatorOracle.sol\":\"IValidatorOracle\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/contracts/interfaces/protocol/IValidatorOracle.sol\":{\"keccak256\":\"0x03ffa654ac60bd59fc921f177f271166a4446832bb2ae0a42d539107ec7eac2c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3250a23350d52120f6bb070177c8760cc6551523369d1bdf6e4fd4957d6f710d\",\"dweb:/ipfs/QmNYCNdH33GtKkwhZP5ziK5cM5vF1TFLjder2Q11gXx5mQ\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface IValidatorOracle {\n    function getStatusAndAddrResponse(string memory _index) external returns (bytes32);\n    function withdrawLink() external;\n}",
+  "sourcePath": "/home/smeee/projects/slashing_insurance/contracts/contracts/interfaces/protocol/IValidatorOracle.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/contracts/interfaces/protocol/IValidatorOracle.sol",
+    "exportedSymbols": {
+      "IValidatorOracle": [
+        5796
+      ]
+    },
+    "id": 5797,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5785,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:23:28"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IValidatorOracle",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 5796,
+        "linearizedBaseContracts": [
+          5796
+        ],
+        "name": "IValidatorOracle",
+        "nameLocation": "67:16:28",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "f34302d4",
+            "id": 5792,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getStatusAndAddrResponse",
+            "nameLocation": "99:24:28",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5788,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5787,
+                  "mutability": "mutable",
+                  "name": "_index",
+                  "nameLocation": "138:6:28",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5792,
+                  "src": "124:20:28",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5786,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "124:6:28",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "123:22:28"
+            },
+            "returnParameters": {
+              "id": 5791,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5790,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5792,
+                  "src": "164:7:28",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 5789,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "164:7:28",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "163:9:28"
+            },
+            "scope": 5796,
+            "src": "90:83:28",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "8dc654a2",
+            "id": 5795,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawLink",
+            "nameLocation": "187:12:28",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5793,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "199:2:28"
+            },
+            "returnParameters": {
+              "id": 5794,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "210:0:28"
+            },
+            "scope": 5796,
+            "src": "178:33:28",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5797,
+        "src": "57:156:28",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:181:28"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2023-05-19T16:24:41.317Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

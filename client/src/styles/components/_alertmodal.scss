@@ -1,0 +1,74 @@
+$baseclass: 'modal_sm';
+
+.#{$baseclass} {
+  position: fixed;
+  top: -300px;
+  left: -100px;
+  width: 40%;
+  height: 100%;
+  background: rgba($brand-black, 0.6);
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  &, &__box, &__header, &__body, &__ctas {
+    display: flex;
+  }
+
+  &, &__box {
+    opacity: 0;
+    transition: all $easing2 $duration-short;
+  }
+
+  &__heading {
+    width: 100%;
+  }
+
+  &__box {
+    position: relative;
+    width: 60%;
+    flex-direction: column;
+    padding: (4 * $rem-base);
+    border-radius: (2 * $rem-base);
+
+    transition-delay: $duration-shorter;
+    transform: translate3d(0,(4 * $rem-base),0);
+  }
+
+  &__header, &__body {
+    width: 100%;
+  }
+
+  &__header {
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: (4 * $rem-base);
+
+    .#{$baseclass}__close-btn {
+      cursor: pointer;
+      transform: rotate(45deg);
+    }
+  }
+
+  &__body {
+    flex-wrap: wrap;
+
+    > * {
+      margin-right: (2 * $rem-base);
+    }
+  }
+
+  &__ctas {
+    justify-content: flex-end;
+  }
+
+  &--open {
+    pointer-events: all;
+    opacity: 1;
+
+    .#{$baseclass}__box {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

@@ -1,0 +1,100 @@
+$font-headings: 'Russo One', sans-serif;
+$font-headings: 'Amatic SC', sans-serif;
+$font-body: 'Russo One', sans-serif;
+
+$base-font-size: px-to-rem(12px);
+
+body, button, input, select, textarea {
+	font-variant-ligatures: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeSpeed;
+	font-family: $font-body;
+	font-size: $base-font-size;
+}
+
+h1, h2, h3, h4, h5, h6, blockquote, p {
+	color: inherit;
+
+	&.uppercase {
+		letter-spacing: $letter-spacing-lg;
+		text-transform: uppercase;
+	}
+
+	&.initial-caps {
+		text-transform: capitalize;
+	}
+
+	&.mr {
+		margin-right: 8.3333%;
+	}
+
+	&.light {
+		font-weight: 400;
+	}
+
+	&.fade {
+		.active-section section & {
+			opacity: 0.48;
+		}
+	}
+
+	.outline {
+		color: transparent;
+		-webkit-text-stroke: 1px;
+	}
+}
+
+html {
+	font-size: $rem-base;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: $font-headings;
+	font-weight: 400;
+	position: relative;
+}
+
+h1 {
+	font-size: px-to-rem($rem-base * 15);
+	line-height: 1;
+	margin-bottom: 48px;
+	letter-spacing: $letter-spacing-xxs;
+	text-transform: uppercase;
+}
+
+h2 {
+	font-size: px-to-rem(38px);
+	line-height: 1;
+	margin-bottom: 36px;
+	letter-spacing: $letter-spacing-sm;
+	text-transform: uppercase;
+}
+
+h3 {
+	font-size: px-to-rem(32px);
+	line-height: 1;
+	margin-bottom: 24px;
+	letter-spacing: $letter-spacing-sm;
+}
+
+h4 {
+	font-size: px-to-rem(24px);
+	line-height: 1;
+	margin-bottom: 16px;
+	letter-spacing: $letter-spacing-sm;
+}
+
+h5 {
+	font-size: px-to-rem(18px);
+	line-height: 1;
+	margin-bottom: 8px;
+	font-family: $font-body;
+}
+
+p {
+	line-height: $goldenRatio;
+	margin-bottom: 24px;
+	letter-spacing: $letter-spacing-lg;
+}
+

@@ -1,0 +1,53 @@
+@media screen and (max-width: $bp-xxlarge) {
+	h1 {
+		font-size: px-to-rem($rem-base * 14);
+	}
+
+	@include grid-at-bp(xxlarge);
+}
+
+@media screen and (max-width: $bp-large) {
+	h1 {
+		font-size: px-to-rem($rem-base * 13);
+	}
+
+	.horizontal-padding {
+		@include horizontalPadding($rem-base * 6);
+	}
+
+	@include grid-at-bp(large);
+}
+
+@media screen and (max-width: $bp-medium) {
+	h1 {
+		font-size: px-to-rem(72px);
+		margin-bottom: 24px;
+		letter-spacing: $letter-spacing-xs;
+	}
+
+	.page-section {
+		@include verticalPadding(($rem-base * 8));
+	}
+
+	.horizontal-padding {
+		@include horizontalPadding(($rem-base * 5));
+	}
+
+	@include grid-at-bp(medium);
+}
+
+@media screen and (max-width: $bp-small) {
+	h1 {
+		font-size: px-to-rem(56px);
+	}
+
+	.horizontal-padding {
+		@include horizontalPadding(($rem-base * 3));
+	}
+}
+
+@media screen and (max-width: $bp-xsmall) {
+	h1 {
+		font-size: px-to-rem(48px);
+	}
+}

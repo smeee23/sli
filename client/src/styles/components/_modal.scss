@@ -1,0 +1,150 @@
+$baseclass: 'modal';
+
+.#{$baseclass} {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba($brand-black, 0.6);
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 20000;
+
+  &, &__box, &__header, &__body, &__ctas {
+    display: flex;
+  }
+
+  &, &__box {
+    opacity: 0;
+    transition: all $easing2 $duration-short;
+  }
+
+  &__heading {
+    width: 100%;
+  }
+
+  &__box {
+    position: relative;
+    width: 60%;
+    max-width: 650px;
+    flex-direction: column;
+    padding: (4 * $rem-base);
+    border-radius: (2 * $rem-base);
+    overflow: scroll;
+
+    transition-delay: $duration-shorter;
+    transform: translate3d(0,(4 * $rem-base),0);
+  }
+
+  &__boxsm {
+    position: relative;
+    width: 60%;
+    max-width: 500px;
+    flex-direction: column;
+    padding: (4 * $rem-base);
+    border-radius: (2 * $rem-base);
+
+    transition-delay: $duration-shorter;
+    transform: translate3d(0,(4 * $rem-base),0);
+  }
+
+  &__boxdeploy {
+    position: static;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    padding: (4 * $rem-base);
+    border-radius: (2 * $rem-base);
+    overflow: scroll;
+
+    transition-delay: $duration-shorter;
+    transform: translate3d(0,(4 * $rem-base),0);
+  }
+
+  &__header, &__body {
+    width: 100%;
+  }
+
+  &__header {
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: (4 * $rem-base);
+
+    .#{$baseclass}__close-btn {
+    }
+  }
+
+  &__body {
+    flex-wrap: wrap;
+
+    > * {
+      margin-right: (2 * $rem-base);
+    }
+  }
+
+  &__bodydeploy {
+    height: 80%;
+    width: 100%;
+    flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    grid-template-rows: repeat(4, 1fr);
+    > * {
+      margin-right: (2 * $rem-base);
+    }
+  }
+
+  &__body__column__one {
+    grid-column: 1 ;
+    grid-row: 1;
+  }
+  &__body__column__two {
+    grid-column: 2 ;
+    grid-row: 1;
+  }
+  &__body__column__three {
+    grid-column: 1 ;
+    grid-row: 2;
+  }
+  &__body__column__four {
+    grid-column: 2 ;
+    grid-row: 2;
+  }
+  &__body__column__five {
+    grid-column: 1/3 ;
+    grid-row: 3;
+    margin-top: auto;
+  }
+  &__body__column__six {
+    grid-column: 1/3 ;
+    grid-row: 4;
+  }
+
+  &__bodytx {
+    flex-wrap: wrap;
+
+    > * {
+      margin-right: (2 * $rem-base);
+    }
+  }
+
+  &__ctas {
+    justify-content: flex-end;
+  }
+
+  &--open {
+    pointer-events: all;
+    opacity: 1;
+
+    .#{$baseclass}__box {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

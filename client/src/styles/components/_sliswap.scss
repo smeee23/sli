@@ -1,0 +1,95 @@
+$baseclass: 'sliswap';
+
+.#{$baseclass} {
+// Reset default styles
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+// Set body styles
+&__body {
+  background-color: $brand-grey-light;
+  width: 400px;
+}
+
+// Main container
+&__container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  align-items: center;
+}
+  // Header
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+  }
+    // Logo
+    &__logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+  // Swap form
+  &__swap-form {
+    margin-top: 10px;
+    //padding: 2px;
+    width:300px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+    // Input groups
+    &__input-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+
+      label {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+    }
+
+    &__button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+
+  // Footer
+  .footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+
+    a {
+      color: #333;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }

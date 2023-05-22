@@ -1,0 +1,64 @@
+$baseclass: 'takeover';
+
+.#{$baseclass} {
+  @include zIndexClose();
+
+  a {
+    display: block;
+    text-decoration: none;
+    margin-bottom: 3 * $rem-base;
+  }
+
+  .#{$baseclass}__hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 32px;
+    height: 24px;
+    margin-right: (2 * $rem-base);
+    cursor: pointer;
+
+    &__line {
+      width: 100%;
+      height: 3px;
+      background: $brand-grey-dark;
+      transform-origin: center;
+      transition: transform $easing2 $duration-short;
+    }
+  }
+
+  &__panel {
+    position: fixed;
+    display: block;
+    flex-direction: column;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    padding-top: (12 * $rem-base);
+    background: $brand-black;
+    box-shadow: 4px 0 (4 * $rem-base) rgba($brand-black, 0.4);
+    transition: transform $easing2 $duration-medium;
+    transform: translate3d(-100%,0,0);
+  }
+
+  &--open {
+    .#{$baseclass}__panel {
+      transform: none;
+    }
+    .#{$baseclass}__hamburger__line {
+      &:first-child {
+        transform: rotate(45deg) translate3d(7px,8px,0);
+      }
+      &:nth-child(2) {
+        opacity: 0;
+      }
+      &:last-child {
+        transform: rotate(-45deg) translate3d(7px,-8px,0);
+      }
+    }
+  }
+
+  @media screen and (min-width: $bp-medium) {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+@mixin zIndex($zindex) {
+	z-index: $zindex;
+}
+
+@mixin zIndexFarthest() {
+	@include zIndex(-1); 
+}
+
+@mixin zIndexFar() {
+	@include zIndex(0); 
+}
+
+@mixin zIndexClose() {
+	@include zIndex(1); 
+}
+
+@mixin zIndexCloser() {
+	@include zIndex(999); 
+}
+
+@mixin zIndexClosest() {
+	@include zIndex(9999); 
+}
+
+

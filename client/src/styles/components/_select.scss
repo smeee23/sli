@@ -1,0 +1,76 @@
+$baseclass: 'select';
+
+.#{$baseclass} {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4 * $rem-base;
+
+  &__selected-box, &__selected, &__option {
+    display: flex;
+    align-items: center;
+  }
+
+  &__selected-box, &__option {
+    justify-content: space-between;
+  }
+
+  &__selected-box {
+    padding: (2 * $rem-base) (1 * $rem-base) (1 * $rem-base);
+  }
+
+  &__label {
+    left: 0;
+    top: 0;
+    position: absolute;
+    transform-origin: left;
+    transform: translate3d(0,-50%,0) scale3d(0.8,0.8,0.8);
+  }
+
+  &__options {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    bottom: 1px;
+    width: 100%;
+    transform: translateY(100%);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 1;
+  }
+
+  &__option {
+    border: 2px solid;
+    border-top: none;
+    padding: 2px 4px;
+    cursor: pointer;
+  }
+
+  &__bar {
+    height: 4px;
+    background: $brand-white;
+  }
+
+  &__caret {
+    margin-left: (1 * $rem-base);
+  }
+
+  &--open {
+    .#{$baseclass}__caret {
+      transform: rotate(180deg);
+    }
+    .#{$baseclass}__options {
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+}
+
+.#{$white-theme-baseclass} {
+  .#{$baseclass}__bar {
+    background: $brand-black;
+  }
+  .#{$baseclass}__options {
+    background: $brand-white;
+  }
+}

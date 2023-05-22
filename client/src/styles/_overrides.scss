@@ -1,0 +1,48 @@
+* {
+	&.mb0 {
+		margin-bottom: 0;
+	}
+
+	&.m0 {
+		margin: 0;
+	}
+
+	&.p0 {
+		padding: 0;
+	}
+
+  &.lh1 {
+    line-height: 1;
+  }
+
+  &.bw0 {
+    border-width: 0;
+  }
+
+  &.tdn {
+    text-decoration: none;
+  }
+}
+
+/*
+create color utility classes in the format
+
+.inherit--brand-[COLOR]
+.inherit-bg--brand-[COLOR]
+.inherit-outline--brand-[COLOR]
+*/
+
+.inherit {
+  @each $key, $val in $colors {
+    &--#{$key} {
+      color: $val;
+
+      .outline {
+        -webkit-text-stroke-color: $val;
+      }
+    }
+    &-bg--#{$key} {
+      background-color: $val;
+    }
+  }
+}

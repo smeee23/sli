@@ -1,0 +1,64 @@
+$baseclass: 'textfield';
+
+.#{$baseclass} {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4 * $rem-base;
+
+  &__input {
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+  }
+
+  &__box {
+    position: relative;
+  }
+
+  &__input, &__label {
+    padding: (2 * $rem-base) (1 * $rem-base);
+    transition: all $easing2 $duration-short;
+  }
+
+  &__label {
+    left: 0;
+    top: 0;
+    position: absolute;
+    transform-origin: left;
+  }
+
+  &__bar {
+    height: 4px;
+    background: $brand-white;
+  }
+
+  .icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: (1 * $rem-base);
+  }
+
+  &--focused,
+  &--completed {
+    .#{$baseclass}__label {
+      transform: translate3d(0,-50%,0) scale3d(0.8,0.8,0.8);
+    }
+    .#{$baseclass}__input {
+      opacity: 1;
+    }
+    .icon {
+      opacity: 0;
+    }
+  }
+}
+
+.#{$white-theme-baseclass} {
+  .#{$baseclass}__bar {
+    background: $brand-black;
+  }
+}

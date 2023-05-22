@@ -138,7 +138,7 @@ contract PremiumGeneratorCore is ReentrancyGuard {
     * @dev Function claims interest for reserve. Calls Aave pools exchanging this
     * contracts aTokens for reserve tokens for interestEarned amount.
     **/
-    function setPremiumDeposit(uint _premiumDeposit)external onlyReserve {
+    function setPremiumDeposit(uint _premiumDeposit)external onlyMultiSig {
         premiumDeposit = _premiumDeposit;
     }
 

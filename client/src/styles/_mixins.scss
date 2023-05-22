@@ -1,0 +1,15 @@
+@mixin horizontalPadding($padding) {
+	padding-left: $padding;
+	padding-right: $padding;
+}
+
+@mixin verticalPadding($padding) {
+	padding-top: $padding;
+	padding-bottom: $padding;
+}
+
+@mixin disabled() {
+	transition: opacity $duration-short $easing2;
+	opacity: 0.24;
+	pointer-events: none;
+}

@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/just_cause/static/css/main.b302cb7f.chunk.css",
+    "main.js": "/just_cause/static/js/main.8807f628.chunk.js",
+    "main.js.map": "/just_cause/static/js/main.8807f628.chunk.js.map",
+    "runtime-main.js": "/just_cause/static/js/runtime-main.12d4dc5f.js",
+    "runtime-main.js.map": "/just_cause/static/js/runtime-main.12d4dc5f.js.map",
+    "static/js/2.972b8cb3.chunk.js": "/just_cause/static/js/2.972b8cb3.chunk.js",
+    "static/js/2.972b8cb3.chunk.js.map": "/just_cause/static/js/2.972b8cb3.chunk.js.map",
+    "index.html": "/just_cause/index.html",
+    "precache-manifest.788558996698a81e635afcf635ca5c50.js": "/just_cause/precache-manifest.788558996698a81e635afcf635ca5c50.js",
+    "service-worker.js": "/just_cause/service-worker.js",
+    "static/css/main.b302cb7f.chunk.css.map": "/just_cause/static/css/main.b302cb7f.chunk.css.map"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.12d4dc5f.js",
+    "static/js/2.972b8cb3.chunk.js",
+    "static/css/main.b302cb7f.chunk.css",
+    "static/js/main.8807f628.chunk.js"
+  ]
+}
