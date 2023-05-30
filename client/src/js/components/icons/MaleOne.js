@@ -9,7 +9,7 @@ class MaleOne extends Component {
 		return (
             <svg width="150px" height="150px" viewBox="0 0 512 512"><defs><clipPath id="clip-Chr_1">
 
-			<rect height="512" width="512"/></clipPath></defs><g clip-path="url(#clip-Chr_1)" data-name="Chr 1" id="Chr_1">
+			<rect height="512" width="512"/></clipPath></defs><g clipPath="url(#clip-Chr_1)" data-name="Chr 1" id="Chr_1">
 
 			<g data-name="Character 1" id="Character_1">
 

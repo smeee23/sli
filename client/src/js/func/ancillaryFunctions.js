@@ -5,6 +5,7 @@ import WbtcLogo from "../components/cryptoLogos/WbtcLogo";
 import UsdcLogo from "../components/cryptoLogos/UsdcLogo";
 import TetherLogo from "../components/cryptoLogos/TetherLogo";
 import EthLogo from "../components/cryptoLogos/EthLogo";
+import EthWhiteLogo from "../components/cryptoLogos/EthWhiteLogo";
 import AaveLogo from "../components/cryptoLogos/AaveLogo";
 import MaticLogo from "../components/cryptoLogos/MaticLogo";
 import WEthLogo from "../components/cryptoLogos/WEthLogo";
@@ -139,7 +140,7 @@ export const delay = (delayInms) => {
 }
 
 export const numberWithCommas = (x) => {
-  return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+  return x.toString();
 }
 
 export const formatDollars = (x) => {
@@ -220,6 +221,9 @@ export const displayLogo = (acceptedTokenString) => {
   let logo = '';
   if(acceptedTokenString === 'ETH'){
     logo = <EthLogo/>;
+  }
+  else if(acceptedTokenString === 'ETH_WHITE'){
+    logo = <EthWhiteLogo/>;
   }
   else if (acceptedTokenString === 'USDT'){
     logo = <TetherLogo/>;

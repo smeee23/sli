@@ -1,0 +1,213 @@
+{
+  "contractName": "IOracleGateway",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_reserve",
+          "type": "address"
+        }
+      ],
+      "name": "setReserve",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_index",
+          "type": "string"
+        }
+      ],
+      "name": "callOracle",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_index\",\"type\":\"string\"}],\"name\":\"callOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_reserve\",\"type\":\"address\"}],\"name\":\"setReserve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/contracts/interfaces/protocol/IOracleGateway.sol\":\"IOracleGateway\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/contracts/interfaces/protocol/IOracleGateway.sol\":{\"keccak256\":\"0x02294cf8249495dc03b57ac12c44263ca96668ae64b5b7a48c6eb6b43ed63e98\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9a38c1d53c6bca02fe516b7c355f993fd9fa5bd47cfba6539d4f1e1073fd08a4\",\"dweb:/ipfs/QmX6dwLBSeCGBQ7EM7hnE1WkjtsynEairwVFPgePCcuhXd\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.9;\n\ninterface IOracleGateway {\n    function setReserve(address _reserve) external;\n    function callOracle(string memory _index) external;\n}",
+  "sourcePath": "/home/smeee/projects/slashing_insurance/contracts/contracts/interfaces/protocol/IOracleGateway.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/contracts/interfaces/protocol/IOracleGateway.sol",
+    "exportedSymbols": {
+      "IOracleGateway": [
+        3521
+      ]
+    },
+    "id": 3522,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3510,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:22:17"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IOracleGateway",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 3521,
+        "linearizedBaseContracts": [
+          3521
+        ],
+        "name": "IOracleGateway",
+        "nameLocation": "66:14:17",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "9cecc80a",
+            "id": 3515,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setReserve",
+            "nameLocation": "96:10:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3513,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3512,
+                  "mutability": "mutable",
+                  "name": "_reserve",
+                  "nameLocation": "115:8:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3515,
+                  "src": "107:16:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3511,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "107:7:17",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "106:18:17"
+            },
+            "returnParameters": {
+              "id": 3514,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "133:0:17"
+            },
+            "scope": 3521,
+            "src": "87:47:17",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "32d59b2a",
+            "id": 3520,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "callOracle",
+            "nameLocation": "148:10:17",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3518,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3517,
+                  "mutability": "mutable",
+                  "name": "_index",
+                  "nameLocation": "173:6:17",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3520,
+                  "src": "159:20:17",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 3516,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "159:6:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "158:22:17"
+            },
+            "returnParameters": {
+              "id": 3519,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "189:0:17"
+            },
+            "scope": 3521,
+            "src": "139:51:17",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3522,
+        "src": "56:136:17",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:160:17"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2023-05-27T18:28:49.736Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

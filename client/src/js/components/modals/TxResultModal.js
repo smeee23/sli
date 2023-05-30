@@ -104,8 +104,7 @@ class TxResultModal extends Component {
       <ModalBodyTx>
         {this.getShareButton(txDetails)}
         <div title={"view transaction on block explorer"}><Button text={ "TX HASH       => "+txDetails.txHash.slice(0, 6) + "..."+txDetails.txHash.slice(-4)} callback={() => redirectWindowBlockExplorer(txDetails.txHash, 'tx', txDetails.networkId)}/></div>
-        <div title={"view pool address on block explorer"}><Button text={"POOL CONTRACT => "+txDetails.poolAddress.slice(0, 6) + "..."+txDetails.poolAddress.slice(-4)} callback={() => redirectWindowBlockExplorer(txDetails.poolAddress, 'address', txDetails.networkId)}/></div>
-      </ModalBodyTx>
+        </ModalBodyTx>
     </Fragment>
 		);
 	}

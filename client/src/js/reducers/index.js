@@ -6,12 +6,12 @@ import loadingReducer from './loading'
 import activeAccountReducer from './activeAccount'
 import tokenMapReducer from './tokenMap'
 import verifiedPoolAddrsReducer from './verifiedPoolAddrs'
-import verifiedPoolInfoReducer from './verifiedPoolInfo'
+import depositorValIdsReducer from './depositorValIds'
 import ownerPoolAddrsReducer from './ownerPoolAddrs'
 import ownerPoolInfoReducer from './ownerPoolInfo'
 import userDepositPoolAddrsReducer from './userDepositPoolAddrs'
 import userDepositPoolInfoReducer from './userDepositPoolInfo'
-import poolTrackerAddressReducer from './poolTrackerAddress'
+import reserveAddressReducer from './reserveAddress'
 import pendingTxReducer from './pendingTx'
 import pendingTxListReducer from './pendingTxList'
 import txResultReducer from './txResult'
@@ -19,7 +19,7 @@ import deployTxResultReducer from './deployTxResult'
 import deployInfoReducer from './deployInfo'
 import depositAmountReducer from './depositAmount'
 import withdrawAmountReducer from './withdrawAmount'
-import searchInfoReducer from './searchInfo'
+import sliETHInfoReducer from './sliETHInfo'
 import aavePoolAddressReducer from './aavePoolAddress'
 import networkIdReducer from './networkId'
 import claimReducer from './claim'
@@ -28,19 +28,21 @@ import shareReducer from './share'
 import connectReducer from './connect'
 import newAboutReducer from './newAbout'
 import burnPitBalancesReducer from './burnPitBalances'
+import activeBalancesReducer from './activeBalances'
 
 const rootReducer = (history) => combineReducers({
 	isMobile: mobileReducer,
 	loading: loadingReducer,
 	activeAccount: activeAccountReducer,
+	activeBalances: activeBalancesReducer,
 	tokenMap: tokenMapReducer,
 	verifiedPoolAddrs: verifiedPoolAddrsReducer,
-	verifiedPoolInfo: verifiedPoolInfoReducer,
+	depositorValIds: depositorValIdsReducer,
 	ownerPoolAddrs: ownerPoolAddrsReducer,
 	ownerPoolInfo: ownerPoolInfoReducer,
 	userDepositPoolAddrs: userDepositPoolAddrsReducer,
 	userDepositPoolInfo: userDepositPoolInfoReducer,
-	poolTrackerAddress: poolTrackerAddressReducer,
+	reserveAddress: reserveAddressReducer,
 	pendingTx: pendingTxReducer,
 	pendingTxList: pendingTxListReducer,
 	txResult: txResultReducer,
@@ -48,7 +50,7 @@ const rootReducer = (history) => combineReducers({
 	deployInfo: deployInfoReducer,
 	depositAmount: depositAmountReducer,
 	withdrawAmount: withdrawAmountReducer,
-	searchInfo: searchInfoReducer,
+	sliETHInfo: sliETHInfoReducer,
 	aavePoolAddress: aavePoolAddressReducer,
 	networkId: networkIdReducer,
 	claim: claimReducer,

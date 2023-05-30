@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
+
+import {SafeERC20} from "./libraries/SafeERC20.sol";
 import {IERC20} from "./interfaces/other/IERC20.sol";
 import {IWETHGateway} from "./interfaces/aave/IWETHGateway.sol";
-import {IFunctionsConsumer} from "./interfaces/link/IFunctionsConsumer.sol";
 import {IPremiumGenerator} from "./interfaces/protocol/IPremiumGenerator.sol";
+import { IOracleGateway } from "./interfaces/protocol/IOracleGateway.sol";
 import {SlashingInsuranceETH} from "./SlashingInsuranceETH.sol";
-import {SafeERC20} from "./libraries/SafeERC20.sol";
+import { Authenticator } from "./Authenticator.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
@@ -15,17 +17,15 @@ import {ILendingPool} from "./interfaces/aave/ILendingPool.sol";
 import {ILendingPoolAddressesProvider} from "./interfaces/aave/ILendingPoolAddressesProvider.sol";
 import {IProtocolDataProvider} from "./interfaces/aave/IProtocolDataProvider.sol";
 
-//AAVE V3
-import {IPool} from "./interfaces/aave/IPool.sol";
-import {IPoolAddressesProvider} from "./interfaces/aave/IPoolAddressesProvider.sol";
 
 /**
- * @title PoolTracker contract
- * @author JustCause
- * @notice Main point of interaction with JustCause Protocol
- * This is a proof of concept starter contract for lossless donations
+ * @title Ethereum Slashing Insurance (SLI) Reserve contract
+ * @author smeee
+ * @notice Main point of interaction with SLI Protocol
+ * This is a proof of concept starter contract for lossless insurance
  *
- * Aave v3 is used to generate interest for crowdfunding
+ * Aave v2 is used to generate interest from premium deposits
+ * Premium is returned to beneficiary after the
  *
  * PoolTracker contract controls deposit calls to Aave to make
  * approvals needed only once per token. Calls JustCause Pools for
@@ -39,165 +39,21 @@ import {IPoolAddressesProvider} from "./interfaces/aave/IPoolAddressesProvider.s
  * @dev Generate ERC721 token
  **/
 
-contract Reserve is ReentrancyGuard {
+contract Reserve is ReentrancyGuard, Authenticator{
     using SafeERC20 for IERC20;
 
     SlashingInsuranceETH immutable sliETH;
-    address immutable wethGatewayAddr;
-    address oracle;
-    uint256 public constant WAIT_PERIOD = 2 weeks;
-    enum Status {
-        NOT_ACTIVE,
-        ACTIVE,
-        AWAIT_ORACLE_ADD,
-        ORACLE_ADD_APPROVE,
-        AWAIT_ORACLE_CLAIM,
-        CLAIM_WAIT_PERIOD,
-        CLOSED,
-        CLAIM_PAUSED
-    }
 
-    struct Beneficiary {
-        Status status;
-        address withdrawAddress;
-        uint claimTimestamp;
-        uint loss;
-    }
-
-    //maps validator index to Beneficiary obj
-    mapping(uint => Beneficiary) beneficiaries;
-
-    address generatorPool;
-
-    address immutable multiSig;
-    uint public minimumProvide;
-    //minimum required for withdrawals and accepting claims
-    uint public minimumReserve;
-    //minimum pure ETH to hold in Reserve
-    //uint public minimumPureHoldings;
-    uint public maxClaim;
-
-    event DenyAddBeneficiary(
-        uint validatorIndex,
-        address withdrawAddres,
-        string reason
-    );
+    event DenyApplication(uint validatorIndex,address withdrawAddress,uint8 reason);
+    event ApproveApplication( uint validatorIndex, address withdrawAddress);
+    event ProvideInsurance(address depositor, uint ethAmount);
+    event WithdrawInsurance(address depositor, uint ethAmount, uint sliETHAmount);
+    event DenyClaim(uint validatorIndex,address withdrawAddress,uint8 reason);
+    event AcceptClaim(uint validatorIndex,address withdrawAddress);
     event AddBeneficiary(uint validatorIndex, address withdrawAddress);
-    event WithdrawBeneficiary(uint validatorIndex, address withdrawAddres);
-    event Harvest(address pool, uint amount);
+    event WithdrawBeneficiary(uint validatorIndex, address withdrawAddress);
     event MakeClaim(uint validatorIndex);
-    event ProcessClaim(address beneficiary, uint amount, string result);
-
-    modifier claimLessThanMax(uint _claimAmount) {
-        require(_claimAmount < maxClaim, "claim cannot be more than 16 Ether");
-        _;
-    }
-
-    modifier minimumReserveMet() {
-        require(
-            minimumReserve <= getProtocolBalance(),
-            "minimum reserve not met"
-        );
-        _;
-    }
-
-    modifier onlyApply(uint _validatorIndex) {
-        require(
-            beneficiaries[_validatorIndex].withdrawAddress == address(0),
-            "not eligible to apply"
-        );
-        _;
-    }
-
-    modifier onlyBeneficiary(address _withdrawAddress, uint _validatorIndex) {
-        require(
-            beneficiaries[_validatorIndex].withdrawAddress == _withdrawAddress,
-            "must send tx from validator withdrawAddress"
-        );
-        _;
-    }
-    modifier onlyAddApproved(uint _validatorIndex) {
-        require(
-            beneficiaries[_validatorIndex].status == Status.ORACLE_ADD_APPROVE,
-            "beneficiary is not approved"
-        );
-        _;
-    }
-
-    modifier onlyActiveBeneficiary(uint _validatorIndex) {
-        require(
-            beneficiaries[_validatorIndex].status == Status.ACTIVE,
-            "beneficiary not active"
-        );
-        _;
-    }
-
-    modifier onlyWaitPeriod(uint _validatorIndex) {
-        require(
-            beneficiaries[_validatorIndex].status == Status.CLAIM_WAIT_PERIOD,
-            "no claim pending"
-        );
-        _;
-    }
-
-    modifier onlyPausedClaim(uint _validatorIndex) {
-        require(
-            beneficiaries[_validatorIndex].status == Status.CLAIM_PAUSED,
-            "no claim paused"
-        );
-        _;
-    }
-
-    modifier onlyTimeoutPassed(uint _validatorIndex) {
-        require(block.timestamp >=
-                beneficiaries[_validatorIndex].claimTimestamp +
-                WAIT_PERIOD, "Cannot withdraw claim until timeout passed"
-        );
-        _;
-    }
-
-    modifier fromWithdrawAddress(
-        address _withdrawAddress,
-        uint _validatorIndex
-    ) {
-        require(
-            beneficiaries[_validatorIndex].withdrawAddress == _withdrawAddress,
-            "withdrawAddress does not match"
-        );
-        _;
-    }
-
-    /**
-     * @dev Only address that are a pool can be passed to functions marked by this modifier.
-     **/
-    modifier onlyPools() {
-        require(isPool(msg.sender), "sender is not pool");
-        _;
-    }
-
-    /**
-     * @dev Only multisig can call functions marked by this modifier.
-     **/
-    modifier onlyMultiSig() {
-        require(multiSig == msg.sender, "not the multiSig");
-        _;
-    }
-
-    /**
-     * @dev Only oracle can call functions marked by this modifier.
-     **/
-    modifier onlyOracle() {
-        require(oracle == msg.sender, "not the oracle");
-        _;
-    }
-
-    /**
-     * @dev Only sliETH contract can call functions marked by this modifier.
-     **/
-    modifier onlySliETHContract() {
-        require(address(sliETH) == msg.sender, "not the sliETH contract");
-        _;
-    }
+    event ProcessClaim(address beneficiary, uint amount, uint8 result);
 
     /**
      * @dev Constructor.
@@ -209,16 +65,19 @@ contract Reserve is ReentrancyGuard {
         uint _minimumProvide,
         uint _minimumReserve,
         uint _maxClaim,
-        address _oracle
-    ) {
-        multiSig = _multiSig;
-        generatorPool = _generatorPool;
-        wethGatewayAddr = _wethGatewayAddr;
+        address _oracle,
+        address _oracleGateway
+    ) Authenticator(
+        _multiSig,
+        _generatorPool,
+        _wethGatewayAddr,
+        _minimumProvide,
+        _minimumReserve,
+        _maxClaim,
+        _oracle,
+        _oracleGateway
+    ){
         sliETH = new SlashingInsuranceETH();
-        oracle = _oracle;
-        minimumProvide = _minimumProvide;
-        minimumReserve = _minimumReserve;
-        maxClaim = _maxClaim;
     }
 
     receive() external payable {
@@ -238,6 +97,7 @@ contract Reserve is ReentrancyGuard {
         sliETH.mint(msg.sender, msg.value);
         address aaveLendingPool = IPremiumGenerator(generatorPool).getLendingPoolAddress();
         IWETHGateway(wethGatewayAddr).depositETH{value: msg.value}(aaveLendingPool, address(this), 0);
+        emit ProvideInsurance(msg.sender, msg.value);
     }
 
     function withdrawInsurance(uint _sliETHAmount) external nonReentrant {
@@ -248,6 +108,7 @@ contract Reserve is ReentrancyGuard {
         );
         sliETH.burn(msg.sender, _sliETHAmount);
         _processOutflow(msg.sender, requestedETH);
+        emit WithdrawInsurance(msg.sender, requestedETH, _sliETHAmount);
     }
 
     function _processOutflow(address _to, uint requestedETH) internal {
@@ -276,13 +137,15 @@ contract Reserve is ReentrancyGuard {
     function applyForCoverage(
         uint _validatorIndex
     ) external onlyApply(_validatorIndex) {
-        _callOracle(Strings.toString(_validatorIndex));
+        IOracleGateway(oracleGateway).callOracle(Strings.toString(_validatorIndex));
         beneficiaries[_validatorIndex] = Beneficiary(
             Status.AWAIT_ORACLE_ADD,
             msg.sender,
             0,
+            0,
             0
         );
+        depositors[msg.sender].push(_validatorIndex);
     }
 
     /**
@@ -294,14 +157,16 @@ contract Reserve is ReentrancyGuard {
         uint _validatorIndex
     )
         external
-        minimumReserveMet
+        minimumReserveMet(getProtocolBalance())
         onlyAddApproved(_validatorIndex)
         onlyBeneficiary(_withdrawAddress, _validatorIndex)
+        onlyInApplyWindow(_validatorIndex)
         onlyPools
     {
         beneficiaries[_validatorIndex] = Beneficiary(
             Status.ACTIVE,
             _withdrawAddress,
+            0,
             0,
             0
         );
@@ -337,14 +202,16 @@ contract Reserve is ReentrancyGuard {
         ) {
             beneficiaries[_validatorIndex].withdrawAddress = address(0);
             beneficiaries[_validatorIndex].status = Status.NOT_ACTIVE;
-            emit DenyAddBeneficiary(
+            emit DenyApplication(
                 _validatorIndex,
                 _withdrawAddress,
-                "address not correct or not set"
+                0 //address not correct or not set
             );
         }
         else {
             beneficiaries[_validatorIndex].status = Status.ORACLE_ADD_APPROVE;
+            beneficiaries[_validatorIndex].applyTimestamp = block.timestamp;
+            emit ApproveApplication(_validatorIndex, _withdrawAddress);
         }
     }
 
@@ -359,86 +226,37 @@ contract Reserve is ReentrancyGuard {
             beneficiaries[_validatorIndex].withdrawAddress != _withdrawAddress
         ) {
             beneficiaries[_validatorIndex].status = Status.ACTIVE;
-            emit DenyAddBeneficiary(
+            emit DenyClaim(
                 _validatorIndex,
                 _withdrawAddress,
-                "withdrawAddress incorrect"
+                0//"withdrawAddress incorrect"
             );
         }
         //check if slashed
-        else if (_slashed == 0) {
+        else if (_slashed == 0 || _loss == 0) {
             beneficiaries[_validatorIndex].status = Status.ACTIVE;
-            emit DenyAddBeneficiary(
+            emit DenyClaim(
                 _validatorIndex,
                 _withdrawAddress,
-                "not slashed"
-            );
-        }
-        //check loss is not 0
-        else if (_loss == 0) {
-            beneficiaries[_validatorIndex].status = Status.ACTIVE;
-            emit DenyAddBeneficiary(
-                _validatorIndex,
-                _withdrawAddress,
-                "not slashed"
+                1//"not slashed"
             );
         }
         else {
             if(_loss > maxClaim){
                 beneficiaries[_validatorIndex].status = Status.CLAIM_PAUSED;
+                emit DenyClaim(
+                _validatorIndex,
+                _withdrawAddress,
+                2//exceeds max claim and has to be reviewed
+            );
             }
             else{
                 beneficiaries[_validatorIndex].status = Status.CLAIM_WAIT_PERIOD;
+                emit AcceptClaim(_validatorIndex, _withdrawAddress);
             }
             beneficiaries[_validatorIndex].claimTimestamp = block.timestamp;
             beneficiaries[_validatorIndex].loss = _loss;
         }
-    }
-
-    function _callOracle(string memory _index) internal {
-        string memory source =
-            ("const validatorIndex = args[0]\n\
-            const url = 'https://flask-service.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/status/'+validatorIndex.toString()\n\
-            const cryptoCompareRequest = Functions.makeHttpRequest({\n\
-                url: url,\n\
-            })\n\
-            const cryptoCompareResponse = await cryptoCompareRequest\n\
-            if (cryptoCompareResponse.error) {\n\
-                console.error(cryptoCompareResponse.error)\n\
-                throw Error('Request failed')\n\
-            }\n\
-            const data = cryptoCompareResponse['data']\n\
-            if (data.Response === 'Error') {\n\
-                console.error(data.Message)\n\
-                throw Error(`Functional error. Read message: ${data.Message}`)\n\
-            }\n\
-            let slashed = true;\n\
-            if(!data['slashed']){\n\
-                slashed = false;\n\
-            }\n\
-            if(data['withdrawAddress'] == '0x0'){\n\
-                data['withdrawAddress'] = '0x0000000000000000000000000000000000000000'\n\
-            }\n\
-            let loss = data['loss'] * 1\n\
-            const buffer = Buffer.alloc(1);\n\
-            buffer.writeUInt8(slashed ? 1 : 0, 0)\n\
-            const hexBool = buffer.toString('hex')\n\
-            let hexIndex = data['index'].toString(16).padStart(64, '0')\n\
-            let hexLoss = loss.toString(16).padStart(64, '0')\n\
-            let result = Buffer.from(data['withdrawAddress'].slice(2)+hexBool+hexIndex+hexLoss, 'hex')\n\
-            return Buffer.from(result)");
-        bytes memory secrets;
-        string[] memory args = new string[](1);
-        args[0] = _index;
-        uint64 sub = 902;
-        uint32 gasLimit = 250000;
-        IFunctionsConsumer(oracle).executeRequest(
-            source,
-            secrets,
-            args,
-            sub,
-            gasLimit
-        );
     }
 
     function makeClaim(
@@ -448,8 +266,7 @@ contract Reserve is ReentrancyGuard {
         fromWithdrawAddress(msg.sender, _validatorIndex)
         onlyActiveBeneficiary(_validatorIndex)
     {
-        string memory indexStr = Strings.toString(_validatorIndex);
-        _callOracle(indexStr);
+        IOracleGateway(oracleGateway).callOracle(Strings.toString(_validatorIndex));
         beneficiaries[_validatorIndex].status = Status.AWAIT_ORACLE_CLAIM;
     }
 
@@ -468,7 +285,11 @@ contract Reserve is ReentrancyGuard {
             beneficiaries[_validatorIndex].loss
         );
         beneficiaries[_validatorIndex].status = Status.CLOSED;
-        emit ProcessClaim(withdrawAddress, loss, "approve");
+        emit ProcessClaim(
+            withdrawAddress,
+            loss,
+            0//approve
+            );
     }
 
     function denyClaim(
@@ -478,7 +299,7 @@ contract Reserve is ReentrancyGuard {
         emit ProcessClaim(
             beneficiaries[_validatorIndex].withdrawAddress,
             0,
-            "deny"
+            1//deny
         );
     }
 
@@ -489,18 +310,22 @@ contract Reserve is ReentrancyGuard {
         emit ProcessClaim(
             beneficiaries[_validatorIndex].withdrawAddress,
             0,
-            "pause"
+            2//pause
         );
     }
 
     function unpauseClaim(
         uint _validatorIndex
-    ) public onlyMultiSig onlyPausedClaim(_validatorIndex) {
+    )
+        public
+        onlyMultiSig
+        onlyPausedClaim(_validatorIndex)
+    {
         beneficiaries[_validatorIndex].status = Status.CLAIM_WAIT_PERIOD;
         emit ProcessClaim(
             beneficiaries[_validatorIndex].withdrawAddress,
             0,
-            "unpause"
+            3//"unpause"
         );
     }
 
@@ -511,23 +336,8 @@ contract Reserve is ReentrancyGuard {
         emit ProcessClaim(
             beneficiaries[_validatorIndex].withdrawAddress,
             0,
-            "reset"
+            4//"reset"
         );
-    }
-
-    function getPremiumHarvestNeeded(
-        uint _requested
-    ) public view returns (uint) {
-        require(
-            getProtocolBalance() >= _requested,
-            "requested is larger than protocol balance"
-        );
-
-        if (address(this).balance >= _requested) {
-            return 0;
-        } else {
-            return (_requested - address(this).balance);
-        }
     }
 
     /**
@@ -544,7 +354,7 @@ contract Reserve is ReentrancyGuard {
         onlyActiveBeneficiary(_validatorIndex)
         onlyPools
     {
-        beneficiaries[_validatorIndex].status = Status.ORACLE_ADD_APPROVE;
+        beneficiaries[_validatorIndex].status = Status.NOT_ACTIVE;
         emit WithdrawBeneficiary(_validatorIndex, _withdrawAddress);
     }
 
@@ -553,21 +363,6 @@ contract Reserve is ReentrancyGuard {
      **/
     function _harvestInterest() internal {
         uint256 amount = IPremiumGenerator(generatorPool).withdrawInterest();
-        emit Harvest(generatorPool, amount);
-    }
-
-    /**
-     * @return multiSig address of multisig
-     **/
-    function getMultiSig() public view returns (address) {
-        return multiSig;
-    }
-
-    /**
-     * @return list of verified pools
-     **/
-    function getGeneratorPool() public view returns (address) {
-        return generatorPool;
     }
 
     function getSlashingInsuranceETHAddress() public view returns (address) {
@@ -580,8 +375,8 @@ contract Reserve is ReentrancyGuard {
         return IERC20(getSlashingInsuranceETHAddress()).balanceOf(_depositor);
     }
 
-    function getUnclaimedInterest() public view returns (uint) {
-        return IPremiumGenerator(generatorPool).getUnclaimedInterest();
+    function getDepositorValidatorIds(address _withdrawAddress) public view returns(uint[] memory){
+        return depositors[_withdrawAddress];
     }
 
     function getReserveATokenBalance() public view returns (uint) {
@@ -592,7 +387,11 @@ contract Reserve is ReentrancyGuard {
     }
 
     function getProtocolBalance() public view returns (uint) {
-        return address(this).balance + getUnclaimedInterest() + getReserveATokenBalance();
+        return (
+            address(this).balance +
+            IPremiumGenerator(generatorPool).getUnclaimedInterest() +
+            getReserveATokenBalance()
+        );
     }
 
     function getSliETHTotalSupply() public view returns (uint) {
@@ -613,9 +412,5 @@ contract Reserve is ReentrancyGuard {
         uint _validatorIndex
     ) public view returns (address withdrawAddress) {
         withdrawAddress = beneficiaries[_validatorIndex].withdrawAddress;
-    }
-
-    function isPool(address _pool) public view returns(bool){
-        return (_pool == generatorPool);
     }
 }

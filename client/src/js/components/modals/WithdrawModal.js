@@ -5,14 +5,14 @@ import TextField from '../TextField'
 import { Button, ButtonExtraSmall } from '../Button'
 
 import getWeb3 from "../../../getWeb3NotOnLoad";
-import PoolTracker from "../../../contracts/PoolTracker.json";
+import Reserve from "../../../contracts/Reserve.json";
 
 import { updatePendingTx } from "../../actions/pendingTx";
 import { updatePendingTxList } from "../../actions/pendingTxList";
 import { updateTxResult } from  "../../actions/txResult";
 import { updateWithdrawAmount } from  "../../actions/withdrawAmount";
 import { updateUserDepositPoolInfo } from "../../actions/userDepositPoolInfo";
-import { updateVerifiedPoolInfo } from "../../actions/verifiedPoolInfo";
+import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
 
 import {getDirectFromPoolInfo, getContractInfo} from '../../func/contractInteractions';
@@ -53,15 +53,13 @@ class WithdrawModal extends Component {
         let result;
         try{
             const web3 = await getWeb3();
-            const tokenAddress = this.props.withdrawAmount.tokenAddress;
-            const poolAddress = this.props.withdrawAmount.poolAddress;
             const tokenString = this.props.withdrawAmount.tokenString;
             const isETH = (tokenString === 'ETH' || tokenString === 'MATIC');
             const activeAccount = this.props.activeAccount;
 
             const amount = this.props.withdrawAmount.amount;
             this.props.updateWithdrawAmount('');
-            const amountInBase = getTokenBaseAmount(amount, this.props.tokenMap[tokenString].decimals);
+            const amountInBase = web3.utils.toWei(String(amount), "ether");
             const gasPrice = (await web3.eth.getGasPrice()).toString();
 
             const parameter = {
@@ -70,16 +68,15 @@ class WithdrawModal extends Component {
                 gasPrice: web3.utils.toHex(gasPrice)
             };
 
-            let PoolTrackerInstance = new web3.eth.Contract(
-                PoolTracker.abi,
-                this.props.poolTrackerAddress,
+            let ReserveInstance = new web3.eth.Contract(
+              Reserve.abi,
+              this.props.reserveAddress,
             );
-            const poolName = await getContractInfo(poolAddress);
-            txInfo = {txHash: '', success: false, amount: amount, tokenString: tokenString, type:"WITHDRAW", poolAddress: poolAddress, poolName: poolName[6], networkId: this.props.networkId};
-            result = await PoolTrackerInstance.methods.withdrawDeposit(amountInBase, tokenAddress, poolAddress, isETH).send(parameter , async(err, transactionHash) => {
+            txInfo = {txHash: '', success: false, amount: amount, tokenString: tokenString, type:"WITHDRAW", poolName: "Unbond ETH", networkId: this.props.networkId};
+            result = await ReserveInstance.methods.withdrawInsurance(amountInBase).send(parameter , async(err, transactionHash) => {
                 console.log('Transaction Hash :', transactionHash);
                 if(!err){
-                  let info = {txHash: transactionHash, amount: amount, tokenString: tokenString, type:"WITHDRAW", poolAddress: poolAddress, poolName: poolName[6], networkId: this.props.networkId, status:"pending"};
+                  let info = {txHash: transactionHash, amount: amount, tokenString: tokenString, type:"WITHDRAW", poolName: "Unbond ETH", networkId: this.props.networkId, status:"pending"};
 						      let pending = [...this.props.pendingTxList];
                   if(!pending) pending = [];
                   pending.push(info);
@@ -94,7 +91,7 @@ class WithdrawModal extends Component {
             });
             txInfo.success = true;
 
-            const newInfo = await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
+            /*const newInfo = await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
             const newDepositInfo = addNewPoolInfo([...this.props.userDepositPoolInfo], newInfo);
             await this.props.updateUserDepositPoolInfo(newDepositInfo);
             localStorage.setItem("userDepositPoolInfo", JSON.stringify(newDepositInfo));
@@ -107,9 +104,9 @@ class WithdrawModal extends Component {
 
             if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
               const newVerifiedInfo = addNewPoolInfo([...this.props.verifiedPoolInfo], newInfo);
-              await this.props.updateVerifiedPoolInfo(newVerifiedInfo);
+              await this.props.updateDepositorValIds(newVerifiedInfo);
               localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
-            }
+            }*/
 		}
     catch (error) {
       console.error(error);
@@ -125,12 +122,15 @@ class WithdrawModal extends Component {
 
     return(
       <div style={{maxWidth: "300px", fontSize: 9, display:"flex", flexDirection: "column", alignItems:"left", justifyContent:"left"}}>
-        <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">Your Deposit for {name} is available to be withdrawn in full. Any funds withdrawn will no longer be used to generate donations for {name}.</p>
-        <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">Thank you for donating and participating in JustCause!</p>
+        <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">Your Deposit into the SLI Claims Fund is available to be withdrawn in full.</p>
+        <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">Withdrawing will swap your sliETH for ETH at the current conversion rate. Withdrawn ETH will no longer earn rewards.</p>
+        <p style={{alignItems:"center", justifyContent:"center", marginRight:"0%", marginTop: "8px", marginBottom: "0px"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
       </div>
     )
 
     }
+
+
 
   displayTxInfo = async(txInfo) => {
 		this.props.updatePendingTx('');
@@ -151,14 +151,14 @@ class WithdrawModal extends Component {
 		return (
       <Fragment>
         <ModalHeader>
-          <h2 className="mb0">Withdraw {displayLogo(withdrawInfo.tokenString)} {withdrawInfo.tokenString} for {withdrawInfo.contractInfo[6]}</h2>
+        <p style={{fontSize: 30}} className="mb0">Unbond ETH</p>
         </ModalHeader>
         <ModalCtas>
-          {this.displayWithdrawNotice(withdrawInfo.contractInfo[6])}
+          {this.displayWithdrawNotice()}
           <div style={{marginLeft: "auto", marginTop:"auto", display:"flex", flexDirection: "column", alignItems:"flex-end", justifyContent:"left"}}>
             <div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
-              <p>{displayLogo(withdrawInfo.tokenString)}{withdrawInfo.tokenString}: {withdrawInfo.formatBalance}</p>
-              <ButtonExtraSmall text="MAX" callback={() => this.refs.myField.replaceValue(withdrawInfo.formatBalance)}/>
+              <p>{displayLogo("ETH_WHITE")}{withdrawInfo.tokenString}: {withdrawInfo.userBalance}</p>
+              <ButtonExtraSmall text="MAX" callback={() => this.refs.myField.replaceValue(withdrawInfo.userBalance)}/>
 
             </div>
             <div style={{marginLeft: "auto", marginTop:"auto"}}>
@@ -179,7 +179,7 @@ class WithdrawModal extends Component {
 
 const mapStateToProps = state => ({
     tokenMap: state.tokenMap,
-	  poolTrackerAddress: state.poolTrackerAddress,
+	  reserveAddress: state.reserveAddress,
     withdrawAmount: state.withdrawAmount,
     activeAccount: state.activeAccount,
     networkId: state.networkId,
@@ -187,6 +187,7 @@ const mapStateToProps = state => ({
     verifiedPoolInfo: state.verifiedPoolInfo,
     ownerPoolInfo: state.ownerPoolInfo,
     pendingTxList: state.pendingTxList,
+    sliETHInfo: state.sliETHInfo,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -194,7 +195,7 @@ const mapDispatchToProps = dispatch => ({
     updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
     updatePendingTxList: (tx) => dispatch(updatePendingTxList(tx)),
     updateTxResult: (res) => dispatch(updateTxResult(res)),
-    updateVerifiedPoolInfo: (infoArray) => dispatch(updateVerifiedPoolInfo(infoArray)),
+    updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
     updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
     updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
 })

@@ -11,7 +11,7 @@ import TxResultModal from "../components/modals/TxResultModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
 import SearchModal from "../components/modals/SearchModal";
 
-import { updateVerifiedPoolInfo } from "../actions/verifiedPoolInfo"
+import { updateDepositorValIds } from "../actions/verifiedPoolInfo"
 import { updateOwnerPoolInfo } from "../actions/ownerPoolInfo"
 import { updateUserDepositPoolInfo } from "../actions/userDepositPoolInfo"
 import {updateSearchInfo } from "../actions/searchInfo";
@@ -43,7 +43,7 @@ class Search extends Component {
 
 			if(this.props.txResult.success){
 				let poolLists = updatePoolInfo(this.props.txResult.poolAddress);
-				if(poolLists[0]) this.props.updateVerifiedPoolInfo(poolLists[0]);
+				if(poolLists[0]) this.props.updateDepositorValIds(poolLists[0]);
 				if(poolLists[1]) this.props.updateOwnerPoolInfo(poolLists[1]);
 				if(poolLists[2]) this.props.updateUserDepositPoolInfo(poolLists[2]);
 			}
@@ -167,7 +167,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-	pdateVerifiedPoolInfo: (infoArray) => dispatch(updateVerifiedPoolInfo(infoArray)),
+	pdateVerifiedPoolInfo: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
 	updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
 	updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
 	updateSearchInfo: (info) => dispatch(updateSearchInfo(info)),

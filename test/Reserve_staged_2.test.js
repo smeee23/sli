@@ -2,6 +2,7 @@ var Reserve = artifacts.require("Reserve");
 var PoolAddressesProviderMock = artifacts.require("PoolAddressesProviderMock");
 var PoolMock = artifacts.require("PoolMock");
 var WethGatewayTest = artifacts.require("WethGatewayTest");
+var OracleGateway = artifacts.require("OracleGateway");
 var aTestToken = artifacts.require("aTestToken");
 var TestToken = artifacts.require("TestToken");
 var OracleMock = artifacts.require("OracleMock");
@@ -46,6 +47,8 @@ contract("Reserve", async (accounts) => {
         await this.wethGateway.setValues(this.wethToken.address, this.aWethToken.address, {from: multiSig});
 
         const wethGatewayAddr = this.wethGateway.address;
+
+        this.oracleGateway = await OracleGateway.new(multiSig, this.oracleMock.address,  {from: multiSig})
         this.premiumGeneratorAaveV2 = await PremiumGeneratorAaveV2.new(this.lendingPoolAddressesProviderMock.address, this.protocolDataProviderMock.address, multiSig, wethGatewayAddr, premiumDeposit);
         this.reserve = await Reserve.new(multiSig,
                                         this.premiumGeneratorAaveV2.address,
@@ -53,10 +56,12 @@ contract("Reserve", async (accounts) => {
                                         minimumSliDeposit,
                                         minimumReserve,
                                         maxClaim,
-                                        this.oracleMock.address);
+                                        this.oracleMock.address,
+                                        this.oracleGateway.address);
 
         await this.oracleMock.setReserve(this.reserve.address, {from: multiSig});
         await this.premiumGeneratorAaveV2.setReserve(this.reserve.address, {from: multiSig});
+        await this.oracleGateway.setReserve(this.reserve.address, {from: multiSig});
 
         await this.reserve.provideInsurance({from: insurer_1, value: largeDeposit});
 
@@ -80,6 +85,10 @@ contract("Reserve", async (accounts) => {
         await this.oracleMock.fulfillMultipleParameters("0x0", "100000", 0, validator_5, 0, {from: oracleCaller});
         await this.premiumGeneratorAaveV2.deposit("100000", {from: validator_5, value: premiumDeposit});
 
+        await this.reserve.applyForCoverage("100", {from: validator_5});
+        await this.oracleMock.fulfillMultipleParameters("0x0", "100", 0, validator_5, 0, {from: oracleCaller});
+        await this.premiumGeneratorAaveV2.deposit("100", {from: validator_5, value: premiumDeposit});
+
         await this.poolMock.simulateInterest(interest, this.premiumGeneratorAaveV2.address, {from:multiSig});
 
         await this.reserve.provideInsurance({from: insurer_2, value: largeDeposit});
@@ -87,20 +96,20 @@ contract("Reserve", async (accounts) => {
 
     });
 
-    it("provideInsurance mints sliETH for sender", async() => {
-        console.log((await this.reserve.getSliETHConversion()).toString());
+    it("getDepositorValidatorIds returns all validatorIds associated with withdrawAddress", async() => {
+        const ids = (await this.reserve.getDepositorValidatorIds(validator_5)).toString();
+        assert.equal(ids, "100000,100", "validator ids incorrect");
+    });
 
-        //await this.poolMock.simulateInterest(largeDeposit, this.premiumGeneratorAaveV2.address, {from:multiSig});
+    it("conversion rate on sli improves as contracts accrue interest", async() => {
+        const before = await this.reserve.getSliETHConversion();
 
-        console.log((await this.reserve.getSliETHConversion()).toString());
+        await this.poolMock.simulateInterest(largeDeposit, this.premiumGeneratorAaveV2.address, {from:multiSig});
 
-        const sliBalance_1 = (await this.reserve.getSlashingInsuranceETHBalance(insurer_1)).toString();
-        const sliBalance_2 = (await this.reserve.getSlashingInsuranceETHBalance(insurer_2)).toString();
-        console.log(sliBalance_1);
-        console.log(sliBalance_2);
-        console.log((await this.reserve.getProtocolBalance()).toString());
-        console.log((await this.reserve.getSliETHTotalSupply()).toString());
-        //assert.strictEqual(sliBalance, premiumDeposit, "balance incorrect");
+        const after = await this.reserve.getSliETHConversion();
+
+        const ethAdded = (new BN(after).gt(new BN(before)));
+        assert.equal(ethAdded, true, "conversion rate unchanged");
     });
 
     it("makeClaim reverts if tx not from withdrawAddress", async() => {

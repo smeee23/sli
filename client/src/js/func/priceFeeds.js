@@ -1,18 +1,5 @@
 const axios = require('axios');
 
-export const getPriceFromMessari = async(apiKey) => {
-    let priceUSD;
-    try{
-        const url = "https://data.messari.io/api/v1/assets/"+apiKey+"/metrics/market-data";
-        const response = await axios.get(url);
-        priceUSD = response.data.data.market_data.price_usd;
-    }
-    catch (error) {
-        console.error(error);
-    }
-    return priceUSD;
-}
-
 export const getPriceFromCoinGecko = async(networkId) => {
     let data;
     try{

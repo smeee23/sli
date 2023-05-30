@@ -15,7 +15,7 @@ import { updateWithdrawAmount } from  "../actions/withdrawAmount";
 import { updateClaim } from "../actions/claim";
 import { updateApprove } from "../actions/approve";
 import { updateTokenMap } from "../actions/tokenMap"
-import { updateVerifiedPoolInfo } from "../actions/verifiedPoolInfo"
+import { updateDepositorValIds } from "../actions/depositorValIds"
 import { updateOwnerPoolInfo } from "../actions/ownerPoolInfo"
 import { updateUserDepositPoolInfo } from "../actions/userDepositPoolInfo"
 import { updateShare } from  "../actions/share";
@@ -32,7 +32,6 @@ import ApproveModal from '../components/modals/ApproveModal'
 import PendingTxModal from "../components/modals/PendingTxModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
 import ShareModal from "../components/modals/ShareModal";
-import UpdateAboutModal from "./modals/UpdateAboutModal";
 
 class Card extends Component {
 	interval = 0;
@@ -43,27 +42,11 @@ class Card extends Component {
 		this.state = {
 			open: false,
 			loading: false,
-			selectedTokenIndex: this.highestDeposit(this.props.acceptedTokenInfo),
 			tokenButtons: [],
 			tokenInfo: this.props.acceptedTokenInfo,
 			copied: false,
 			directResponse: "",
 		}
-	}
-
-	highestDeposit = (acceptedTokenInfo) =>{
-		let highVal = 0.0;
-		let highIndex = 0;
-		for(let i = 0; i <  acceptedTokenInfo.length; i++){
-			const item = acceptedTokenInfo[i];
-			const priceUSD = this.props.tokenMap[item.acceptedTokenString] && this.props.tokenMap[item.acceptedTokenString].priceUSD;
-			const usdAmount = precise(item.userBalance, item.decimals) * priceUSD;
-			if(usdAmount > highVal){
-				highVal = usdAmount;
-				highIndex = i;
-			}
-		}
-		return highIndex;
 	}
 
   	componentDidMount = async () => {
@@ -242,19 +225,11 @@ class Card extends Component {
 		el.style.animation = null;
 	}
 
-	createTokenInfo = (address, receiver, acceptedTokenInfo, about, picHash, title, isVerified, isReceiver) => {
-		if (!acceptedTokenInfo) return '';
-		if (!this.props.tokenMap) return '';
-
+	createValidatorInfo = () => {
+		//if (!acceptedTokenInfo) return '';
+		if (!this.props.depositorValIds) return '';
 		//const item = this.props.acceptedTokenInfo[this.state.selectedTokenIndex];
-		const item = this.state.tokenInfo[this.state.selectedTokenIndex];
-
-		const depositAPY = this.props.tokenMap[item.acceptedTokenString] && this.props.tokenMap[item.acceptedTokenString].depositAPY;
-		const isETH = (item.acceptedTokenString === 'ETH' || item.acceptedTokenString === 'MATIC') ? true : false;
-
-		const priceUSD = this.props.tokenMap[item.acceptedTokenString] && this.props.tokenMap[item.acceptedTokenString].priceUSD;
-
-		const tokenInfo =
+		/*const tokenInfo =
 			<div className="card__body" key={item.acceptedTokenString}>
 				<div style={{display: "flex", flexDirection: "column", borderRight: "double"}}>
 					<div style={{display: "flex", flexDirection: "wrap"}}>
@@ -279,7 +254,7 @@ class Card extends Component {
 							{this.getPoolImage(picHash)}
 						</div>
 					</div>
-					<div /*style={{fontSize:17}}*/ className="card__body__column__eight">
+					<div className="card__body__column__eight">
 						{this.getAbout(about, address, isReceiver, picHash, title)}
 						<div style={{display: "flex", flexDirection: "wrap", gap: "16px"}}>
 							{this.getVerifiedLinks(isVerified, title)}
@@ -344,15 +319,9 @@ class Card extends Component {
 				</div>
 
 			</div>
-		return tokenInfo;
+		return tokenInfo;*/
 	}
 
-	getUpdateAboutModal = () => {
-		if(this.props.newAbout){
-			let modal = <LargeModal isOpen={true}><UpdateAboutModal newAboutInfo={this.props.newAbout}/></LargeModal>
-			return modal;
-		}
-	}
 	updateAbout = async(aboutString, address, picHash, title) => {
 		await this.props.updateNewAbout('');
 		console.log("update about clicked", this.props.newAbout);
@@ -517,7 +486,7 @@ class Card extends Component {
 
 		if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
 			const newVerifiedInfo = addNewPoolInfoAllTokens([...this.props.verifiedPoolInfo], newInfoAllTokens);
-			await this.props.updateVerifiedPoolInfo(newVerifiedInfo);
+			await this.props.updateDepositorValIds(newVerifiedInfo);
 			localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
 		}
 
@@ -546,7 +515,7 @@ class Card extends Component {
 	}
 
 	render() {
-		const { title, about, picHash, idx, address, receiver, acceptedTokenInfo, isVerified} = this.props;
+		const { idx } = this.props;
 		const poolIcons = [
 			{ "name": "poolShape1", "color": palette("brand-red")},
 			{ "name": "poolShape2", "color": palette("brand-yellow")},
@@ -554,9 +523,7 @@ class Card extends Component {
 			{ "name": "poolShape4", "color": palette("brand-pink")},
 			{ "name": "poolShape5", "color": palette("brand-green")},
 		]
-
-		const isReceiver = this.isReceiver(receiver);
-
+		const validator = this.props.depositorValIds[idx];
 		const randomPoolIcon = poolIcons[idx % poolIcons.length];
 
 		const classnames = classNames({
@@ -565,37 +532,30 @@ class Card extends Component {
 		})
 
 		//const {userBalance, interestEarned, totalBalance} = getHeaderValuesInUSD(acceptedTokenInfo, this.props.tokenMap);
-		const {userBalance, interestEarned, totalBalance} = this.getHeaderValues();
-		const tokenButtons = this.createTokenButtons(acceptedTokenInfo);
-		const tokenInfo = this.createTokenInfo(address, receiver, acceptedTokenInfo, about, picHash, title, isVerified, isReceiver);
+		//const {userBalance, interestEarned, totalBalance} = this.getHeaderValues();
+		//const tokenButtons = this.createTokenButtons(acceptedTokenInfo);
+		const validatorInfo = this.createValidatorInfo();
 
 		return (
 			<div className={classnames}>
 				<div className="card__header">
-				{this.state.open ? "" : <Icon name={randomPoolIcon.name} size={32} color={randomPoolIcon.color} strokeWidth={3}/>}
-					<h4 className="mb0">
-						{this.state.open ? "" : title}
-					</h4>
+				{/*this.state.open ? "" : <Icon name={randomPoolIcon.name} size={32} color={randomPoolIcon.color} strokeWidth={3}/>*/}
+					<p className="mb0" style={{fontSize: 20}}>
+						{"Validator: " + validator.validatorindex}
+					</p>
 
-					<div className="card__token__buttons" style={{paddingLeft:"10px", display:"flex", flexWrap:"wrap"}}>
-						{tokenButtons}
-					</div>
 					<div className="card__header--right">
-									{this.getRefreshButton(address)}
-									<p title="USD value of your deposited tokens (approx.)" className="mb0">{userBalance === "" ? "" : "Balance: " + userBalance}</p>
-									<p title="USD value of all pool tokens (approx.)" className="mb0">{totalBalance === "" ? "" : "Pool: "+ totalBalance}</p>
-									<p title="USD value of all harvested and unharvested donations (approx.)" className="mb0">{interestEarned === "" ? "" : "Total Donated: "+ interestEarned}</p>
+									{this.getRefreshButton()}
 									<div className="card__open-button" onClick={this.toggleCardOpen}><Icon name={"plus"} size={32}/></div>
 					</div>
 				</div>
-				{tokenInfo}
+				{validatorInfo}
 				<div className="card__bar"/>
 				{this.getDepositAmountModal()}
 				{this.getWithdrawAmountModal()}
 				{this.getClaimModal()}
 				{this.getApproveModal()}
 				{this.getShareModal()}
-				{this.getUpdateAboutModal()}
       		</div>
 		);
 	}
@@ -619,6 +579,7 @@ const mapStateToProps = state => ({
 	share: state.share,
 	networkId: state.networkId,
 	newAbout: state.newAbout,
+	depositorValIds: state.depositorValIds,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -627,7 +588,7 @@ const mapDispatchToProps = dispatch => ({
 	updateDepositAmount: (amnt) => dispatch(updateDepositAmount(amnt)),
 	updateWithdrawAmount: (amount) => dispatch(updateWithdrawAmount(amount)),
 	updateTokenMap: (tokenMap) => dispatch(updateTokenMap(tokenMap)),
-	updateVerifiedPoolInfo: (infoArray) => dispatch(updateVerifiedPoolInfo(infoArray)),
+	updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
 	updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
 	updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
 	updateClaim: (txInfo) => dispatch(updateClaim(txInfo)),

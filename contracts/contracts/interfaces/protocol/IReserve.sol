@@ -21,7 +21,6 @@ interface IReserve {
     function getGeneratorPools() external view returns(address[] memory);
     function checkPool(address _pool) external view returns(bool);
     function getSlashingInsuranceETHAddress() external view returns(address);
-    function getUnclaimedInterest() external view returns(uint);
     function getProtocolBalance() external view returns(uint);
 
 }

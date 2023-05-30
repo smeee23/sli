@@ -9,9 +9,6 @@ class ModalHeader extends Component {
       <div className="modal__header">
         <Fragment>
             { this.props.children }
-            <div className="modal__close-btn" onClick={this.closeModal}>
-              <Logo/>
-            </div>
         </Fragment>
       </div>
 		);

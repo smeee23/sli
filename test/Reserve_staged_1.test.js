@@ -1,14 +1,16 @@
 var Reserve = artifacts.require("Reserve");
+var SlashingInsuranceETH = artifacts.require("SlashingInsuranceETH");
 var PoolAddressesProviderMock = artifacts.require("PoolAddressesProviderMock");
 var PoolMock = artifacts.require("PoolMock");
 var WethGatewayTest = artifacts.require("WethGatewayTest");
+var OracleGateway = artifacts.require("OracleGateway");
 var aTestToken = artifacts.require("aTestToken");
 var TestToken = artifacts.require("TestToken");
 var OracleMock = artifacts.require("OracleMock");
 var PremiumGeneratorAaveV2 = artifacts.require("PremiumGeneratorAaveV2");
 var LendingPoolAddressesProviderMock = artifacts.require("LendingPoolAddressesProviderMock");
 var ProtocolDataProviderMock = artifacts.require("ProtocolDataProviderMock");
-const { expectRevert } = require('@openzeppelin/test-helpers');
+const { expectRevert, time } = require('@openzeppelin/test-helpers');
 
 const chai = require("./setupchai.js");
 const BN = web3.utils.BN;
@@ -42,20 +44,30 @@ contract("Reserve", async (accounts) => {
         this.protocolDataProviderMock = await ProtocolDataProviderMock.new(this.aWethToken.address);
 
         this.oracleMock = await OracleMock.new(multiSig);
+
         this.wethGateway = await WethGatewayTest.new();
         await this.wethGateway.setValues(this.wethToken.address, this.aWethToken.address, {from: multiSig});
 
         const wethGatewayAddr = this.wethGateway.address;
+
+        this.oracleGateway = await OracleGateway.new(multiSig, this.oracleMock.address,  {from: multiSig})
         this.premiumGeneratorAaveV2 = await PremiumGeneratorAaveV2.new(this.lendingPoolAddressesProviderMock.address, this.protocolDataProviderMock.address, multiSig, wethGatewayAddr, premiumDeposit);
+
         this.reserve = await Reserve.new(multiSig,
                                         this.premiumGeneratorAaveV2.address,
                                         wethGatewayAddr,
                                         minimumSliDeposit,
                                         minimumReserve,
                                         maxClaim,
-                                        this.oracleMock.address);
+                                        this.oracleMock.address,
+                                        this.oracleGateway.address);
+
         await this.oracleMock.setReserve(this.reserve.address, {from: multiSig});
         await this.premiumGeneratorAaveV2.setReserve(this.reserve.address, {from: multiSig});
+        await this.oracleGateway.setReserve(this.reserve.address, {from: multiSig});
+
+        const sliETHAddress = await this.reserve.getSlashingInsuranceETHAddress({from: multiSig})
+        this.slashingInsuranceETH = await SlashingInsuranceETH.at(sliETHAddress);
     });
 
     it("provideInsurance mints sliETH for sender", async() => {
@@ -122,7 +134,7 @@ contract("Reserve", async (accounts) => {
         let b1 = await web3.eth.getBalance(insurer_1);
         const sliAmount = TWO_ETH;
         const sliBalance_1 = (await this.reserve.getSlashingInsuranceETHBalance(insurer_1)).toString();
-        const sliTotal = (await this.reserve.getSliETHTotalSupply()).toString();
+        const sliTotal = (await  this.reserve.getSliETHTotalSupply()).toString();
 
         await this.reserve.withdrawInsurance(sliAmount, {from: insurer_1});
         let b2 = await web3.eth.getBalance(insurer_1);
@@ -165,6 +177,24 @@ contract("Reserve", async (accounts) => {
         //NOT_ACTIVE == 0
         assert.strictEqual("0", status, "The pool name did not return the correct address");
     });
+
+    it("addBeneficiary reverts if user applies and does not deposit within 2 days and can re-apply", async() => {
+        await this.reserve.provideInsurance({from: insurer_1, value: TWO_ETH});
+
+        await this.reserve.applyForCoverage("210", {from: validator_1});
+        await this.oracleMock.fulfillMultipleParameters("0x0", "210", 0, validator_1, 0, {from: oracleCaller});
+
+        await time.increase(time.duration.weeks(1));
+
+        await expectRevert(
+            this.premiumGeneratorAaveV2.deposit("210", {from: validator_1, value: premiumDeposit}),
+            "Outside apply window"
+        );
+
+        await this.reserve.applyForCoverage("210", {from: validator_1});
+        await this.oracleMock.fulfillMultipleParameters("0x0", "210", 0, validator_1, 0, {from: oracleCaller});
+        await this.premiumGeneratorAaveV2.deposit("210", {from: validator_1, value: premiumDeposit});
+    })
 
     it(`applyForCoverage:
             - reverts for repeat or incorrect address
@@ -215,7 +245,7 @@ contract("Reserve", async (accounts) => {
 
             await this.reserve.provideInsurance({from: insurer_1, value: TWO_ETH});
 
-            await expectRevert(
+           await expectRevert(
                 this.premiumGeneratorAaveV2.deposit("2110", {from: validator_1, value: premiumDeposit}),
                 "beneficiary is not approved"
             );
@@ -257,16 +287,23 @@ contract("Reserve", async (accounts) => {
             const ethAdded = (new BN(valBal_2).gt(new BN(valBal_1)));
             assert.equal(ethAdded, true, "eth not withdrawn");
 
+            await expectRevert(
+                this.premiumGeneratorAaveV2.deposit("210", {from: validator_1, value: premiumDeposit}),
+                "beneficiary is not approved"
+            );
+
+            await this.reserve.applyForCoverage("210", {from: validator_1});
+            await this.oracleMock.fulfillMultipleParameters("0x0", "210", 0, validator_1, 0, {from: oracleCaller});
             await this.premiumGeneratorAaveV2.deposit("210", {from: validator_1, value: premiumDeposit});
             await this.poolMock.simulateInterest(interest, this.premiumGeneratorAaveV2.address, {from:multiSig});
             await this.premiumGeneratorAaveV2.withdraw("210", {from: validator_1});
             const interestCheck = new BN(interest).add(new BN(interest)).toString();
-            assert.strictEqual((await this.reserve.getUnclaimedInterest()).toString(), interestCheck, "interest not colculated correctly");
+            assert.strictEqual((await this.premiumGeneratorAaveV2.getUnclaimedInterest()).toString(), interestCheck, "interest not colculated correctly");
 
     });
 
     it("getMultiSig returns multiSig", async() => {
-        const _multiSig = await this.reserve.getMultiSig({to:this.reserve.address, from: multiSig});
+        const _multiSig = await this.reserve.multiSig({to:this.reserve.address, from: multiSig});
         assert.strictEqual(multiSig, _multiSig, "The pool name did not return the correct address");
     });
 });

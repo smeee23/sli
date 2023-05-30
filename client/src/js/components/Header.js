@@ -216,8 +216,10 @@ class Header extends Component {
         </Takeover>
         {this.getHomeLink()}
           <h2 title="connected" className="mb0 horizontal-padding-sm" style={{fontSize:15, paddingRight: "0px", color: "green"}}> {getConnection(this.props.tokenMap, this.props.networkId)} </h2>
-        <nav className="app-bar__items">
+          <nav className="app-bar__items__left">
           { nav }
+        </nav>
+        <nav className="app-bar__items__right">
         {this.getConnectButton()}
         </nav>
       </header>

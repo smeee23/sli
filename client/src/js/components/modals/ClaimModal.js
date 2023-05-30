@@ -11,7 +11,7 @@ import { updatePendingTxList } from "../../actions/pendingTxList";
 import { updateTxResult } from  "../../actions/txResult";
 import { updateClaim } from "../../actions/claim";
 import { updateUserDepositPoolInfo } from "../../actions/userDepositPoolInfo";
-import { updateVerifiedPoolInfo } from "../../actions/verifiedPoolInfo";
+import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
 
 import {delay, displayLogo, getFormatUSD, numberWithCommas, precise, checkPoolInPoolInfo, addNewPoolInfo} from '../../func/ancillaryFunctions';
@@ -91,7 +91,7 @@ class ClaimModal extends Component {
 				if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
 					newInfo = newInfo ? newInfo : await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
 					const newVerifiedInfo = addNewPoolInfo([...this.props.verifiedPoolInfo], newInfo);
-					await this.props.updateVerifiedPoolInfo(newVerifiedInfo);
+					await this.props.updateDepositorValIds(newVerifiedInfo);
 					localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
 				}
 
@@ -164,7 +164,7 @@ const mapDispatchToProps = dispatch => ({
     updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
 	updatePendingTxList: (tx) => dispatch(updatePendingTxList(tx)),
 	updateTxResult: (res) => dispatch(updateTxResult(res)),
-	updateVerifiedPoolInfo: (infoArray) => dispatch(updateVerifiedPoolInfo(infoArray)),
+	updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
 	updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
 	updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
 })

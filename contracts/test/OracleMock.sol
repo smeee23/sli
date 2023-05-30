@@ -8,7 +8,11 @@ contract OracleMock {
   address multiSig;
   address sender;
   string index;
-
+  string source;
+  bytes secrets;
+  string args;
+  uint64 subscriptionId;
+  uint32 gasLimit;
   /**
   * @dev Only Reserve can call functions marked by this modifier.
   **/
@@ -29,7 +33,7 @@ contract OracleMock {
     multiSig = _multiSig;
   }
 
-  function getStatusAndAddrResponse(string memory _index) external onlyReserve returns (bytes32 requestId) {
+  function getStatusAndAddrResponse(string memory _index) external returns (bytes32 requestId) {
     index = _index;
     return 0x0;
   }
@@ -46,13 +50,19 @@ contract OracleMock {
   }
 
   function executeRequest(
-        string calldata source,
-        bytes calldata secrets,
-        string[] calldata args,
-        uint64 subscriptionId,
-        uint32 gasLimit
+        string calldata _source,
+        bytes calldata _secrets,
+        string[] calldata _args,
+        uint64 _subscriptionId,
+        uint32 _gasLimit
     ) external returns (bytes32){
       bytes32 result = "";
+      source = _source;
+      secrets = _secrets;
+      args = _args[0];
+      subscriptionId = _subscriptionId;
+      gasLimit = _gasLimit;
+
       return result;
     }
 

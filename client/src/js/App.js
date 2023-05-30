@@ -12,24 +12,26 @@ import { detectMobile } from "./actions/mobile"
 import { updateActiveAccount } from "./actions/activeAccount"
 import { updateTokenMap } from "./actions/tokenMap"
 import { updateVerifiedPoolAddrs } from "./actions/verifiedPoolAddrs"
-import { updateVerifiedPoolInfo } from "./actions/verifiedPoolInfo"
+import { updateDepositorValIds } from "./actions/depositorValIds"
 import { updateOwnerPoolAddrs } from "./actions/ownerPoolAddrs"
 import { updateOwnerPoolInfo } from "./actions/ownerPoolInfo"
 import { updateUserDepositPoolAddrs } from "./actions/userDepositPoolAddrs"
 import { updateUserDepositPoolInfo } from "./actions/userDepositPoolInfo"
-import { updatePoolTrackerAddress } from "./actions/poolTrackerAddress"
+import { updateReserveAddress } from "./actions/reserveAddress"
+import {updateSliETHInfo } from "./actions/sliETHInfo"
 import { updateAavePoolAddress } from "./actions/aavePoolAddress"
 import { updateNetworkId } from "./actions/networkId"
 import { updateConnect } from "./actions/connect"
 import { updateBurnPitBalances } from "./actions/burnPitBalances";
 import { updatePendingTxList } from "./actions/pendingTxList";
+import { updateActiveBalances } from "./actions/activeBalances";
 
 //import PoolTracker from "../contracts/PoolTracker.json";
 import Reserve from "../contracts/Reserve.json";
 import ERC20Instance from "../contracts/IERC20.json";
 
 import { getTokenMap, getAaveAddressProvider, deployedNetworks } from "./func/tokenMaps.js";
-import {getPoolInfo, checkTransactions, getDepositorAddress, getAllowance, getLiquidityIndexFromAave, getAavePoolAddress, getBurnBalances} from './func/contractInteractions.js';
+import {getPoolInfo, checkTransactions, getDepositorAddress, getAllowance, getLiquidityIndexFromAave, getAavePoolAddress, getBalances, getSliStats, getDepositorValidatorIds} from './func/contractInteractions.js';
 import {getPriceFromCoinGecko} from './func/priceFeeds.js'
 import {precise, delay, checkLocationForAppDeploy, filterOutVerifieds} from './func/ancillaryFunctions';
 
@@ -81,21 +83,12 @@ class App extends Component {
 							localStorage.setItem("pendingTxList", JSON.stringify(truePending));
 							console.log("pendingTx from storage", truePending);
 						}
-						const verifiedPoolInfo = localStorage.getItem("verifiedPoolInfo");
-						if(verifiedPoolInfo){
-							await this.props.updateVerifiedPoolInfo(JSON.parse(verifiedPoolInfo));
-							console.log("verifiedPoolInfo from storage", JSON.parse(verifiedPoolInfo));
+						const depositorValIds = localStorage.getItem("depositorValIds");
+						if(depositorValIds){
+							await this.props.updateDepositorValIds(JSON.parse(depositorValIds));
+							console.log("depositorValIds from storage", JSON.parse(depositorValIds));
 						}
-						const ownerPoolInfo = localStorage.getItem("ownerPoolInfo");
-						if(ownerPoolInfo){
-							await this.props.updateOwnerPoolInfo(JSON.parse(ownerPoolInfo));
-							console.log("ownerPoolInfo from storage", JSON.parse(ownerPoolInfo));
-						}
-						const userDepositPoolInfo = localStorage.getItem("userDepositPoolInfo");
-						if(userDepositPoolInfo){
-							await this.props.updateUserDepositPoolInfo(JSON.parse(userDepositPoolInfo));
-							console.log("userDepositPoolInfo from storage", JSON.parse(userDepositPoolInfo));
-						}
+
 						const tokenMap = localStorage.getItem("tokenMap");
 						if(tokenMap){
 							await this.props.updateTokenMap(JSON.parse(tokenMap));
@@ -108,7 +101,7 @@ class App extends Component {
 							await this.setUpConnection();
 							await this.setStates();
 						}
-						//this.subscribeToInfura();
+						this.subscribeToInfura();
 					}
 				}
 		}
@@ -148,15 +141,22 @@ class App extends Component {
 			this.ReserveAddress,
 		);
 
-		//this.setPoolTrackAddress(this.ReserveAddress);
-		console.log(this.ReserveAddress)
+		this.setReserveAddress(this.ReserveAddress);
+		console.log("reserve test", this.props.reserveAddress)
+		this.setSliETHInfo(await getSliStats(this.ReserveAddress));
+		console.log("sli test", this.props.sliETHInfo, this.props.activeAccount);
 
-		//const tokenMap = getTokenMap(this.networkId);
+		this.setDepositorValIds(await getDepositorValidatorIds(this.ReserveAddress, this.props.activeAccount))
+		console.log("depositor valids test", (this.props.depositorValIds));
+
+		this.setActiveBalances(await getBalances(this.ReserveAddress, this.props.activeAccount));
+		console.log("balances test", (this.props.activeBalances));
 		//await this.setTokenMapState(tokenMap);
 		//await this.setBurnPitBalances(tokenMap);
 		//await this.setPoolStateAll(this.props.activeAccount);
 		const aaveAddressesProvider = getAaveAddressProvider(this.networkId);
 		this.setAavePoolAddress(aaveAddressesProvider);
+
 	}
 
 	componentWillUnmount() {
@@ -174,11 +174,12 @@ class App extends Component {
 		return provider;
 	}
 
-	/*subscribeToInfura = async() => {
-		let poolTrackerInstance = new this.web3.eth.Contract(
-			PoolTracker.abi,
-			this.poolTrackerAddress,
-		);
+	subscribeToInfura = async() => {
+		//this.ReserveAddress = Reserve.networks[this.networkId] && Reserve.networks[this.networkId].address;
+		/*this.ReserveInstance = new this.web3.eth.Contract(
+			Reserve.abi,
+			this.ReserveAddress,
+		);*/
 
 
 		let options = {
@@ -188,10 +189,20 @@ class App extends Component {
 			fromBlock: 0
 		};
 
-		console.log("events", poolTrackerInstance.events);
+		console.log("events", this.ReserveInstance.events);
 
-		let pending;
-		poolTrackerInstance.events.Claim(options)
+		/*
+		event DenyApplication(uint validatorIndex,address withdrawAddress,uint8 reason);
+		event ApproveApplication( uint validatorIndex, address withdrawAddress);
+		event WithdrawInsurance(address depositor, uint ethAmount, uint sliETHAmount);
+		event DenyClaim(uint validatorIndex,address withdrawAddress,uint8 reason);
+		event AcceptClaim(uint validatorIndex,address withdrawAddress);
+		event AddBeneficiary(uint validatorIndex, address withdrawAddress);
+		event WithdrawBeneficiary(uint validatorIndex, address withdrawAddress);
+		event MakeClaim(uint validatorIndex);
+		event ProcessClaim(address beneficiary, uint amount, uint8 result);
+		*/
+		this.ReserveInstance.events.ProvideInsurance(options)
 			.on('data', async(event) => {
 				console.log("EVENT data", event)
 				let pending = [...this.props.pendingTxList];
@@ -203,16 +214,39 @@ class App extends Component {
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 
-				await delay(3000);
+				await delay(2000);
 				pending = (pending).filter(e => !(e.txHash === event.transactionHash));
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+				console.log("event", event);
 			})
 			.on('changed', changed => console.log("EVENT changed", changed))
 			.on('error', err => console.log("EVENT err", err))
 			.on('connected', str => console.log("EVENT str", str))
 
-		poolTrackerInstance.events.AddPool(options)
+		this.ReserveInstance.events.WithdrawInsurance(options)
+		.on('data', async(event) => {
+			console.log("EVENT data", event)
+			let pending = [...this.props.pendingTxList];
+			pending.forEach((e, i) =>{
+				if(e.txHash === event.transactionHash){
+					e.status = "complete"
+				}
+			});
+			await this.props.updatePendingTxList(pending);
+			localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+			await delay(2000);
+			pending = (pending).filter(e => !(e.txHash === event.transactionHash));
+			await this.props.updatePendingTxList(pending);
+			localStorage.setItem("pendingTxList", JSON.stringify(pending));
+			console.log("event", event);
+		})
+		.on('changed', changed => console.log("EVENT changed", changed))
+		.on('error', err => console.log("EVENT err", err))
+		.on('connected', str => console.log("EVENT str", str))
+
+		/*poolTrackerInstance.events.AddPool(options)
 		.on('data', async(event) => {
 			console.log("EVENT data", event)
 			let pending = [...this.props.pendingTxList];
@@ -273,10 +307,10 @@ class App extends Component {
 		})
 			.on('changed', changed => console.log("EVENT changed", changed))
 			.on('error', err => console.log("EVENT err", err))
-			.on('connected', str => console.log("EVENT str", str))
+			.on('connected', str => console.log("EVENT str", str))*/
 
 		console.log("pending TX List", this.props.pendingTxList);
-	}*/
+	}
 
 	getAccounts = async() => {
 		const provider = await this.connectToWeb3();
@@ -342,8 +376,20 @@ class App extends Component {
 		await this.props.updateNetworkId(networkId);
 	}
 
-	setPoolTrackAddress = async(poolTrackerAddress) => {
-		await this.props.updatePoolTrackerAddress(poolTrackerAddress);
+	setReserveAddress = async(reserveAddress) => {
+		await this.props.updateReserveAddress(reserveAddress);
+	}
+
+	setActiveBalances = async(balances) => {
+		await this.props.updateActiveBalances(balances);
+	}
+
+	setSliETHInfo = async(sliETHInfo) => {
+		await this.props.updateSliETHInfo(sliETHInfo);
+	}
+
+	setDepositorValIds = async(depositorValIds) => {
+		await this.props.updateDepositorValIds(depositorValIds);
 	}
 
 	setActiveAccountState = async(activeAccount) => {
@@ -396,35 +442,6 @@ class App extends Component {
 		return userOwnedPools;
 	}
 
-	setPoolStateAll = async(activeAccount) => {
-		const verifiedPools = filterOutVerifieds(await this.PoolTrackerInstance.methods.getVerifiedPools().call());
-		const ownerPools = await this.getOwnerAddress(activeAccount);
-		const depositBalancePools = await getDepositorAddress(activeAccount, this.PoolTrackerInstance.options.address);
-		const userDepositPools = depositBalancePools.depositPools;
-		const userBalancePools = depositBalancePools.balances;
-
-		let verifiedPoolInfo;
-		verifiedPoolInfo = await getPoolInfo(verifiedPools, getTokenMap(this.networkId), userBalancePools);
-		await this.props.updateVerifiedPoolInfo(verifiedPoolInfo);
-		localStorage.setItem("verifiedPoolInfo", JSON.stringify(verifiedPoolInfo));
-
-		let ownerPoolInfo;
-		ownerPoolInfo = await getPoolInfo(ownerPools, getTokenMap(this.networkId), userBalancePools, this.props.verifiedPoolInfo);
-		await this.props.updateUserDepositPoolAddrs(userDepositPools);
-		await this.props.updateOwnerPoolInfo(ownerPoolInfo);
-		localStorage.setItem("ownerPoolInfo", JSON.stringify(ownerPoolInfo));
-
-		let userDepositPoolInfo;
-		let knownPools = ownerPoolInfo;
-		for(const key in this.props.verifiedPoolInfo){
-			knownPools[("v_"+key)] = this.props.verifiedPoolInfo[key];
-		}
-
-		userDepositPoolInfo = await getPoolInfo(userDepositPools, getTokenMap(this.networkId),  userBalancePools, knownPools);
-		await this.props.updateUserDepositPoolInfo(userDepositPoolInfo);
-		localStorage.setItem("userDepositPoolInfo", JSON.stringify(userDepositPoolInfo));
-	}
-
 	render() {
 				let history;
 		if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -445,24 +462,31 @@ class App extends Component {
 const mapStateToProps = state => ({
 	isMobile: state.isMobile,
 	activeAccount: state.activeAccount,
+	activeBalances: state.activeBalances,
 	networkId: state.networkId,
 	aavePoolAddress: state.aavePoolAddress,
 	connect: state.connect,
 	tokenMap: state.tokenMap,
 	pendingTxList: state.pendingTxList,
+	reserveAddress: state.reserveAddress,
+	sliETHInfo: state.sliETHInfo,
+	depositorValIds: state.depositorValIds,
+
 })
 
 const mapDispatchToProps = dispatch => ({
 	detectMobile: () => dispatch(detectMobile()),
 	updateActiveAccount: (s) => dispatch(updateActiveAccount(s)),
+	updateActiveBalances: (s) => dispatch(updateActiveBalances(s)),
 	updateTokenMap: (tokenMap) => dispatch(updateTokenMap(tokenMap)),
 	updateVerifiedPoolAddrs: (addrsArray) => dispatch(updateVerifiedPoolAddrs(addrsArray)),
-	updateVerifiedPoolInfo: (infoArray) => dispatch(updateVerifiedPoolInfo(infoArray)),
+	updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
 	updateOwnerPoolAddrs: (addrsArray) => dispatch(updateOwnerPoolAddrs(addrsArray)),
 	updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
 	updateUserDepositPoolAddrs: (addrsArray) => dispatch(updateUserDepositPoolAddrs(addrsArray)),
 	updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
-	updatePoolTrackerAddress: (s) => dispatch(updatePoolTrackerAddress(s)),
+	updateReserveAddress: (s) => dispatch(updateReserveAddress(s)),
+	updateSliETHInfo: (o) => dispatch(updateSliETHInfo(o)),
 	updateNetworkId: (int) => dispatch(updateNetworkId(int)),
 	updateAavePoolAddress: (s) => dispatch(updateAavePoolAddress(s)),
 	updateConnect: (bool) => dispatch(updateConnect(bool)),

@@ -1,6 +1,6 @@
 import React, {Component} from "react"
 
-class DaiLogo extends Component {
+class EthLogo extends Component {
 	render() {
 		return (
             <svg width="22px" height="22px" viewBox="0 0 22 22">
@@ -19,4 +19,4 @@ class DaiLogo extends Component {
     }
 }
 
-export default DaiLogo
+export default EthLogo

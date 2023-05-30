@@ -8,16 +8,81 @@ import Pool from "../../contracts/IPool.json";
 import { getIpfsData } from "./ipfs";
 import { tempFixForDescriptions } from "./verifiedPoolMap";
 
-	export const getAavePoolAddress = async(poolAddressesProviderAddress) => {
-		const web3 = await getWeb3();
-		const PoolAddressesProviderInstance = new web3.eth.Contract(
-			PoolAddressesProvider.abi,
-			poolAddressesProviderAddress,
-		);
+import { getValidatorInfo } from "./validatorInfoFeed";
 
-		const poolAddr = await PoolAddressesProviderInstance.methods.getPool().call();
-		return poolAddr;
+import Reserve from "../../contracts/Reserve.json";
+import Web3 from "web3";
+
+export const getSliStats = async(reserveAddress) => {
+	const web3 = await getWeb3();
+
+	const ReserveInstance = new web3.eth.Contract(
+		Reserve.abi,
+		reserveAddress,
+	);
+
+	const sliConversion = web3.utils.fromWei(await ReserveInstance.methods.getSliETHConversion().call(), 'ether').substring(0, 7)
+	const sliTotalSupply = web3.utils.fromWei(await ReserveInstance.methods.getSliETHTotalSupply().call(), 'ether').substring(0, 7)
+	const protocolBalance = web3.utils.fromWei(await ReserveInstance.methods.getProtocolBalance().call(), 'ether').substring(0, 7)
+
+	return {sliConversion, sliTotalSupply, protocolBalance}
+}
+
+export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => {
+	const web3 = await getWeb3();
+
+	const ReserveInstance = new web3.eth.Contract(
+		Reserve.abi,
+		reserveAddress,
+	);
+
+	const validatorIds = await ReserveInstance.methods.getDepositorValidatorIds(activeAccount).call();
+	console.log("validatorIds", validatorIds);
+
+	let validatorInfo = [];
+	for(let i = 0; i < validatorIds.length; i++){
+		const info = await getValidatorInfo(validatorIds[i]);
+		console.log("info", info)
+		validatorInfo[i] = info
 	}
+
+	return validatorInfo;
+}
+
+export const getBalances = async(reserveAddress, activeAccount) => {
+	const web3 = await getWeb3();
+
+	const ReserveInstance = new web3.eth.Contract(
+		Reserve.abi,
+		reserveAddress,
+	);
+
+	const sliETHBalance = await ReserveInstance.methods.getSlashingInsuranceETHBalance(activeAccount).call();
+	const ethBalance = await web3.eth.getBalance(activeAccount);
+	console.log("sliETHBalance", sliETHBalance, ethBalance)
+	return {sliETHBalance, ethBalance}
+}
+
+export const convertWeiToETH = async(value) => {
+	const web3 = await getWeb3();
+	return web3.utils.fromWei(value, 'ether').substring(0, 7)
+  }
+
+export const convertGweiToETH = async(value) => {
+	const web3 = await getWeb3();
+	let valueInWei = web3.utils.toWei(value, 'gwei');
+	return web3.utils.fromWei(valueInWei, 'ether').substring(0, 7);
+}
+export const getAavePoolAddress = async(poolAddressesProviderAddress) => {
+	const web3 = await getWeb3();
+	const PoolAddressesProviderInstance = new web3.eth.Contract(
+		PoolAddressesProvider.abi,
+		poolAddressesProviderAddress,
+	);
+
+	const poolAddr = await PoolAddressesProviderInstance.methods.getPool().call();
+	return poolAddr;
+}
 
 	export const getLiquidityIndexFromAave = async(tokenAddress, poolAddressesProviderAddress) => {
 		const web3 = await getWeb3();

@@ -12,7 +12,7 @@ import DeployTxModal from "../components/modals/DeployTxModal";
 import NewPoolModal from "../components/modals/NewPoolModal";
 import PendingTxList from "../components/PendingTxList";
 
-import { updateVerifiedPoolInfo } from "../actions/verifiedPoolInfo"
+import { updateDepositorValIds } from "../actions/depositorValIds"
 import { updateOwnerPoolInfo } from "../actions/ownerPoolInfo"
 import { updateUserDepositPoolInfo } from "../actions/userDepositPoolInfo"
 import { updateDeployTxResult } from  "../actions/deployTxResult";
@@ -27,6 +27,7 @@ import { updateBurnPitBalances } from "../actions/burnPitBalances";
 
 import LogoCard from "../components/logos/LogoCard";
 import { precise, numberWithCommas, getHeaderValuesInUSD } from '../func/ancillaryFunctions';
+import { convertGweiToETH } from '../func/contractInteractions';
 
 import web3Modal from "../App";
 
@@ -232,37 +233,40 @@ class Insurance extends Component {
 				<div style={{display:"flex", flexDirection: "column", alignItems:"left", justifyContent:"left"}}>
 
 					<a style={{ textDecoration: "none"}} title="New to Polygon? Follow link to learn more" href="https://polygon.technology/" target="_blank" rel="noopener noreferrer">
-						<h2 style={{marginBottom: "5px", fontSize:50, marginLeft: "20px", marginRight: "auto"}} >Connect to Polygon Mumbai Testnet to View Your Covered Validators</h2>
+						<h2 style={{marginBottom: "5px", fontSize:50, marginLeft: "20px", marginRight: "auto"}} >Connect to Polygon Mumbai Testnet to View Validators</h2>
 					</a>
 				</div>
 			</div>
 			);
 		}
-		const poolInfo = [this.props.verifiedPoolInfo, this.props.ownerPoolInfo, this.props.userDepositPoolInfo][this.state.openTabIndex];
 
-
-		//if(poolInfo === "No Verified Pools") return
-
-		if(!this.props.tokenMap || !poolInfo){
+		if(!this.props.depositorValIds){
 			return (<div className="card__loader_wait" style={{display:"flex", flexDirection: "wrap", alignItems:"center", justifyContent:"center", marginLeft:"auto", marginRight:"auto", paddingTop: "100px"}}>
-					<h2>Loading Pools...</h2>
-				   </div>);
-				}
-
-		if((this.props.verifiedPoolAddrs.length > 5 && this.state.openTabIndex === 0) ||
-		   (this.props.ownerPoolAddrs.length > 5 && this.state.openTabIndex === 1) ||
-		   (this.props.userDepositPoolAddrs.length > 5 && this.state.openTabIndex === 2)){
-
-			console.log("length hit", this.state.openTabIndex)
+				<h2>Loading Pools...</h2>
+				</div>);
 		}
 
+		console.log(this.props.depositorValIds)
 		let cardHolder = [];
-		for(let i = 0; i < poolInfo.length; i++){
-			const item = poolInfo[i];
+		for(let i = 0; i < (this.props.depositorValIds).length; i++){
+			const item = this.props.depositorValIds[i];
+			console.log("DATA", convertGweiToETH((String(item.balance))))
+			//const {userBalance} = getHeaderValuesInUSD(item.acceptedTokenInfo, this.props.tokenMap);
 
-			const {userBalance} = getHeaderValuesInUSD(item.acceptedTokenInfo, this.props.tokenMap);
-
-			if(this.state.hideLowBalance && this.state.openTabIndex === 1){
+			cardHolder.push(
+				<Card
+					key={i}
+					//title={item.name}
+					idx={i}
+					//receiver={item.receiver}
+					//address={item.address}
+					//acceptedTokenInfo={item.acceptedTokenInfo}
+					//about={item.about}
+					//picHash={item.picHash}
+					//isVerified={item.isVerified}
+				/>
+			);
+			/*if(this.state.hideLowBalance && this.state.openTabIndex === 1){
 				if(userBalance !== "<$0.01" && userBalance !== "$0.00"){
 					cardHolder.push(
 						<Card
@@ -278,76 +282,7 @@ class Insurance extends Component {
 						/>
 					);
 				}
-			}
-			else if(this.state.openTabIndex === 0){
-				const name = item.name;
-				if(this.state.openVerifiedIndex === 1){
-					if(name.endsWith("Cause Fund") || name === "Environment Conservation Fund" || name === "Healthcare & Research Fund"){
-						cardHolder.push(
-							<Card
-								key={item.address}
-								title={item.name}
-								idx={i}
-								receiver={item.receiver}
-								address={item.address}
-								acceptedTokenInfo={item.acceptedTokenInfo}
-								about={item.about}
-								picHash={item.picHash}
-								isVerified={item.isVerified}
-							/>
-						);
-					}
-				}
-				/*else if(this.state.openVerifiedIndex === 1){
-					if(name === "Retire Carbon Credits"){
-						cardHolder.push(
-							<Card
-								key={item.address}
-								title={item.name}
-								idx={i}
-								receiver={item.receiver}
-								address={item.address}
-								acceptedTokenInfo={item.acceptedTokenInfo}
-								about={item.about}
-								picHash={item.picHash}
-								isVerified={item.isVerified}
-							/>
-						);
-					}
-				}*/
-				else if(this.state.openVerifiedIndex === 0){
-					if(!name.endsWith("Cause Fund") && name !== "Healthcare & Research Fund" && name !== "Environment Conservation Fund" && name !== "Retire Carbon Credits"){
-						cardHolder.push(
-							<Card
-								key={item.address}
-								title={item.name}
-								idx={i}
-								receiver={item.receiver}
-								address={item.address}
-								acceptedTokenInfo={item.acceptedTokenInfo}
-								about={item.about}
-								picHash={item.picHash}
-								isVerified={item.isVerified}
-							/>
-						);
-					}
-				}
-			}
-			else{
-				cardHolder.push(
-					<Card
-						key={item.address}
-						title={item.name}
-						idx={i}
-						receiver={item.receiver}
-						address={item.address}
-						acceptedTokenInfo={item.acceptedTokenInfo}
-						about={item.about}
-						picHash={item.picHash}
-						isVerified={item.isVerified}
-					/>
-				);
-			}
+			}*/
 		}
 		return (
 			<div className="card__cardholder_slide">
@@ -372,8 +307,6 @@ class Insurance extends Component {
 						{this.getPendingTxModal()}
 						{this.getTxResultModal()}
 						{this.getDeployTxModal()}
-						{this.getNewPoolModal()}
-						{this.getApplicationLink()}
 						{cardHolder}
 					</section>
 					<section className="page-section page-section--center horizontal-padding bw0" style={{paddingTop:"0px"}} >
@@ -402,13 +335,12 @@ const mapStateToProps = state => ({
 	deployTxResult: state.deployTxResult,
 	depositAmount: state.depositAmount,
 	deployInfo: state.deployInfo,
-	newAbout: state.newAbout,
-	burnPitBalances: state.burnPitBalances,
 	pendingTxList: state.pendingTxList,
+	depositorValIds: state.depositorValIds,
 })
 
 const mapDispatchToProps = dispatch => ({
-	updateVerifiedPoolInfo: (infoArray) => dispatch(updateVerifiedPoolInfo(infoArray)),
+	updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
 	updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
 	updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
 	updateDeployTxResult: (res) => dispatch(updateDeployTxResult(res)),
