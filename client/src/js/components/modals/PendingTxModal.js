@@ -18,7 +18,6 @@ import { Button } from '../Button';
 import { updateShare } from  "../../actions/share";
 
 import { redirectWindowBlockExplorer } from '../../func/ancillaryFunctions';
-import { getContractInfo } from '../../func/contractInteractions';
 
 class PendingTxModal extends Component {
 
@@ -60,10 +59,6 @@ class PendingTxModal extends Component {
 
     return logo;
   }
-
-  getContractInfo = async(address) => {
-    return await getContractInfo(address);
-  };
 
   share = async(poolAddress, name, txDetails) => {
 		await this.props.updateShare("");

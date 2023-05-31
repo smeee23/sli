@@ -9,7 +9,6 @@ import { Button, ButtonSmall } from '../components/Button';
 import PendingTxModal from "../components/modals/PendingTxModal";
 import TxResultModal from "../components/modals/TxResultModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
-import NewPoolModal from "../components/modals/NewPoolModal";
 import PendingTxList from "../components/PendingTxList";
 
 import { updateDepositorValIds } from "../actions/depositorValIds"
@@ -97,13 +96,6 @@ class Insurance extends Component {
 	getDeployTxModal = () => {
 		if(this.props.deployTxResult){
 			let modal = <Modal isOpen={true}><DeployTxModal txDetails={this.props.deployTxResult}/></Modal>;
-			return modal;
-		}
-	}
-
-	getNewPoolModal = () => {
-		if(this.props.deployInfo){
-			let modal = <LargeModal isOpen={true}><NewPoolModal poolInfo={this.props.deployInfo}/></LargeModal>;
 			return modal;
 		}
 	}

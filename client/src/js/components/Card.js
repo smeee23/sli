@@ -21,13 +21,12 @@ import { updateUserDepositPoolInfo } from "../actions/userDepositPoolInfo"
 import { updateShare } from  "../actions/share";
 import { updateNewAbout } from  "../actions/newAbout";
 
-import { getBalance, getContractInfo , getDirectFromPoolInfoAllTokens, convertGweiToETH} from '../func/contractInteractions';
+import { getBalance, convertGweiToETH, convertWeiToETH, getPremiumDeposit} from '../func/contractInteractions';
 import { precise, delay, getHeaderValuesInUSD, getFormatUSD, displayLogo, displayLogoLg, redirectWindowBlockExplorer, redirectWindowUrl, numberWithCommas, copyToClipboard, checkPoolInPoolInfo, addNewPoolInfoAllTokens } from '../func/ancillaryFunctions';
 import { verifiedPoolMap } from '../func/verifiedPoolMap';
 import { Modal, SmallModal, LargeModal } from "../components/Modal";
-import DepositModal from '../components/modals/DepositModal'
+import DepositPremiumModal from '../components/modals/DepositPremiumModal'
 import WithdrawModal from '../components/modals/WithdrawModal'
-import ClaimModal from '../components/modals/ClaimModal'
 import ApproveModal from '../components/modals/ApproveModal'
 import PendingTxModal from "../components/modals/PendingTxModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
@@ -85,29 +84,22 @@ class Card extends Component {
 		return <div title={"deposit premium insurance for slashing coverage"}><Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={() => {}}/></div>
 		}
 		else if(item.beneStatus == "NOT_ACTIVE"){
-			return <div title={"deposit premium insurance for slashing coverage"}><Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={() => {}}/></div>
+			return <div title={"apply for slashing insurance for your validator"}><Button logo={displayLogo("ETH")} text={"Apply For Coverage"} /*disabled={isDisabled}*/ callback={async() => await this.depositETH(item.validatorId)}/></div>
 			}
 		else /*if(!["NOT_ACTIVE", "AWAIT_DEPOSIT"].includes(item.beneStatus))*/{
 			return <div title={"withdraw coverage and receieve premium deposit"}><Button logo={displayLogo("ETH")} text={"Withdraw Insurance"} /*disabled={isDisabled}*/ callback={() => {}}/></div>;
 		}
 	}
 	displayClaim = (item) => {
-		if(item.beneStatus)
-		return <div title={"deposit premium insurance for slashing coverage"}>
-		<Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={() => {}}/>
-		</div>
+		if(item.slashed)
+		return <div title={"make a claim for a covered validator, who has been slashed"}>
+					<Button logo={displayLogo("ETH")} text={"Make Claim"} /*disabled={isDisabled}*/ callback={() => {}}/>
+				</div>
 	}
 	toggleCardOpen = () => {
 		this.setState({
 			open: !this.state.open
 		})
-	}
-
-	setSelectedToken = (index) => {
-		this.setState({
-			selectedTokenIndex: index,
-		});
-
 	}
 
 	copyToClipboard = (receiver) => {
@@ -116,41 +108,6 @@ class Card extends Component {
 		this.setState({
 			copied: true,
 		});
-	}
-	createTokenButtons = (acceptedTokenInfo) => {
-		if(!this.state.open) return;
-		if (!acceptedTokenInfo) return 'no data';
-		let buttonHolder = [];
-		for(let i = 0; i < acceptedTokenInfo.length; i++){
-			const tokenName = acceptedTokenInfo[i].acceptedTokenString;
-			let isDisabled = false;
-			if(i === this.state.selectedTokenIndex) isDisabled = true;
-			buttonHolder.push(<ButtonSmall text={tokenName} logo={displayLogo(tokenName)} disabled={isDisabled} key={i} callback={() => this.setSelectedToken(i)}/>)
-		}
-		return buttonHolder;
-	}
-
-	notifyLoad = () => {
-		//console.log('image Loaded')
-	}
-	getPoolImage = (picHash, header) => {
-		if(!picHash){
-			//default JustCause image
-			picHash = "bafybeigop55rl4tbkhwt4k4cvd544kz2zfkpdoovrsflqqkal2v4ucixxu"
-		}
-		if(header){
-			return <img alt="" style={{width:'auto', maxWidth:'32px', height:'auto'}} src={'https://ipfs.io/ipfs/'+picHash} onLoad={this.notifyLoad()}/>
-		}
-		return <img alt="" style={{width:'auto', maxWidth:'300px', height:'auto'}} src={'https://ipfs.io/ipfs/'+picHash} onLoad={this.notifyLoad()}/>
-	}
-
-	getIsVerified = (isVerified) => {
-		if(isVerified){
-			return <h3 style={{fontSize: 13, color: "green"}}>(Verified Pool)</h3>
-		}
-		else{
-			return <h3 style={{fontSize: 13}}>(User Pool)</h3>
-		}
 	}
 
 	getAPY = (depositAPY) => {
@@ -188,36 +145,6 @@ class Card extends Component {
 		return (
 			<div title="copy receiving address to clipboard"><Button isLogo="copy_white" disable="true" callback={() => this.copyToClipboard(receiver)}/></div>
 		);
-	}
-
-	getAbout = (about, address, isReceiver, picHash, title) => {
-		if(this.state.directResponse){
-			about = this.state.directResponse;
-			console.log("directResponse", typeof about, typeof this.state.directResponse)
-		}
-		if(!about){
-			console.log("about does not exist", address);
-			about = "(There is a delay loading the description from IPFS.)"
-		}
-			let aboutString = about;
-			let aboutHolder = [];
-			//let regex = /^Update#[0-9]+$/;
-			if(about.includes("\\n")){
-				const paragraphs = about.split(/\\n/);
-				for(let i = 0; i < paragraphs.length; i++){
-					aboutHolder.push(<p key={i} style={{marginTop: "20px", whiteSpace: "pre-wrap"}} className="mr">{paragraphs[i].replace(/^\s+|\s+$/g, '')}</p>);
-				}
-			}
-			else{
-				aboutHolder.push(<p key="0" style={{marginTop: "20px", whiteSpace: "pre-wrap"}} className="mr">{about.replace(/^\s+|\s+$/g, '')}</p>);
-			}
-			if(isReceiver){
-				aboutHolder.push(
-					<div key={aboutHolder.length} title={"update the description for your cause"} style={{marginBottom: "20px"}}>
-						<ButtonSmall text={"Edit Description"} callback={async() => await this.updateAbout(aboutString, address, picHash, title)}/>
-					</div>)
-			}
-			return aboutHolder;
 	}
 
 	resetAnimation = () => {
@@ -399,6 +326,7 @@ class Card extends Component {
 						<div style={{marginRight: "auto"}}>
 							{/*this.displayWithdraw()*/}
 							{this.displayDepositApplyWithdraw(item)}
+							{this.displayClaim()}
 						</div>
 					</div>
 				</div>
@@ -407,34 +335,22 @@ class Card extends Component {
 		return tokenInfo;
 	}
 
-	updateAbout = async(aboutString, address, picHash, title) => {
-		await this.props.updateNewAbout('');
-		console.log("update about clicked", this.props.newAbout);
-		try{
-			await this.props.updateNewAbout({about: aboutString, poolAddress: address, picHash: picHash, poolName: title});
-		}
-		catch (error) {
-			console.error(error);
-		}
-	}
-
 	getDepositAmountModal = () => {
 		if(this.props.depositAmount){
-			let modal = <Modal isOpen={true}><DepositModal depositInfo={this.props.depositAmount}/></Modal>
+			let modal = <Modal isOpen={true}><DepositPremiumModal depositInfo={this.props.depositAmount}/></Modal>
 			return modal;
 		}
 	}
 
-	deposit = async(poolAddress, tokenAddress) => {
+	depositETH = async(validatorId) => {
 		await this.props.updateDepositAmount('');
 		console.log('deposit clicked', this.props.depositAmount);
 		try{
-			const tokenMap = this.props.tokenMap;
-			const tokenString = Object.keys(tokenMap).find(key => tokenMap[key].address === tokenAddress);
 			const activeAccount = this.props.activeAccount;
-			const userBalance = await getBalance(tokenAddress, tokenMap[tokenString].decimals, tokenString, activeAccount);
-			const contractInfo = await getContractInfo(poolAddress);
-			await this.props.updateDepositAmount({tokenString: tokenString, tokenAddress: tokenAddress, userBalance: userBalance, poolAddress: poolAddress, contractInfo: contractInfo, activeAccount: activeAccount, amount: ''});
+            console.log(this.props.activeBalances)
+			const userBalance = await convertWeiToETH(this.props.activeBalances.ethBalance);
+			const premiumDeposit =  await getPremiumDeposit();
+			await this.props.updateDepositAmount({tokenString: "ETH", userBalance: userBalance, activeAccount: activeAccount, validatorId: validatorId, premiumDepsoit: premiumDeposit});
 			//this.updatePoolInfo(this.props.depositAmount.poolAddress, this.props.depositAmount.activeAccount);
 		}
 		catch (error) {
@@ -455,12 +371,11 @@ class Card extends Component {
 			const tokenMap = this.props.tokenMap;
 			const tokenString = Object.keys(tokenMap).find(key => tokenMap[key].address === tokenAddress);
 			const activeAccount = this.props.activeAccount;
-			const contractInfo = await getContractInfo(poolAddress);
 			let formatBalance = precise(rawBalance, tokenMap[tokenString].decimals);
 			if(rawBalance /10**tokenMap[tokenString].decimals < formatBalance){
 				alert('withdraw amount issue');
 			}
-			await this.props.updateWithdrawAmount({tokenString: tokenString, tokenAddress: tokenAddress, formatBalance: formatBalance, rawBalance: rawBalance, poolAddress: poolAddress, contractInfo: contractInfo, activeAccount: activeAccount, amount: ''});
+			await this.props.updateWithdrawAmount({tokenString: tokenString, tokenAddress: tokenAddress, formatBalance: formatBalance, rawBalance: rawBalance, poolAddress: poolAddress, activeAccount: activeAccount, amount: ''});
 		}
 		catch (error) {
 			console.error(error);
@@ -469,8 +384,8 @@ class Card extends Component {
 
 	getClaimModal = () => {
 		if(this.props.claim){
-			let modal = <SmallModal isOpen={true}><ClaimModal claimInfo={this.props.claim}/></SmallModal>
-			return modal;
+			//let modal = <SmallModal isOpen={true}><ClaimModal claimInfo={this.props.claim}/></SmallModal>
+			return ""// modal;
 		}
 	}
 
@@ -480,9 +395,8 @@ class Card extends Component {
 		try{
 			const activeAccount = this.props.activeAccount;
 			const tokenString = Object.keys(this.props.tokenMap).find(key => this.props.tokenMap[key].address === tokenAddress);
-			const contractInfo = await getContractInfo(poolAddress);
 
-			await this.props.updateClaim({tokenString: tokenString, tokenAddress: tokenAddress, poolAddress: poolAddress, contractInfo: contractInfo, activeAccount: activeAccount, unclaimedInterest: unclaimedInterest});
+			await this.props.updateClaim({tokenString: tokenString, tokenAddress: tokenAddress, poolAddress: poolAddress, activeAccount: activeAccount, unclaimedInterest: unclaimedInterest});
 
 		}
 		catch (error) {
@@ -551,7 +465,7 @@ class Card extends Component {
 	getHeaderValues = () => {
 		return getHeaderValuesInUSD(this.state.tokenInfo, this.props.tokenMap);
 	}
-	refresh = async(poolAddress) =>{
+	/*refresh = async(poolAddress) =>{
 		this.setState({loading: true});
 
 		let newInfoAllTokens = await getDirectFromPoolInfoAllTokens(this.props.address, this.props.tokenMap, this.props.activeAccount);
@@ -586,7 +500,7 @@ class Card extends Component {
 
 		this.resetAnimation();
 		this.setState({ tokenInfo: tempInfo, loading: false });
-	}
+	}*/
 
 	getRefreshButton = (poolAddress) => {
 		if(!this.state.open) return;
