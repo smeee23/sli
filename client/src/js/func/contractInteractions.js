@@ -9,7 +9,7 @@ import { getIpfsData } from "./ipfs";
 import { tempFixForDescriptions } from "./verifiedPoolMap";
 
 import { getValidatorInfo } from "./validatorInfoFeed";
-
+import { convertSolidityTimestamp } from "./ancillaryFunctions";
 import Reserve from "../../contracts/Reserve.json";
 import Web3 from "web3";
 
@@ -28,6 +28,34 @@ export const getSliStats = async(reserveAddress) => {
 	return {sliConversion, sliTotalSupply, protocolBalance}
 }
 
+export const getBeneficiaryStatus = async(validatorId, reserveAddress) => {
+	const web3 = await getWeb3();
+
+	const ReserveInstance = new web3.eth.Contract(
+		Reserve.abi,
+		reserveAddress,
+	);
+
+	/*  NOT_ACTIVE,
+        ACTIVE,
+        AWAIT_ORACLE_ADD,
+        ORACLE_ADD_APPROVE,
+        AWAIT_ORACLE_CLAIM,
+        CLAIM_WAIT_PERIOD,
+        CLOSED,
+        CLAIM_PAUSED*/
+		console.log(await ReserveInstance.methods.getBeneficiaryInfo(validatorId).call())
+	let {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await ReserveInstance.methods.getBeneficiaryInfo(validatorId).call();
+	if(status == 0) status = 'NOT_ACTIVE';
+	else if(status == 1) status = 'ACTIVE';
+	else if(status == 2) status = 'AWAIT_APPLICATION';
+	else if(status == 3) status = 'AWAIT_DEPOSIT';
+	else if(status == 5) status = 'AWAIT_CLAIM_RESPONSE';
+	else if(status == 6) status = 'CLAIM_WAIT_PERIOD';
+	else if(status == 7) status = 'CLOSED';
+	else status = 'CLAIM PAUSED';
+	return {status, withdrawAddress, loss, claimTimestamp, applyTimestamp};
+}
 export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => {
 	const web3 = await getWeb3();
 
@@ -41,9 +69,17 @@ export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => 
 
 	let validatorInfo = [];
 	for(let i = 0; i < validatorIds.length; i++){
+
+		const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorIds[i], reserveAddress);
+		//data["withdrawAddress"] = withdrawAddress.substring(0, 4) == "0x01" ? "0x"+withdrawAddress.substring(withdrawAddress.length - 40) : "0x0";
 		const info = await getValidatorInfo(validatorIds[i]);
 		console.log("info", info)
-		validatorInfo[i] = info
+		info["beneStatus"] = status;
+		info["withdrawAddress"] = withdrawAddress;
+		info["apply"] = applyTimestamp == 0 ? "N/A" : convertSolidityTimestamp(applyTimestamp);
+		info["claim"] = claimTimestamp == 0 ? "N/A" : convertSolidityTimestamp(claimTimestamp);
+		info["loss"] = loss == 0 ? "N/A" : await convertWeiToETH(loss);
+		validatorInfo[i] = info;
 	}
 
 	return validatorInfo;
@@ -70,7 +106,7 @@ export const convertWeiToETH = async(value) => {
 
 export const convertGweiToETH = async(value) => {
 	const web3 = await getWeb3();
-	let valueInWei = web3.utils.toWei(value, 'gwei');
+	let valueInWei = web3.utils.toWei(value.toString(), 'gwei');
 	return web3.utils.fromWei(valueInWei, 'ether').substring(0, 7);
 }
 export const getAavePoolAddress = async(poolAddressesProviderAddress) => {

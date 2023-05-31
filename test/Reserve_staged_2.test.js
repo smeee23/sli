@@ -96,6 +96,13 @@ contract("Reserve", async (accounts) => {
 
     });
 
+    it("getBeneficiaryInfo returns Beneficiary details", async() => {
+        const ids = (await this.reserve.getDepositorValidatorIds(validator_1)).toString();
+        assert.equal(ids, "210", "validator ids incorrect");
+        const info = (await this.reserve.getBeneficiaryInfo(ids)).toString();
+        assert.equal(info[0], "1", "beneficiary info is incorrect");
+    });
+
     it("getDepositorValidatorIds returns all validatorIds associated with withdrawAddress", async() => {
         const ids = (await this.reserve.getDepositorValidatorIds(validator_5)).toString();
         assert.equal(ids, "100000,100", "validator ids incorrect");

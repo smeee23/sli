@@ -140,7 +140,7 @@ $baseclass: 'card';
     flex-direction: column;
     margin: 0 auto;
     padding-top: 3 * $rem-base;
-    margin-left: 32px;
+    margin-left: 16px;
     margin-bottom: 2 * $rem-base;
   }
 
@@ -231,10 +231,28 @@ $baseclass: 'card';
       transform: scale(1.0);
     }
 
+
     .#{$baseclass}__token__buttons {
       transform: scale(1.0);
     }
 
+    .#{$baseclass}__body__key-value-pairs {
+      display: flex;
+    }
+
+    .#{$baseclass}__body__column {
+      flex: 1;
+    }
+
+    .#{$baseclass}__body__pair {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .#{$baseclass}__body__key {
+      font-weight: bold;
+      margin-right: 5px;
+    }
   }
 
   @media screen and (max-width: $bp-medium) {

@@ -27,6 +27,25 @@ import Logo from "../components/Logo"
 
 import {getPriceFromCoinGecko} from './priceFeeds.js'
 
+
+export const convertSolidityTimestamp = (timestamp) => {
+  // Convert the Solidity timestamp to milliseconds
+    const timestampInMillis = timestamp * 1000;
+
+    // Create a new Date object using the timestamp in milliseconds
+    const date = new Date(timestampInMillis);
+
+    // Obtain the individual date and time components from the Date object
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // Months are zero-based, so add 1
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    // Create a readable date and time string
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 export const linkedInShare = (purl, ptitle, poolAddress, psummary) => {
   let url = 'http://www.linkedin.com/shareArticle?mini=true';
   url += '&url=' + encodeURIComponent(purl)+poolAddress;

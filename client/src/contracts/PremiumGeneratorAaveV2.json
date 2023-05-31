@@ -14074,12 +14074,12 @@
     "80001": {
       "events": {},
       "links": {},
-      "address": "0x74cb582408b1615fE48bD315B8dcd8e78b2f0BBC",
-      "transactionHash": "0x0a6a0828830d8cecbb1e3c6cfd0553e6d24d568fd01c50d0aacec4cc4b41597a"
+      "address": "0xFCB012e7D388B26Ffb1e556CaEEa6faDAAdF7e90",
+      "transactionHash": "0x6d31ed0ea8468e03eb8f495de90fe7ce5cd48b2a64e804dbb139d90956aa1635"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2023-05-27T20:21:13.191Z",
+  "updatedAt": "2023-05-30T18:30:52.833Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "smeee This is a contract for lossless insurance premiums using Aave v3 Aave is used to generate interest for insurance applications Beneficiaries deposit tokens into PremiumGenerator which deposit them into Aave lending protocol The interest earned is directed to the reserve associated with the PremiumGenerator Beneficiaries can claim their funds (and terminate their policy) at any time. Functions withdraw() and withdrawInterest() directly call the aave Pool",

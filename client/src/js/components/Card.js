@@ -21,7 +21,7 @@ import { updateUserDepositPoolInfo } from "../actions/userDepositPoolInfo"
 import { updateShare } from  "../actions/share";
 import { updateNewAbout } from  "../actions/newAbout";
 
-import { getBalance, getContractInfo , getDirectFromPoolInfoAllTokens} from '../func/contractInteractions';
+import { getBalance, getContractInfo , getDirectFromPoolInfoAllTokens, convertGweiToETH} from '../func/contractInteractions';
 import { precise, delay, getHeaderValuesInUSD, getFormatUSD, displayLogo, displayLogoLg, redirectWindowBlockExplorer, redirectWindowUrl, numberWithCommas, copyToClipboard, checkPoolInPoolInfo, addNewPoolInfoAllTokens } from '../func/ancillaryFunctions';
 import { verifiedPoolMap } from '../func/verifiedPoolMap';
 import { Modal, SmallModal, LargeModal } from "../components/Modal";
@@ -75,25 +75,27 @@ class Card extends Component {
 		clearInterval(this.interval);
 	}
 
-	displayWithdraw = (item, address, tokenString, title) => {
-	if(item.userBalance > 0){
-		return <div title={"withdraw deposit"}><Button logo={displayLogo(tokenString)} text={"Withdraw "+tokenString} /*disabled={isDisabled}*/ callback={async() => await this.withdrawDeposit(address, item.address, item.userBalance)}/></div>
-		}
+	displayWithdraw = () => {
+		return <div title={"withdraw coverage and receieve premium deposit"}><Button logo={displayLogo("ETH")} text={"Withdraw Insurance"} /*disabled={isDisabled}*/ callback={() => {}}/></div>
+
 	}
 
-	displayClaim = (item, address, title) => {
-		if(item.unclaimedInterest > 500){
-			return <div title={"harvest donations for "+title}><Button logo={displayLogo(item.acceptedTokenString)} text={"Harvest Donations"} /*disabled={isDisabled}*/ callback={async() => await this.claim(address, item.address, item.unclaimedInterest)}/></div>
+	displayDepositApplyWithdraw = (item) => {
+		if(item.beneStatus == "AWAIT_DEPOSIT"){
+		return <div title={"deposit premium insurance for slashing coverage"}><Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={() => {}}/></div>
+		}
+		else if(item.beneStatus == "NOT_ACTIVE"){
+			return <div title={"deposit premium insurance for slashing coverage"}><Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={() => {}}/></div>
+			}
+		else /*if(!["NOT_ACTIVE", "AWAIT_DEPOSIT"].includes(item.beneStatus))*/{
+			return <div title={"withdraw coverage and receieve premium deposit"}><Button logo={displayLogo("ETH")} text={"Withdraw Insurance"} /*disabled={isDisabled}*/ callback={() => {}}/></div>;
 		}
 	}
-	displayDepositOrApprove = (poolAddress, tokenAddress, isEth, tokenString, allowance, title) => {
-		if(isEth){
-			return  <div title={"earn donations for "+title}><Button logo={displayLogo(tokenString)} text={"Deposit "+tokenString} /*disabled={isDisabled}*/ callback={async() => await this.deposit(poolAddress, tokenAddress)}/></div>
-		}
-		if(Number(allowance) === 0){
-			return <div title={"required before deposit"}><Button logo={displayLogo(tokenString)} text={"Approve "+tokenString} /*disabled={isDisabled}*/ callback={async() => await this.approve(tokenAddress, tokenString, poolAddress)}/></div>
-		}
-		return <div title={"earn donations for "+title}><Button logo={displayLogo(tokenString)} text={"Deposit "+tokenString} /*disabled={isDisabled}*/ callback={async() => await this.deposit(poolAddress, tokenAddress)}/></div>
+	displayClaim = (item) => {
+		if(item.beneStatus)
+		return <div title={"deposit premium insurance for slashing coverage"}>
+		<Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={() => {}}/>
+		</div>
 	}
 	toggleCardOpen = () => {
 		this.setState({
@@ -225,101 +227,184 @@ class Card extends Component {
 		el.style.animation = null;
 	}
 
+	getName = (name) => {
+		if(!name) return;
+		return (<div title="validator name" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+					<div style={{gridColumn: 1}}>
+						<p>{"Name"}</p>
+					</div>
+					<div style={{gridColumn: 2, width: "250px"}}>
+						<p>{name}</p>
+					</div>
+				</div>);
+	}
+
+	getSlashed = (slashed) => {
+		if(slashed){
+			 return <p style={{color: "red"}}>{"Yes"}</p>
+		}
+		return <p style={{color: "green"}}>{"No"}</p>
+	}
 	createValidatorInfo = () => {
 		//if (!acceptedTokenInfo) return '';
-		if (!this.props.depositorValIds) return '';
-		//const item = this.props.acceptedTokenInfo[this.state.selectedTokenIndex];
-		/*const tokenInfo =
-			<div className="card__body" key={item.acceptedTokenString}>
-				<div style={{display: "flex", flexDirection: "column", borderRight: "double"}}>
-					<div style={{display: "flex", flexDirection: "wrap"}}>
-						<div className="card__body__column__one">
-						<div >
-							<div style={{display: "flex", flexDirection: "column", gap: "1px", marginLeft: "8px"}}>
-								<h4 className="mb0">
-									{title}
-								</h4>
-								{this.getIsVerified(isVerified)}
-							</div>
-							<div title="view on block explorer" style={{marginLeft: "8px"}}>
-								<div style={{display: "flex", flexDirection: "wrap", gap: "3px"}}>
-									<Button text={"Receiver "+receiver.slice(0, 6) + "..."+receiver.slice(-4)} callback={() => redirectWindowBlockExplorer(receiver, 'address', this.props.networkId)}/>
-									{this.getCopyButton(receiver)}
-								</div>
-								<Button text={"Pool "+address.slice(0, 6) + "..."+address.slice(-4)} callback={() => redirectWindowBlockExplorer(address, 'address', this.props.networkId)}/>
+		if (!this.props.depositorValIds[this.props.idx]) return '';
+
+		let item = this.props.depositorValIds[this.props.idx];
+		item.decimals = 18;
+
+		//const priceUSD = this.props.tokenMap[item.acceptedTokenString] && this.props.tokenMap[item.acceptedTokenString].priceUSD;
+		const tokenInfo =
+			<div className="card__body" key={"ETH"}>
+				<div style={{display: "grid", width: "330px", flex: "0 0 330", borderRight: "double"}}>
+					<div id="animated" className="card__body__column__nine">
+						<div title="validator info" style={{display: "grid", gridTemplateColumns:"150px 1fr"}}>
+							<div style={{gridColumn: 1}}>
+								<p style={{fontSize: 14}}>{"Validator Info"}</p>
 							</div>
 						</div>
+						{this.getName(item.name)}
+						<div title="validator status" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Validator Status"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250px"}}>
+								<p>{item.status}</p>
+							</div>
 						</div>
-						<div className="card__body__column__two">
-							{this.getPoolImage(picHash)}
+						<div title="policy status" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Policy Status"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250px"}}>
+								<p>{item.beneStatus}</p>
+							</div>
 						</div>
-					</div>
-					<div className="card__body__column__eight">
-						{this.getAbout(about, address, isReceiver, picHash, title)}
-						<div style={{display: "flex", flexDirection: "wrap", gap: "16px"}}>
-							{this.getVerifiedLinks(isVerified, title)}
-							<div title={"share "+ title} style={{bottom: "0px", color: "red"}}>
-								<Button isLogo="share" callback={async() => await this.share(address, title )} />
+						<div title="date and time of coverage application" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Applied"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250px"}}>
+								<p>{item.apply}</p>
+							</div>
+						</div>
+						<div title={"public key"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Public Key"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+							<p>{item.pubkey.slice(0, 6)+ "..."+item.pubkey.slice(-4)}</p>
+							</div>
+						</div>
+						<div title={"withdraw Address"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Withdraw Address"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+							<p>{item.withdrawAddress.slice(0, 6)+ "..."+item.withdrawAddress.slice(-4)}</p>
+							</div>
+						</div>
+
+						<div title="validator info" style={{display: "grid", gridTemplateColumns:"150px 1fr"}}>
+							<div style={{gridColumn: 1}}>
+								<p style={{fontSize: 14}}>{"Claims Info"}</p>
+							</div>
+						</div>
+						<div title={"has validator been slashed yes/no"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Slashed"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+							{this.getSlashed(item.slashed)}
+							</div>
+						</div>
+						<div title={"ETH lost due to slashing"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Loss"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+								{item.loss}
+							</div>
+						</div>
+						<div title={"date and time of claim"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Claim"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+								{item.claim}
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div style={{display: "grid", width: "330px", flex: "0 0 330"}}>
+				<div style={{display: "grid", width: "210px", flex: "0 0 210"}}>
 					<div id="animated" className="card__body__column__nine">
-						<div style={{display: "grid", gridTemplateColumns:"108px 1fr"}}>
+						<div title="validator info" style={{display: "grid", gridTemplateColumns:"70px 1fr"}}>
 							<div style={{gridColumn: 1}}>
-								{displayLogoLg(item.acceptedTokenString)}
+								<p style={{fontSize: 14}}>{"Returns"}</p>
 							</div>
-							<div style={{gridColumn: 2, marginRight: "auto", marginTop: "auto"}}>
-								<h5 className="mb0">  {item.acceptedTokenString} </h5>
-								{this.getAPY(depositAPY)}
+							<div style={{gridColumn: 2, width: "250"}}>
+							<p style={{fontSize: 14}}>{"ETH"}</p>
 							</div>
 						</div>
-
-						<div title="user balance" style={{display: "grid", gridTemplateColumns:"70px 1fr", paddingTop: "20px"}}>
+						<div title="validator balance" style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
 							<div style={{gridColumn: 1}}>
 								<p>{"Balance"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250px"}}>
-								<p >{numberWithCommas(precise(item.userBalance, item.decimals))+"  (" +getFormatUSD(precise(item.userBalance, item.decimals), priceUSD)+")"}</p>
+								<p>{item.balance}</p>
 							</div>
 						</div>
-						<div title="pool balance" style={{display: "grid", gridTemplateColumns:"70px 1fr"}}>
+						<div title={"earned 1 day in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
 							<div style={{gridColumn: 1}}>
-								<p>{"Pool"}</p>
-							</div>
-							<div style={{gridColumn: 2, width: "250px"}}>
-								<p>{numberWithCommas(precise(item.totalDeposits, item.decimals))+"  (" +getFormatUSD(precise(item.totalDeposits, item.decimals),priceUSD)+")"}</p>
-							</div>
-						</div>
-						<div title={"unharvested "+item.acceptedTokenString+" for "+title} style={{display: "grid", gridTemplateColumns:"70px 1fr"}}>
-							<div style={{gridColumn: 1}}>
-								<p>{"Earned"}</p>
+								<p>{"Day"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{numberWithCommas(precise(item.unclaimedInterest, item.decimals)) +"  (" +getFormatUSD(precise(item.unclaimedInterest, item.decimals), priceUSD)+")"}</p>
+							<p>{item.performance1d}</p>
 							</div>
 						</div>
-						<div title={item.acceptedTokenString+" harvested and sent to "+title} style={{display: "grid", gridTemplateColumns:"70px 1fr"}}>
+						<div title={"earned 7 days in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
 							<div style={{gridColumn: 1}}>
-								<p>{"Donated"}</p>
+								<p>{"Week"}</p>
 							</div>
-							<div style={{gridColumn: 2, width: "250px"}}>
-								<p>{numberWithCommas(precise(item.claimedInterest, item.decimals))+"  (" +getFormatUSD(precise(item.claimedInterest, item.decimals), priceUSD)+")" }</p>
+							<div style={{gridColumn: 2, width: "250"}}>
+							<p>{item.performance7d}</p>
 							</div>
 						</div>
 
+						<div title={"earned 31 days in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Month"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+							<p>{item.performance31d}</p>
+							</div>
+						</div>
+
+						<div title={"earned 365 days in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Year"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+							<p>{item.performance365d}</p>
+							</div>
+						</div>
+						<div title={"overall earned in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
+							<div style={{gridColumn: 1}}>
+								<p>{"Total"}</p>
+							</div>
+							<div style={{gridColumn: 2, width: "250"}}>
+							<p>{item.performancetotal}</p>
+							</div>
+						</div>
 						<div style={{marginRight: "auto"}}>
-							{this.displayClaim(item, address, title)}
-							{this.displayWithdraw(item, address, item.acceptedTokenString, title)}
-							{this.displayDepositOrApprove(address, item.address, isETH, item.acceptedTokenString, this.props.tokenMap[item.acceptedTokenString].allowance, title)}
+							{/*this.displayWithdraw()*/}
+							{this.displayDepositApplyWithdraw(item)}
 						</div>
 					</div>
 				</div>
 
 			</div>
-		return tokenInfo;*/
+		return tokenInfo;
 	}
 
 	updateAbout = async(aboutString, address, picHash, title) => {
@@ -539,13 +624,12 @@ class Card extends Component {
 		return (
 			<div className={classnames}>
 				<div className="card__header">
-				{/*this.state.open ? "" : <Icon name={randomPoolIcon.name} size={32} color={randomPoolIcon.color} strokeWidth={3}/>*/}
+				<Icon name={randomPoolIcon.name} size={32} color={randomPoolIcon.color} strokeWidth={3}/>
 					<p className="mb0" style={{fontSize: 20}}>
-						{"Validator: " + validator.validatorindex}
+						{"Validator " + validator.validatorindex}
 					</p>
 
 					<div className="card__header--right">
-									{this.getRefreshButton()}
 									<div className="card__open-button" onClick={this.toggleCardOpen}><Icon name={"plus"} size={32}/></div>
 					</div>
 				</div>

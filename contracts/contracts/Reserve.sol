@@ -413,4 +413,10 @@ contract Reserve is ReentrancyGuard, Authenticator{
     ) public view returns (address withdrawAddress) {
         withdrawAddress = beneficiaries[_validatorIndex].withdrawAddress;
     }
+
+    function getBeneficiaryInfo(
+        uint _validatorIndex
+    ) public view returns (Beneficiary memory) {
+        return beneficiaries[_validatorIndex];
+    }
 }
