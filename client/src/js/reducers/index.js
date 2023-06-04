@@ -14,6 +14,7 @@ import userDepositPoolInfoReducer from './userDepositPoolInfo'
 import reserveAddressReducer from './reserveAddress'
 import pendingTxReducer from './pendingTx'
 import pendingTxListReducer from './pendingTxList'
+import pendingApplicationListReducer from './pendingApplicationList'
 import txResultReducer from './txResult'
 import deployTxResultReducer from './deployTxResult'
 import deployInfoReducer from './deployInfo'
@@ -45,6 +46,7 @@ const rootReducer = (history) => combineReducers({
 	reserveAddress: reserveAddressReducer,
 	pendingTx: pendingTxReducer,
 	pendingTxList: pendingTxListReducer,
+	pendingApplicationList: pendingApplicationListReducer,
 	txResult: txResultReducer,
 	deployTxResult: deployTxResultReducer,
 	deployInfo: deployInfoReducer,

@@ -8,7 +8,6 @@ import palette from "../utils/palette";
 
 import { Button, ButtonSmall } from '../components/Button';
 
-import { updatePendingTx } from "../actions/pendingTx";
 import { updateTxResult } from  "../actions/txResult";
 import { updateDepositAmount } from  "../actions/depositAmount";
 import { updateWithdrawAmount } from  "../actions/withdrawAmount";
@@ -20,13 +19,14 @@ import { updateOwnerPoolInfo } from "../actions/ownerPoolInfo"
 import { updateUserDepositPoolInfo } from "../actions/userDepositPoolInfo"
 import { updateShare } from  "../actions/share";
 import { updateNewAbout } from  "../actions/newAbout";
+import { updatePendingTx } from "../actions/pendingTx";
 
 import { getBalance, convertGweiToETH, convertWeiToETH, getPremiumDeposit} from '../func/contractInteractions';
 import { precise, delay, getHeaderValuesInUSD, getFormatUSD, displayLogo, displayLogoLg, redirectWindowBlockExplorer, redirectWindowUrl, numberWithCommas, copyToClipboard, checkPoolInPoolInfo, addNewPoolInfoAllTokens } from '../func/ancillaryFunctions';
 import { verifiedPoolMap } from '../func/verifiedPoolMap';
 import { Modal, SmallModal, LargeModal } from "../components/Modal";
 import DepositPremiumModal from '../components/modals/DepositPremiumModal'
-import WithdrawModal from '../components/modals/WithdrawModal'
+import WithdrawPremiumModal from '../components/modals/WithdrawPremiumModal'
 import ApproveModal from '../components/modals/ApproveModal'
 import PendingTxModal from "../components/modals/PendingTxModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
@@ -79,22 +79,31 @@ class Card extends Component {
 
 	}
 
+	openApplyModal = async(validatorId) => {
+		await this.props.updatePendingTx("");
+		await this.props.updatePendingTx({validatorId: validatorId});
+	}
+
 	displayDepositApplyWithdraw = (item) => {
-		if(item.beneStatus == "AWAIT_DEPOSIT"){
-		return <div title={"deposit premium insurance for slashing coverage"}><Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={() => {}}/></div>
-		}
-		else if(item.beneStatus == "NOT_ACTIVE"){
-			return <div title={"apply for slashing insurance for your validator"}><Button logo={displayLogo("ETH")} text={"Apply For Coverage"} /*disabled={isDisabled}*/ callback={async() => await this.depositETH(item.validatorId)}/></div>
+		if(item){
+			if(item.beneStatus == "AWAIT_DEPOSIT"){
+			return <div title={"deposit premium insurance for slashing coverage"}><Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={async() => await this.depositETH(item.validatorId)}/></div>
 			}
-		else /*if(!["NOT_ACTIVE", "AWAIT_DEPOSIT"].includes(item.beneStatus))*/{
-			return <div title={"withdraw coverage and receieve premium deposit"}><Button logo={displayLogo("ETH")} text={"Withdraw Insurance"} /*disabled={isDisabled}*/ callback={() => {}}/></div>;
+			else if(item.beneStatus == "NOT_ACTIVE"){
+				return <div title={"apply for slashing insurance for your validator"}><Button logo={displayLogo("ETH")} text={"Apply For Coverage"} /*disabled={isDisabled}*/ callback={async() => await this.openApplyModal(item.validatorId)}/></div>
+				}
+			else if(!(item.slashed && item.claim == "N/A")){
+				return <div title={"withdraw coverage and receieve premium deposit"}><Button logo={displayLogo("ETH")} text={"Withdraw Insurance"} /*disabled={isDisabled}*/ callback={async() => await this.withdrawDeposit(item.validatorId)}/></div>;
+			}
 		}
 	}
 	displayClaim = (item) => {
-		if(item.slashed)
-		return <div title={"make a claim for a covered validator, who has been slashed"}>
-					<Button logo={displayLogo("ETH")} text={"Make Claim"} /*disabled={isDisabled}*/ callback={() => {}}/>
-				</div>
+		if(item){
+			if(item.slashed)
+				return <div title={"make a claim for a covered validator, who has been slashed"}>
+							<Button logo={displayLogo("ETH")} text={"Make Claim"} /*disabled={isDisabled}*/ callback={() => {}}/>
+						</div>
+				}
 	}
 	toggleCardOpen = () => {
 		this.setState({
@@ -189,13 +198,13 @@ class Card extends Component {
 								<p style={{fontSize: 14}}>{"Validator Info"}</p>
 							</div>
 						</div>
-						{this.getName(item.name)}
+						{this.getName(item.beaconInfo.name)}
 						<div title="validator status" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
 							<div style={{gridColumn: 1}}>
 								<p>{"Validator Status"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250px"}}>
-								<p>{item.status}</p>
+								<p>{item.beaconInfo.status}</p>
 							</div>
 						</div>
 						<div title="policy status" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
@@ -208,7 +217,7 @@ class Card extends Component {
 						</div>
 						<div title="date and time of coverage application" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
 							<div style={{gridColumn: 1}}>
-								<p>{"Applied"}</p>
+								<p>{"Date Apply"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250px"}}>
 								<p>{item.apply}</p>
@@ -219,7 +228,7 @@ class Card extends Component {
 								<p>{"Public Key"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.pubkey.slice(0, 6)+ "..."+item.pubkey.slice(-4)}</p>
+							<p>{item.beaconInfo.pubkey.slice(0, 6)+ "..."+item.pubkey.slice(-4)}</p>
 							</div>
 						</div>
 						<div title={"withdraw Address"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
@@ -254,7 +263,7 @@ class Card extends Component {
 						</div>
 						<div title={"date and time of claim"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
 							<div style={{gridColumn: 1}}>
-								<p>{"Claim"}</p>
+								<p>{"Date Claim"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
 								{item.claim}
@@ -278,7 +287,7 @@ class Card extends Component {
 								<p>{"Balance"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250px"}}>
-								<p>{item.balance}</p>
+								<p>{item.beaconInfo.balance}</p>
 							</div>
 						</div>
 						<div title={"earned 1 day in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
@@ -286,7 +295,7 @@ class Card extends Component {
 								<p>{"Day"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.performance1d}</p>
+							<p>{item.beaconInfo.performance1d}</p>
 							</div>
 						</div>
 						<div title={"earned 7 days in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
@@ -294,7 +303,7 @@ class Card extends Component {
 								<p>{"Week"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.performance7d}</p>
+							<p>{item.beaconInfo.performance7d}</p>
 							</div>
 						</div>
 
@@ -303,7 +312,7 @@ class Card extends Component {
 								<p>{"Month"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.performance31d}</p>
+							<p>{item.beaconInfo.performance31d}</p>
 							</div>
 						</div>
 
@@ -312,7 +321,7 @@ class Card extends Component {
 								<p>{"Year"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.performance365d}</p>
+							<p>{item.beaconInfo.performance365d}</p>
 							</div>
 						</div>
 						<div title={"overall earned in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
@@ -320,13 +329,13 @@ class Card extends Component {
 								<p>{"Total"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.performancetotal}</p>
+							<p>{item.beaconInfo.performancetotal}</p>
 							</div>
 						</div>
 						<div style={{marginRight: "auto"}}>
 							{/*this.displayWithdraw()*/}
 							{this.displayDepositApplyWithdraw(item)}
-							{this.displayClaim()}
+							{this.displayClaim(item)}
 						</div>
 					</div>
 				</div>
@@ -349,8 +358,8 @@ class Card extends Component {
 			const activeAccount = this.props.activeAccount;
             console.log(this.props.activeBalances)
 			const userBalance = await convertWeiToETH(this.props.activeBalances.ethBalance);
-			const premiumDeposit =  await getPremiumDeposit();
-			await this.props.updateDepositAmount({tokenString: "ETH", userBalance: userBalance, activeAccount: activeAccount, validatorId: validatorId, premiumDepsoit: premiumDeposit});
+			const premiumDeposit =  await getPremiumDeposit(this.props.reserveAddress.premiumGenerator);
+			await this.props.updateDepositAmount({tokenString: "ETH", userBalance: userBalance, activeAccount: activeAccount, validatorId: validatorId, premiumDeposit: premiumDeposit});
 			//this.updatePoolInfo(this.props.depositAmount.poolAddress, this.props.depositAmount.activeAccount);
 		}
 		catch (error) {
@@ -360,22 +369,18 @@ class Card extends Component {
 
 	getWithdrawAmountModal = () => {
 		if(this.props.withdrawAmount){
-			let modal = <Modal isOpen={true}><WithdrawModal withdrawInfo={this.props.withdrawAmount}/></Modal>
+			let modal = <Modal isOpen={true}><WithdrawPremiumModal withdrawInfo={this.props.withdrawAmount}/></Modal>
 			return modal;
 		}
 	}
-	withdrawDeposit = async(poolAddress, tokenAddress, rawBalance) => {
+	withdrawDeposit = async(validatorId) => {
 		this.props.updateWithdrawAmount('');
 		console.log('withdraw clicked');
 		try{
-			const tokenMap = this.props.tokenMap;
-			const tokenString = Object.keys(tokenMap).find(key => tokenMap[key].address === tokenAddress);
 			const activeAccount = this.props.activeAccount;
-			let formatBalance = precise(rawBalance, tokenMap[tokenString].decimals);
-			if(rawBalance /10**tokenMap[tokenString].decimals < formatBalance){
-				alert('withdraw amount issue');
-			}
-			await this.props.updateWithdrawAmount({tokenString: tokenString, tokenAddress: tokenAddress, formatBalance: formatBalance, rawBalance: rawBalance, poolAddress: poolAddress, activeAccount: activeAccount, amount: ''});
+			const userBalance = await convertWeiToETH(this.props.activeBalances.ethBalance);
+			const premiumDeposit =  await getPremiumDeposit(this.props.reserveAddress.premiumGenerator);
+			await this.props.updateWithdrawAmount({tokenString: "ETH", userBalance: userBalance, activeAccount: activeAccount, validatorId: validatorId, premiumDeposit: premiumDeposit});
 		}
 		catch (error) {
 			console.error(error);
@@ -442,7 +447,6 @@ class Card extends Component {
 		this.props.updateShare({poolAddress: poolAddress, name: name});
 	}
 	displayTxInfo = async(txInfo,) => {
-		this.props.updatePendingTx('');
 		this.props.updateTxResult(txInfo);
 		await delay(5000);
 		this.props.updateTxResult('');
@@ -540,7 +544,7 @@ class Card extends Component {
 				<div className="card__header">
 				<Icon name={randomPoolIcon.name} size={32} color={randomPoolIcon.color} strokeWidth={3}/>
 					<p className="mb0" style={{fontSize: 20}}>
-						{"Validator " + validator.validatorindex}
+						{"Validator " + validator.validatorId}
 					</p>
 
 					<div className="card__header--right">
@@ -551,7 +555,6 @@ class Card extends Component {
 				<div className="card__bar"/>
 				{this.getDepositAmountModal()}
 				{this.getWithdrawAmountModal()}
-				{this.getClaimModal()}
 				{this.getApproveModal()}
 				{this.getShareModal()}
       		</div>
@@ -578,10 +581,11 @@ const mapStateToProps = state => ({
 	networkId: state.networkId,
 	newAbout: state.newAbout,
 	depositorValIds: state.depositorValIds,
+	activeBalances: state.activeBalances,
+	reserveAddress: state.reserveAddress,
 })
 
 const mapDispatchToProps = dispatch => ({
-	updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
 	updateTxResult: (res) => dispatch(updateTxResult(res)),
 	updateDepositAmount: (amnt) => dispatch(updateDepositAmount(amnt)),
 	updateWithdrawAmount: (amount) => dispatch(updateWithdrawAmount(amount)),
@@ -593,6 +597,7 @@ const mapDispatchToProps = dispatch => ({
 	updateApprove: (txInfo) => dispatch(updateApprove(txInfo)),
 	updateShare: (share) => dispatch(updateShare(share)),
 	updateNewAbout: (about) => dispatch(updateNewAbout(about)),
+	updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Card)

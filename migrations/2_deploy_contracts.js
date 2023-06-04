@@ -29,7 +29,7 @@ module.exports = async function(deployer, network, accounts){
     const lendingPoolAddressesProvider = "0x178113104fEcbcD7fF8669a0150721e231F0FD4B";
     const protocolDataProvider = "0xFA3bD19110d986c5e5E9DD5F69362d05035D045B";
     wethGatewayAddr = "0xee9eE614Ad26963bEc1Bec0D2c92879ae1F209fA";
-    let chainlinkFunctionsConsumer = "0xbf1e7b49c84eEb5bd9235Daf47D15C6aB6C4dB36"// old does not care who calls "0xC9d89400B007699EC7Cf1223acd478c13F1bD85B";
+    let chainlinkFunctionsConsumer = "0x3f47DF60715CC81B0C6E1B7Bc2f51269687cA542"
     multiSig = "0x78726673245fdb56425c8bd782f6FaA3E447625A";
 
     await deployer.deploy(OracleGateway, multiSig, chainlinkFunctionsConsumer);

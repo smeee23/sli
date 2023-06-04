@@ -6,7 +6,6 @@ import { Button } from '../Button'
 import getWeb3 from "../../../getWeb3NotOnLoad";
 import ERC20Instance from "../../../contracts/IERC20.json";
 
-import { updatePendingTx } from "../../actions/pendingTx";
 import { updateTxResult } from  "../../actions/txResult";
 import { updateApprove } from "../../actions/approve";
 import { updateTokenMap } from "../../actions/tokenMap"
@@ -41,7 +40,7 @@ class ApproveModal extends Component {
                 result = await erc20Instance.methods.approve(this.props.poolTrackerAddress, amount).send(parameter, (err, transactionHash) => {
                     console.log('Transaction Hash :', transactionHash, err);
 					if(!err){
-						this.props.updatePendingTx({txHash: transactionHash, amount: '', tokenString: tokenString, type:"APPROVE", poolAddress: poolAddress, networkId: this.props.networkId});
+						//this.props.updatePendingTx({txHash: transactionHash, amount: '', tokenString: tokenString, type:"APPROVE", poolAddress: poolAddress, networkId: this.props.networkId});
 						txInfo.txHash = transactionHash;
 					}
 					else{
@@ -76,7 +75,6 @@ class ApproveModal extends Component {
   }
 
   displayTxInfo = async(txInfo) => {
-		this.props.updatePendingTx('');
 		this.props.updateTxResult(txInfo);
 		await delay(5000);
 		this.props.updateTxResult('');
@@ -110,7 +108,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     updateApprove: (amount) => dispatch(updateApprove(amount)),
-    updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
 	updateTxResult: (res) => dispatch(updateTxResult(res)),
     updateTokenMap: (res) => dispatch(updateTokenMap(res)),
 })

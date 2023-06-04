@@ -11,7 +11,7 @@ import PremiumGeneratorAaveV2 from "../../../contracts/PremiumGeneratorAaveV2.js
 
 import { updatePendingTxList } from "../../actions/pendingTxList";
 import { updateTxResult } from  "../../actions/txResult";
-import { updateDepositAmount } from  "../../actions/depositAmount";
+import { updateWithdrawAmount } from  "../../actions/withdrawAmount";
 import { updateUserDepositPoolInfo } from "../../actions/userDepositPoolInfo";
 import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
@@ -19,7 +19,7 @@ import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
 import { getAllowance, addPoolToPoolInfo, getContractInfo, getDirectFromPoolInfo,  convertWeiToETH  } from '../../func/contractInteractions';
 import { delay, getTokenBaseAmount, displayLogo, addNewPoolInfo, checkPoolInPoolInfo } from '../../func/ancillaryFunctions';
 
-class DepositPremiumModal extends Component {
+class WithdrawPremiumModal extends Component {
 
   	constructor(props) {
 		super(props);
@@ -31,13 +31,13 @@ class DepositPremiumModal extends Component {
 		}
 	}
 
-  setAmount = async(depositInfo) => {
+  setAmount = async(withdrawInfo) => {
     /*if(!isNaN(amount)){
       if(Math.sign(amount) === 1){
-        if(amount > depositInfo.balance){
+        if(amount > withdrawInfo.balance){
           if(amount === 0){*/
-            this.props.updateDepositAmount(depositInfo);
-            await this.depositToChain(depositInfo.premiumDeposit, depositInfo.validatorId);
+            this.props.updateWithdrawAmount(withdrawInfo);
+            await this.depositToChain(withdrawInfo.premiumDeposit, withdrawInfo.validatorId);
           /*}
           else this.setState({isValidInput: 'zero', amount});
         }
@@ -53,10 +53,10 @@ class DepositPremiumModal extends Component {
 			let result;
 			try{
 				const web3 = await getWeb3();
-				const tokenString = this.props.depositAmount.tokenString;
+				const tokenString = this.props.withdrawAmount.tokenString;
 				const activeAccount = this.props.activeAccount;
 				premiumDeposit = web3.utils.toWei(premiumDeposit, "ether");
-				this.props.updateDepositAmount('');
+				this.props.updateWithdrawAmount('');
 				//const amountInBase_test = getAmountBase(amount, this.props.tokenMap[tokenString].decimals);//web3.utils.toWei(amount, 'ether');
 				const gasPrice = (await web3.eth.getGasPrice()).toString();
 
@@ -65,7 +65,6 @@ class DepositPremiumModal extends Component {
 					from: activeAccount,
 					gas: web3.utils.toHex(3000000),
 					gasPrice: web3.utils.toHex(gasPrice),
-					value: premiumDeposit
 				};
 
 				let PremiumGeneratorAaveV2Instance = new web3.eth.Contract(
@@ -73,12 +72,12 @@ class DepositPremiumModal extends Component {
 					this.props.reserveAddress.premiumGenerator,
 				);
 
-				txInfo = {txHash: '', success: '', amount: premiumDeposit, tokenString: tokenString, type:"PREMIUM_DEPOSIT", poolName: "Premium Deposit", networkId: this.props.networkId};
+				txInfo = {txHash: '', success: '', amount: premiumDeposit, tokenString: tokenString, type:"PREMIUM_WITHDRAW", poolName: "Premium Deposit", networkId: this.props.networkId};
 
-				result = await PremiumGeneratorAaveV2Instance.methods.deposit(validatorId).send(parameter, async(err, transactionHash) => {
+				result = await PremiumGeneratorAaveV2Instance.methods.withdraw(validatorId).send(parameter, async(err, transactionHash) => {
 					console.log('Transaction Hash :', transactionHash);
 					if(!err){
-						let info = {txHash: transactionHash, amount: premiumDeposit, tokenString: tokenString, type:"PREMIUM_DEPOSIT", poolName: "Premium Deposit", networkId: this.props.networkId, status:"pending"};
+						let info = {txHash: transactionHash, amount: premiumDeposit, tokenString: tokenString, type:"PREMIUM_WITHDRAW", poolName: "Premium Deposit", networkId: this.props.networkId, status:"pending"};
 						let pending = [...this.props.pendingTxList];
 						pending.push(info);
 						await this.props.updatePendingTxList(pending);
@@ -165,22 +164,22 @@ class DepositPremiumModal extends Component {
 
 
   render() {
-        const { depositInfo } = this.props;
+        const { withdrawInfo } = this.props;
 
-		console.log("depositInfo:", depositInfo)
+		console.log("withdrawInfo:", withdrawInfo)
 		return (
       <Fragment>
         <ModalHeader>
-          <p style={{fontSize: 30}} className="mb0">Deposit Premium for Coverage</p>
+          <p style={{fontSize: 30}} className="mb0">Withdraw Premium to Discontinue Coverage</p>
         </ModalHeader>
         <ModalCtas>
-			{this.displayDepositNotice(depositInfo.premiumDeposit)}
+			{this.displayDepositNotice(withdrawInfo.premiumDeposit)}
 			<div style={{marginLeft: "auto", marginTop:"auto", display:"flex", flexDirection: "column", alignItems:"flex-end", justifyContent:"left"}}>
 				<div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
-					<p>{displayLogo(depositInfo.tokenString)}{ depositInfo.userBalance} {depositInfo.tokenString}</p>
+					<p>{displayLogo(withdrawInfo.tokenString)}{ withdrawInfo.userBalance} {withdrawInfo.tokenString}</p>
 				</div>
 				<div style={{marginLeft: "auto", marginTop:"auto", paddingBottom:"32px"}}>
-					<Button style={{marginLeft: "auto", marginTop:"auto"}} text={"Deposit "+depositInfo.premiumDeposit+" ETH"} callback={() => this.setAmount(depositInfo)}/>
+					<Button style={{marginLeft: "auto", marginTop:"auto"}} text={"Withdraw "+withdrawInfo.premiumDeposit} callback={() => this.setAmount(withdrawInfo)}/>
 				</div>
 			</div>
         </ModalCtas>
@@ -193,7 +192,7 @@ const mapStateToProps = state => ({
   	tokenMap: state.tokenMap,
 	reserveAddress: state.reserveAddress,
 	verifiedPoolAddrs: state.verifiedPoolAddrs,
- 	depositAmount: state.depositAmount,
+ 	withdrawAmount: state.withdrawAmount,
 	activeAccount: state.activeAccount,
 	userDepositPoolInfo: state.userDepositPoolInfo,
 	verifiedPoolInfo: state.verifiedPoolInfo,
@@ -204,7 +203,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    updateDepositAmount: (amount) => dispatch(updateDepositAmount(amount)),
+    updateWithdrawAmount: (amount) => dispatch(updateWithdrawAmount(amount)),
 	updatePendingTxList: (tx) => dispatch(updatePendingTxList(tx)),
 	updateTxResult: (res) => dispatch(updateTxResult(res)),
 	updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
@@ -213,4 +212,4 @@ const mapDispatchToProps = dispatch => ({
 
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(DepositPremiumModal)
+export default connect(mapStateToProps, mapDispatchToProps)(WithdrawPremiumModal)

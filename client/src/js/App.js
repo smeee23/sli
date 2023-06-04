@@ -25,10 +25,12 @@ import { updateConnect } from "./actions/connect"
 import { updateBurnPitBalances } from "./actions/burnPitBalances";
 import { updatePendingTxList } from "./actions/pendingTxList";
 import { updateActiveBalances } from "./actions/activeBalances";
+import { updateTxResult } from  "./actions/txResult";
 
 //import PoolTracker from "../contracts/PoolTracker.json";
 import Reserve from "../contracts/Reserve.json";
 import ERC20Instance from "../contracts/IERC20.json";
+import PremiumGeneratorAaveV2 from "../contracts/PremiumGeneratorAaveV2.json"
 
 import { getTokenMap, getAaveAddressProvider, deployedNetworks } from "./func/tokenMaps.js";
 import {getPoolInfo, checkTransactions, getDepositorAddress, getAllowance, getLiquidityIndexFromAave, getAavePoolAddress, getBalances, getSliStats, getDepositorValidatorIds} from './func/contractInteractions.js';
@@ -141,7 +143,10 @@ class App extends Component {
 			this.ReserveAddress,
 		);
 
-		this.setReserveAddress(this.ReserveAddress);
+		this.PremiumGeneratorAddress = PremiumGeneratorAaveV2.networks[this.networkId] && PremiumGeneratorAaveV2.networks[this.networkId].address;
+		//const premiumGeneratorAddr = await this.ReserveInstance.methods.premiumGenerator().call();
+
+		this.setReserveAddress({reserve: this.ReserveAddress, premiumGenerator: this.PremiumGeneratorAddress});
 		console.log("reserve test", this.props.reserveAddress)
 		this.setSliETHInfo(await getSliStats(this.ReserveAddress));
 		console.log("sli test", this.props.sliETHInfo, this.props.activeAccount);
@@ -161,6 +166,12 @@ class App extends Component {
 
 	componentWillUnmount() {
 		window.removeEventListener('resize', this.props.detectMobile);
+	}
+
+	displayTxInfo = async(txInfo) => {
+		this.props.updateTxResult(txInfo);
+		await delay(5000);
+		this.props.updateTxResult('');
 	}
 
 	connectToWeb3 = async() => {
@@ -218,7 +229,7 @@ class App extends Component {
 				pending = (pending).filter(e => !(e.txHash === event.transactionHash));
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
-				console.log("event", event);
+				console.log("event", event.returnValues);
 			})
 			.on('changed', changed => console.log("EVENT changed", changed))
 			.on('error', err => console.log("EVENT err", err))
@@ -246,6 +257,41 @@ class App extends Component {
 		.on('error', err => console.log("EVENT err", err))
 		.on('connected', str => console.log("EVENT str", str))
 
+		this.ReserveInstance.events.AddBeneficiary(options)
+		.on('data', async(event) => {
+			console.log("EVENT data", event)
+			let pending = [...this.props.pendingTxList];
+			pending.forEach((e, i) =>{
+				if(e.txHash === event.transactionHash){
+					e.status = "complete"
+				}
+			});
+			await this.props.updatePendingTxList(pending);
+			localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+			await delay(2000);
+			pending = (pending).filter(e => !(e.txHash === event.transactionHash));
+			await this.props.updatePendingTxList(pending);
+			localStorage.setItem("pendingTxList", JSON.stringify(pending));
+			console.log("event", event);
+		})
+		.on('changed', changed => console.log("EVENT changed", changed))
+		.on('error', err => console.log("EVENT err", err))
+		.on('connected', str => console.log("EVENT str", str))
+
+		this.ReserveInstance.events.ApproveApplication(options)
+		.on('data', async(event) => {
+			console.log("EVENT data", event)
+			if(this.props.activeAccount === event.returnValues.withdrawAddress){
+				console.log(this.props.activeAccount, event, "MATCH");
+				let txInfo = {txHash: '', success: true,tokenString: "ETH", type:"APPLICATION APPROVAL", poolName: "application approved", networkId: this.props.networkId};
+				await this.displayTxInfo(txInfo);
+			}
+			console.log("ApproveApplication event", event);
+		})
+		.on('changed', changed => console.log("EVENT changed", changed))
+		.on('error', err => console.log("EVENT err", err))
+		.on('connected', str => console.log("EVENT str", str))
 		/*poolTrackerInstance.events.AddPool(options)
 		.on('data', async(event) => {
 			console.log("EVENT data", event)
@@ -492,6 +538,8 @@ const mapDispatchToProps = dispatch => ({
 	updateConnect: (bool) => dispatch(updateConnect(bool)),
 	updateBurnPitBalances: (bal) => dispatch(updateBurnPitBalances(bal)),
 	updatePendingTxList: (list) => dispatch(updatePendingTxList(list)),
+	updateTxResult: (res) => dispatch(updateTxResult(res)),
 })
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

@@ -156,6 +156,7 @@ contract PremiumGeneratorCore is ReentrancyGuard {
     **/
     function _getUnclaimedInterest(address _aTokenAddress) internal view returns (uint256){
         uint256 aTokenBalance = IERC20(_aTokenAddress).balanceOf(address(this));
+        if(aTokenBalance == 0) return 0;
         return aTokenBalance - deposits;
     }
 

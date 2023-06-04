@@ -44,7 +44,6 @@ export const getBeneficiaryStatus = async(validatorId, reserveAddress) => {
         CLAIM_WAIT_PERIOD,
         CLOSED,
         CLAIM_PAUSED*/
-		console.log(await ReserveInstance.methods.getBeneficiaryInfo(validatorId).call())
 	let {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await ReserveInstance.methods.getBeneficiaryInfo(validatorId).call();
 	if(status == 0) status = 'NOT_ACTIVE';
 	else if(status == 1) status = 'ACTIVE';
@@ -54,6 +53,7 @@ export const getBeneficiaryStatus = async(validatorId, reserveAddress) => {
 	else if(status == 6) status = 'CLAIM_WAIT_PERIOD';
 	else if(status == 7) status = 'CLOSED';
 	else status = 'CLAIM PAUSED';
+	console.log("Apply test", validatorId, status, withdrawAddress, loss, claimTimestamp, applyTimestamp)
 	return {status, withdrawAddress, loss, claimTimestamp, applyTimestamp};
 }
 export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => {
@@ -64,37 +64,40 @@ export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => 
 		reserveAddress,
 	);
 
-	const validatorIds = await ReserveInstance.methods.getDepositorValidatorIds(activeAccount).call();
+	let validatorIds = await ReserveInstance.methods.getDepositorValidatorIds(activeAccount).call();
 	console.log("validatorIds", validatorIds);
+
+	const set = new Set(validatorIds);
+	validatorIds = Array.from(set);
 
 	let validatorInfo = [];
 	for(let i = 0; i < validatorIds.length; i++){
 
 		const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorIds[i], reserveAddress);
 		//data["withdrawAddress"] = withdrawAddress.substring(0, 4) == "0x01" ? "0x"+withdrawAddress.substring(withdrawAddress.length - 40) : "0x0";
-		const info = await getValidatorInfo(validatorIds[i]);
+		let info = await getValidatorInfo(validatorIds[i]);
 		console.log("info", info)
 		info["beneStatus"] = status;
 		info["withdrawAddress"] = withdrawAddress;
 		info["apply"] = applyTimestamp == 0 ? "N/A" : convertSolidityTimestamp(applyTimestamp);
 		info["claim"] = claimTimestamp == 0 ? "N/A" : convertSolidityTimestamp(claimTimestamp);
 		info["loss"] = loss == 0 ? "N/A" : await convertWeiToETH(loss);
+		info["validatorId"] = validatorIds[i];
 		validatorInfo[i] = info;
 	}
 
 	return validatorInfo;
 }
 
-export const getPremiumDeposit = async() => {
+export const getPremiumDeposit = async(premiumGeneratorAddr) => {
 	const web3 = await getWeb3();
-    const premiumGeneratorAddr = PremiumGeneratorAaveV2[this.props.networkId] && PremiumGeneratorAaveV2.networks[this.props.networkId].address;
 
-    let PremiumGeneratorAaveV2 = new web3.eth.Contract(
+    let PremiumGeneratorAaveV2Instance = new web3.eth.Contract(
         PremiumGeneratorAaveV2.abi,
         premiumGeneratorAddr,
     );
-
-    return (await convertWeiToETH(await PremiumGeneratorAaveV2.methods.premiumDeposit().call()));
+		console.log("premium Deposit ", await PremiumGeneratorAaveV2Instance.methods.premiumDeposit().call())
+    return (await convertWeiToETH(await PremiumGeneratorAaveV2Instance.methods.premiumDeposit().call()));
   }
 
 export const getBalances = async(reserveAddress, activeAccount) => {

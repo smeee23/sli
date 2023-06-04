@@ -11,6 +11,7 @@ import Takeover from "./Takeover";
 import { updateActiveAccount } from "../actions/activeAccount"
 import { updateConnect } from "../actions/connect"
 import { checkLocationForAppDeploy, displayTVL, getConnection, redirectWindowBlockExplorer } from "../func/ancillaryFunctions"
+import { EthWhiteLogo } from "./cryptoLogos/EthWhiteLogo"
 
 import { web3Modal } from "../App"
 
@@ -136,14 +137,14 @@ class Header extends Component {
     if("outsideApp" === checkLocationForAppDeploy()){
       return (
         <NavLink exact to={"/"} className="app-bar__left tdn theme--white">
-            <h2 className="mb0" style={{marginTop: "-45px", fontSize: 60}}>SLI</h2>
+            <h1 className="mb0" style={{marginTop: "-10px", fontSize: 50}}>SLI</h1>
         </NavLink>
       );
     }
     else{
       return (
         <div className="app-bar__left tdn theme--white">
-          <h2 className="mb0" style={{marginTop: "-45px", fontSize: 60}}>SLI</h2>
+          <h1 className="mb0" style={{marginTop: "-10px", fontSize: 50}}>SLI</h1>
         </div>
       );
     }

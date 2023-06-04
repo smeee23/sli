@@ -7,15 +7,15 @@ import { Button, ButtonExtraSmall } from '../Button'
 import getWeb3 from "../../../getWeb3NotOnLoad";
 import Reserve from "../../../contracts/Reserve.json";
 
-import { updatePendingTx } from "../../actions/pendingTx";
 import { updatePendingTxList } from "../../actions/pendingTxList";
 import { updateTxResult } from  "../../actions/txResult";
 import { updateWithdrawAmount } from  "../../actions/withdrawAmount";
 import { updateUserDepositPoolInfo } from "../../actions/userDepositPoolInfo";
 import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
+import { updateSliETHInfo } from "../../actions/sliETHInfo";
 
-import {getDirectFromPoolInfo, getContractInfo} from '../../func/contractInteractions';
+import {getDirectFromPoolInfo, getContractInfo, getSliStats } from '../../func/contractInteractions';
 import {delay, getTokenBaseAmount, displayLogo, addNewPoolInfo, checkPoolInPoolInfo } from '../../func/ancillaryFunctions';
 
 class WithdrawModal extends Component {
@@ -70,7 +70,7 @@ class WithdrawModal extends Component {
 
             let ReserveInstance = new web3.eth.Contract(
               Reserve.abi,
-              this.props.reserveAddress,
+              this.props.reserveAddress.reserve,
             );
             txInfo = {txHash: '', success: false, amount: amount, tokenString: tokenString, type:"WITHDRAW", poolName: "Unbond ETH", networkId: this.props.networkId};
             result = await ReserveInstance.methods.withdrawInsurance(amountInBase).send(parameter , async(err, transactionHash) => {
@@ -82,7 +82,6 @@ class WithdrawModal extends Component {
                   pending.push(info);
 						      await this.props.updatePendingTxList(pending);
                   localStorage.setItem("pendingTxList", JSON.stringify(pending));
-                  await this.props.updatePendingTx(info);
                   txInfo.txHash = transactionHash;
                 }
                 else{
@@ -90,23 +89,8 @@ class WithdrawModal extends Component {
                 }
             });
             txInfo.success = true;
+            this.setSliETHInfo(await getSliStats(this.props.reserveAddress.reserve));
 
-            /*const newInfo = await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-            const newDepositInfo = addNewPoolInfo([...this.props.userDepositPoolInfo], newInfo);
-            await this.props.updateUserDepositPoolInfo(newDepositInfo);
-            localStorage.setItem("userDepositPoolInfo", JSON.stringify(newDepositInfo));
-
-            if(checkPoolInPoolInfo(poolAddress, this.props.ownerPoolInfo)){
-              const newOwnerInfo = addNewPoolInfo([...this.props.ownerPoolInfo], newInfo);
-              await this.props.updateOwnerPoolInfo(newOwnerInfo);
-              localStorage.setItem("ownerPoolInfo", JSON.stringify(newOwnerInfo));
-            }
-
-            if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
-              const newVerifiedInfo = addNewPoolInfo([...this.props.verifiedPoolInfo], newInfo);
-              await this.props.updateDepositorValIds(newVerifiedInfo);
-              localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
-            }*/
 		}
     catch (error) {
       console.error(error);
@@ -130,10 +114,11 @@ class WithdrawModal extends Component {
 
     }
 
-
+  setSliETHInfo = async(sliETHInfo) => {
+    await this.props.updateSliETHInfo(sliETHInfo);
+  }
 
   displayTxInfo = async(txInfo) => {
-		this.props.updatePendingTx('');
 		this.props.updateTxResult(txInfo);
 		await delay(5000);
 		this.props.updateTxResult('');
@@ -192,12 +177,12 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     updateWithdrawAmount: (amount) => dispatch(updateWithdrawAmount(amount)),
-    updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
     updatePendingTxList: (tx) => dispatch(updatePendingTxList(tx)),
     updateTxResult: (res) => dispatch(updateTxResult(res)),
     updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
     updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
     updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
-})
+    updateSliETHInfo: (o) => dispatch(updateSliETHInfo(o)),
+  })
 
 export default connect(mapStateToProps, mapDispatchToProps)(WithdrawModal)

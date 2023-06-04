@@ -92,7 +92,7 @@ class ProvideInsurance extends Component {
                     <Fragment>
                         <section className="page-section horizontal-padding" style={{paddingBottom: "8px", alignItems: "center", justifyContent: "center"}}>
                                 <div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-                                    <h1 style={{alignItems:"center", justifyContent:"center", marginRight:"0%"}}>Bond ETH</h1>
+                                    <h2 style={{fontSize: 60, alignItems:"center", justifyContent:"center", marginRight:"0%"}}>Bond ETH</h2>
                                     <h2 style={{alignItems:"center", justifyContent:"center", marginRight:"0%", marginTop: "-40px", fontSize: 30}}>Deposit ETH to Claim Fund</h2>
                                     <div style={{display: "flex", flexDirection: "wrap", gap: "5px"}}>
                                     <div title={"exchange sliETH back to ETH"}><Button logo={displayLogo("ETH_WHITE")} text={"Withdraw sliETH"} /*disabled={isDisabled}*/ callback={async() => await this.withdrawDeposit()}/></div>

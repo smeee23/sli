@@ -21,24 +21,23 @@ import {IProtocolDataProvider} from "./interfaces/aave/IProtocolDataProvider.sol
 /**
  * @title Ethereum Slashing Insurance (SLI) Reserve contract
  * @author smeee
- * @notice Main point of interaction with SLI Protocol
- * This is a proof of concept starter contract for lossless insurance
+ * @notice This is a proof of concept starter contract for lossless insurance
  *
- * Aave v2 is used to generate interest from premium deposits
- * Premium is returned to beneficiary after the
+ * Aave v2 is used to generate interest from beneficiary premium deposits
+ * Premium is returned to beneficiary when Policy terminated (validator
+ * exits from staking or simply no longer wishes to have insurance).
+ * Interest is accrued in Reserve to cover validator slashing claims.
  *
- * PoolTracker contract controls deposit calls to Aave to make
- * approvals needed only once per token. Calls JustCause Pools for
- * withdrawals and claims
+ * Chainlink Functions is used as an oracle to access the validator stats
+ * such as slashing, loss, and withdrawal credentials associated with a
+ * validator Id.
  *
- * Controls Owner/Contributor NFT creation and updates for deposits/withdrawals
+ * Claims Fund is funded by sliETH.
  *
- * Controls JustCause Pool creation with proxy contracts
+ * Reserve contract controls deposit calls to Aave for funds held in Reserve.
  *
  * @dev Deposits, withdraws, and claims for Aave Pools
- * @dev Generate ERC721 token
  **/
-
 contract Reserve is ReentrancyGuard, Authenticator{
     using SafeERC20 for IERC20;
 
@@ -157,19 +156,13 @@ contract Reserve is ReentrancyGuard, Authenticator{
         uint _validatorIndex
     )
         external
-        minimumReserveMet(getProtocolBalance())
         onlyAddApproved(_validatorIndex)
         onlyBeneficiary(_withdrawAddress, _validatorIndex)
         onlyInApplyWindow(_validatorIndex)
         onlyPools
     {
-        beneficiaries[_validatorIndex] = Beneficiary(
-            Status.ACTIVE,
-            _withdrawAddress,
-            0,
-            0,
-            0
-        );
+        beneficiaries[_validatorIndex].status = Status.ACTIVE;
+        emit AddBeneficiary(_validatorIndex, _withdrawAddress);
     }
 
     function oracleResponse(
@@ -205,7 +198,7 @@ contract Reserve is ReentrancyGuard, Authenticator{
             emit DenyApplication(
                 _validatorIndex,
                 _withdrawAddress,
-                0 //address not correct or not set
+                0 //address not correct or validator slashed
             );
         }
         else {

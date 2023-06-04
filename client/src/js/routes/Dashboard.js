@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import Card from '../components/Card';
 import { Modal, LargeModal } from "../components/Modal";
 import { Button, ButtonSmall } from '../components/Button';
-import PendingTxModal from "../components/modals/PendingTxModal";
+import ApplyModal from "../components/modals/ApplyModal";
 import TxResultModal from "../components/modals/TxResultModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
 import PendingTxList from "../components/PendingTxList";
@@ -22,7 +22,7 @@ import { updateClaim } from "../actions/claim";
 import { updateApprove } from "../actions/approve";
 import { updateShare } from  "../actions/share";
 import { updateNewAbout } from  "../actions/newAbout";
-import { updateBurnPitBalances } from "../actions/burnPitBalances";
+import { updatePendingTx } from "../actions/pendingTx";
 
 import LogoCard from "../components/logos/LogoCard";
 import { precise, numberWithCommas, getHeaderValuesInUSD } from '../func/ancillaryFunctions';
@@ -87,10 +87,10 @@ class Insurance extends Component {
 			return modal;
 		}
 	}
-	getPendingTxModal = () => {
+	getApplyModal = () => {
 		if(this.props.pendingTx){
-			let modal = <Modal isOpen={true}><PendingTxModal txDetails={this.props.pendingTx}/></Modal>;
-			//return modal;
+			let modal = <Modal isOpen={true}><ApplyModal txDetails={this.props.pendingTx}/></Modal>;
+			return modal;
 		}
 	}
 	getDeployTxModal = () => {
@@ -158,34 +158,6 @@ class Insurance extends Component {
 		return buttonHolder;
 	}
 
-	createVerifiedButtons = () => {
-		if(this.state.openTabIndex !== 0) return;
-		let buttonHolder = [];
-		const buttonStrings = ['General', 'Crypto for Charity'];
-		const infoStrings = ['miscellaneous funds', 'Crypto for Charity cause funds'];
-		for(let i = 0; i < buttonStrings.length; i++){
-			const name = buttonStrings[i];
-			let isDisabled = false;
-			if(i === this.state.openVerifiedIndex){
-				isDisabled = true;
-			}
-			buttonHolder.push(<div title={infoStrings[i]} key={i}><ButtonSmall text={name} disabled={isDisabled} callback={() => this.setSelectedVerifiedTab(i)}/></div>)
-		}
-		return buttonHolder;
-	}
-
-	getTabTitle = () => {
-		let title;
-		if(this.state.openTabIndex === 0) title = "Verified Pools";
-		else if (this.state.openTabIndex === 1) title = "Your Causes";
-		else if (this.state.openTabIndex === 2) title = "Contributions";
-		return (
-			<div style={{marginTop: "100px", display:"flex", flexDirection: "wrap", alignItems:"center", justifyContent:"center"}}>
-				<h2 style={{marginTop: "50px"}}> {title}</h2>
-			</div>
-		);
-	}
-
 
 	setHideLowBalances = () => {
 		let orig = this.state.hideLowBalance;
@@ -218,6 +190,11 @@ class Insurance extends Component {
 		window.open("https://docs.google.com/forms/d/e/1FAIpQLSfvejwW-3zNhy4H3hvcIDZ2WGUH422Zj1_yVouRH4tTN8kQFg/viewform?usp=sf_link", "_blank")
 	}
 
+	openApplyModal = async() => {
+		await this.props.updatePendingTx("");
+		await this.props.updatePendingTx("open");
+	}
+
 	createCardInfo = () => {
 		if(this.props.activeAccount === "Connect" && !web3Modal.cachedProvider){
 			return(
@@ -238,43 +215,17 @@ class Insurance extends Component {
 				</div>);
 		}
 
-		console.log(this.props.depositorValIds)
 		let cardHolder = [];
 		for(let i = 0; i < (this.props.depositorValIds).length; i++){
 			const item = this.props.depositorValIds[i];
-			console.log("DATA", convertGweiToETH((String(item.balance))))
 			//const {userBalance} = getHeaderValuesInUSD(item.acceptedTokenInfo, this.props.tokenMap);
 
 			cardHolder.push(
 				<Card
 					key={i}
-					//title={item.name}
 					idx={i}
-					//receiver={item.receiver}
-					//address={item.address}
-					//acceptedTokenInfo={item.acceptedTokenInfo}
-					//about={item.about}
-					//picHash={item.picHash}
-					//isVerified={item.isVerified}
 				/>
 			);
-			/*if(this.state.hideLowBalance && this.state.openTabIndex === 1){
-				if(userBalance !== "<$0.01" && userBalance !== "$0.00"){
-					cardHolder.push(
-						<Card
-							key={item.address}
-							title={item.name}
-							idx={i}
-							receiver={item.receiver}
-							address={item.address}
-							acceptedTokenInfo={item.acceptedTokenInfo}
-							about={item.about}
-							picHash={item.picHash}
-							isVerified={item.isVerified}
-						/>
-					);
-				}
-			}*/
 		}
 		return (
 			<div className="card__cardholder_slide">
@@ -291,12 +242,12 @@ class Insurance extends Component {
 		return (
 			<Fragment>
 				<article>
-					<section  className="page-section page-section--center horizontal-padding bw0" style={{paddingBottom:"0px"}}>
-						<h1 style={{marginBottom: "5px"}} >Ethereum Slashing Insurance</h1>
-						<div title="apply for slashing protection for your validator"><Button text="Apply for Coverage" callback={() => {}}/></div>
+					<section  className="page-section page-section--center horizontal-padding bw0" style={{paddingBottom:"20px"}}>
+						<h2 style={{fontSize: 60, marginBottom: "5px"}} >Ethereum Slashing Insurance</h2>
+						<div title="apply for slashing protection for your validator"><Button text="Apply for Coverage" callback={async() => await this.openApplyModal()}/></div>
 					</section>
 					<section className="page-section_no_vert_padding horizontal-padding bw0">
-						{this.getPendingTxModal()}
+						{this.getApplyModal()}
 						{this.getTxResultModal()}
 						{this.getDeployTxModal()}
 						{cardHolder}
@@ -343,7 +294,7 @@ const mapDispatchToProps = dispatch => ({
 	updateApprove: (txInfo) => dispatch(updateApprove(txInfo)),
 	updateShare: (share) => dispatch(updateShare(share)),
 	updateNewAbout: (about) => dispatch(updateNewAbout(about)),
-	updateBurnPitBalances: (bal) => dispatch(updateBurnPitBalances(bal)),
+	updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Insurance)

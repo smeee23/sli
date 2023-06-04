@@ -29,7 +29,7 @@ class Homepage extends Component {
 
 					<div style={{gridColumn: "3",marginRight: "20px", gridRow: "2", display: "flex", flexDirection: "column", alignItems:"center", justifyContent:"center", paddingRight:"20px"}}>
 						<h1 style={{fontSize: 150}} >SLI</h1>
-						<h2 style={{marginTop: "-45px"}} className="mb0">Contracts</h2>
+						<h2 style={{marginTop: "-45px"}} className="mb0">RESERVE</h2>
 					</div>
 					<div style={{gridColumn: "4", gridRow: "2"}}>
 						<Arrow/>
@@ -49,7 +49,7 @@ class Homepage extends Component {
 					</div>
 					<div style={{gridColumn: "7", gridRow: "2", display: "flex", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
 						<MaleOne/>
-						<h2 style={{marginTop: "5px"}} className="mb0">Claims</h2>
+						<h2 style={{marginTop: "5px"}} className="mb0">Validator</h2>
 					</div>
 				</div>
 					</div>

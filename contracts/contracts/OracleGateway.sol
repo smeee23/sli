@@ -5,7 +5,7 @@ import {IFunctionsConsumer} from "./interfaces/link/IFunctionsConsumer.sol";
 
 contract OracleGateway {
 
-    address oracle;
+    address public oracle;
     address public reserve;
     address immutable public multiSig;
 
@@ -38,10 +38,18 @@ contract OracleGateway {
         reserve = _reserve;
     }
 
+    /**
+    * @param _oracle address of oracle.
+    **/
+    function setOracle(address _oracle) external onlyMultiSig {
+        //require(reserve == address(0), "reserve already set");
+        oracle = _oracle;
+    }
+
     function callOracle(string memory _index) external onlyReserve {
         string memory source =
             ("const validatorIndex = args[0]\n\
-            const url = 'https://flask-service.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/status/'+validatorIndex.toString()\n\
+            const url = 'https://flask-servicecors.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/status/'+validatorIndex.toString()\n\
             const cryptoCompareRequest = Functions.makeHttpRequest({\n\
                 url: url,\n\
             })\n\

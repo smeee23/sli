@@ -9,15 +9,15 @@ import getWeb3 from "../../../getWeb3NotOnLoad";
 import Reserve from "../../../contracts/Reserve.json";
 import ERC20Instance from "../../../contracts/IERC20.json";
 
-import { updatePendingTx } from "../../actions/pendingTx";
 import { updatePendingTxList } from "../../actions/pendingTxList";
 import { updateTxResult } from  "../../actions/txResult";
 import { updateDepositAmount } from  "../../actions/depositAmount";
 import { updateUserDepositPoolInfo } from "../../actions/userDepositPoolInfo";
 import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
+import { updateSliETHInfo } from "../../actions/sliETHInfo";
 
-import { getAllowance, addPoolToPoolInfo, getContractInfo, getDirectFromPoolInfo,  convertWeiToETH  } from '../../func/contractInteractions';
+import { getAllowance, addPoolToPoolInfo, getContractInfo, getDirectFromPoolInfo,  convertWeiToETH , getSliStats } from '../../func/contractInteractions';
 import { delay, getTokenBaseAmount, displayLogo, addNewPoolInfo, checkPoolInPoolInfo } from '../../func/ancillaryFunctions';
 
 class DepositModal extends Component {
@@ -68,14 +68,14 @@ class DepositModal extends Component {
 				let parameter = {};
 				parameter = {
 					from: activeAccount,
-					gas: web3.utils.toHex(1500000),
+					gas: web3.utils.toHex(3000000),
 					gasPrice: web3.utils.toHex(gasPrice),
 					value: amountInBase
 				};
 
 				let ReserveInstance = new web3.eth.Contract(
 					Reserve.abi,
-					this.props.reserveAddress,
+					this.props.reserveAddress.reserve,
 				);
 
 				txInfo = {txHash: '', success: '', amount: amount, tokenString: tokenString, type:"DEPOSIT", poolName: "Bond ETH for sliETH", networkId: this.props.networkId};
@@ -88,7 +88,6 @@ class DepositModal extends Component {
 						pending.push(info);
 						await this.props.updatePendingTxList(pending);
 						localStorage.setItem("pendingTxList", JSON.stringify(pending));
-						await this.props.updatePendingTx(info);
 						txInfo.txHash = transactionHash;
 
 					}
@@ -97,33 +96,7 @@ class DepositModal extends Component {
 					}
 				});
 				txInfo.success = true;
-
-				/*let newInfo;
-				let newDepositInfo;
-				if(checkPoolInPoolInfo(poolAddress, this.props.userDepositPoolInfo)){
-					newInfo = await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					newDepositInfo = addNewPoolInfo([...this.props.userDepositPoolInfo], newInfo);
-				}
-				else{
-					console.log("POOL NOT FOUND IN DEPOSITS, ADDING POOL");
-					newDepositInfo = await addPoolToPoolInfo(poolAddress, this.props.activeAccount, this.props.reserveAddress, this.props.tokenMap, this.props.userDepositPoolInfo);
-				}
-				await this.props.updateUserDepositPoolInfo(newDepositInfo);
-				localStorage.setItem("userDepositPoolInfo", JSON.stringify(newDepositInfo));
-
-				if(checkPoolInPoolInfo(poolAddress, this.props.ownerPoolInfo)){
-					newInfo = newInfo ? newInfo : await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					const newOwnerInfo = addNewPoolInfo([...this.props.ownerPoolInfo], newInfo);
-					await this.props.updateOwnerPoolInfo(newOwnerInfo);
-					localStorage.setItem("ownerPoolInfo", JSON.stringify(newOwnerInfo));
-				}
-
-				if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
-					newInfo = newInfo ? newInfo : await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					const newVerifiedInfo = addNewPoolInfo([...this.props.verifiedPoolInfo], newInfo);
-					await this.props.updateDepositorValIds(newVerifiedInfo);
-					localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
-				}*/
+				this.setSliETHInfo(await getSliStats(this.props.reserveAddress.reserve));
 			}
 			catch (error) {
 				console.error(error);
@@ -135,21 +108,23 @@ class DepositModal extends Component {
 			}
 	}
 
-  displayDepositNotice = () => {
-	return(
-		<div style={{maxWidth: "300px", fontSize: 9, display:"flex", flexDirection: "column", alignItems:"left", justifyContent:"left"}}>
-			<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Deposits receive sliETH based on the conversion rate. Each sliETH token represents a user's share of the total ETH deposited in the Claims Fund. These sliETH tokens are transferable and can be held or traded like any other ERC-20 token."}</p>
-			<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"As the Claims Fund generates interest from validator premiums and bonded ETH, these rewards are distributed proportionally to sliETH holders."}</p>
-			<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Users can withdraw their sliETH tokens and convert them back into ETH at any time. The conversion rate depends on the current value of ETH held in the Claims Fund and the total supply of sliETH tokens."}</p>
-			<p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12, marginTop: "8px", marginBottom: "0px"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
-		</div>
-	)
+	displayDepositNotice = () => {
+		return(
+			<div style={{maxWidth: "300px", fontSize: 9, display:"flex", flexDirection: "column", alignItems:"left", justifyContent:"left"}}>
+				<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Deposits receive sliETH based on the conversion rate. Each sliETH token represents a user's share of the total ETH deposited in the Claims Fund. These sliETH tokens are transferable and can be held or traded like any other ERC-20 token."}</p>
+				<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"As the Claims Fund generates interest from validator premiums and bonded ETH, these rewards are distributed proportionally to sliETH holders."}</p>
+				<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Users can withdraw their sliETH tokens and convert them back into ETH at any time. The conversion rate depends on the current value of ETH held in the Claims Fund and the total supply of sliETH tokens."}</p>
+				<p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12, marginTop: "8px", marginBottom: "0px"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
+			</div>
+		)
 
-  }
+	}
 
+	setSliETHInfo = async(sliETHInfo) => {
+		await this.props.updateSliETHInfo(sliETHInfo);
+	}
 
-  displayTxInfo = async(txInfo) => {
-		this.props.updatePendingTx('');
+  	displayTxInfo = async(txInfo) => {
 		this.props.updateTxResult(txInfo);
 		await delay(5000);
 		this.props.updateTxResult('');
@@ -183,7 +158,7 @@ class DepositModal extends Component {
 			{this.displayDepositNotice()}
 			<div style={{marginLeft: "auto", marginTop:"auto", display:"flex", flexDirection: "column", alignItems:"flex-end", justifyContent:"left"}}>
 				<div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
-					<p>{displayLogo(depositInfo.tokenString)}{depositInfo.tokenString}: { depositInfo.userBalance}</p>
+					<p>{displayLogo(depositInfo.tokenString)}{ depositInfo.userBalance} {depositInfo.tokenString}</p>
 					<ButtonExtraSmall text="MAX" callback={() => this.refs.myField.replaceValue(depositInfo.userBalance)}/>
 
 				</div>
@@ -192,7 +167,7 @@ class DepositModal extends Component {
 				</div>
 			</div>
 			<div style={{marginLeft: "auto", marginTop:"auto", paddingBottom:"32px"}}>
-          		<Button style={{marginLeft: "auto", marginTop:"auto"}} text="Deposit" callback={() => this.setAmount(this.refs.myField.getValue(), depositInfo)}/>
+          		<Button style={{marginLeft: "auto", marginTop:"auto"}} text="Deposit ETH" callback={() => this.setAmount(this.refs.myField.getValue(), depositInfo)}/>
 		  	</div>
         </ModalCtas>
       </Fragment>
@@ -216,13 +191,12 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     updateDepositAmount: (amount) => dispatch(updateDepositAmount(amount)),
-    updatePendingTx: (tx) => dispatch(updatePendingTx(tx)),
 	updatePendingTxList: (tx) => dispatch(updatePendingTxList(tx)),
 	updateTxResult: (res) => dispatch(updateTxResult(res)),
 	updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
 	updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
 	updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
-
+	updateSliETHInfo: (o) => dispatch(updateSliETHInfo(o)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(DepositModal)
