@@ -292,6 +292,32 @@ class App extends Component {
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
 		.on('connected', str => console.log("EVENT str", str))
+
+		this.ReserveInstance.events.AcceptClaim(options)
+		.on('data', async(event) => {
+			if(this.props.activeAccount === event.returnValues.withdrawAddress){
+				console.log(this.props.activeAccount, event, "MATCH");
+				let txInfo = {txHash: '', success: true,tokenString: "ETH", type:"CLAIM APPROVAL", poolName: "claim submission approved", networkId: this.props.networkId};
+				await this.displayTxInfo(txInfo);
+			}
+			console.log("ProcessClaim", event);
+		})
+		.on('changed', changed => console.log("EVENT changed", changed))
+		.on('error', err => console.log("EVENT err", err))
+		.on('connected', str => console.log("EVENT str", str))
+
+		this.ReserveInstance.events.ProcessClaim(options)
+		.on('data', async(event) => {
+			/*if(this.props.activeAccount === event.returnValues.withdrawAddress){
+				console.log(this.props.activeAccount, event, "MATCH");
+				let txInfo = {txHash: '', success: true,tokenString: "ETH", type:"APPLICATION APPROVAL", poolName: "application approved", networkId: this.props.networkId};
+				await this.displayTxInfo(txInfo);
+			}*/
+			console.log("ProcessClaim", event);
+		})
+		.on('changed', changed => console.log("EVENT changed", changed))
+		.on('error', err => console.log("EVENT err", err))
+		.on('connected', str => console.log("EVENT str", str))
 		/*poolTrackerInstance.events.AddPool(options)
 		.on('data', async(event) => {
 			console.log("EVENT data", event)

@@ -31,6 +31,7 @@ import ApproveModal from '../components/modals/ApproveModal'
 import PendingTxModal from "../components/modals/PendingTxModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
 import ShareModal from "../components/modals/ShareModal";
+import ClaimModal from "../components/modals/ClaimModal";
 
 class Card extends Component {
 	interval = 0;
@@ -65,7 +66,7 @@ class Card extends Component {
 		catch (error) {
 			alert(
 				error,
-			);
+			)
 			console.error(error);
 		}
 	}
@@ -86,25 +87,55 @@ class Card extends Component {
 
 	displayDepositApplyWithdraw = (item) => {
 		if(item){
-			if(item.beneStatus == "AWAIT_DEPOSIT"){
+			if(item.beneStatus === "AWAIT_DEPOSIT" && !item.slashed){
 			return <div title={"deposit premium insurance for slashing coverage"}><Button logo={displayLogo("ETH")} text={"Deposit Premium"} /*disabled={isDisabled}*/ callback={async() => await this.depositETH(item.validatorId)}/></div>
 			}
-			else if(item.beneStatus == "NOT_ACTIVE"){
+			else if(item.beneStatus === "NOT_ACTIVE"){
 				return <div title={"apply for slashing insurance for your validator"}><Button logo={displayLogo("ETH")} text={"Apply For Coverage"} /*disabled={isDisabled}*/ callback={async() => await this.openApplyModal(item.validatorId)}/></div>
 				}
-			else if(!(item.slashed && item.claim == "N/A")){
+			else if(item.beneStatus === "ACTIVE" && !item.slashed){
 				return <div title={"withdraw coverage and receieve premium deposit"}><Button logo={displayLogo("ETH")} text={"Withdraw Insurance"} /*disabled={isDisabled}*/ callback={async() => await this.withdrawDeposit(item.validatorId)}/></div>;
 			}
 		}
 	}
+
+	isClaimDisabled = (loss) => {
+		if(loss === "N/A") return true;
+		return false;
+	}
+
+	isPayoutDisabled = (claimPlusWait) => {
+		const currentTimestamp = Date.now();
+		console.log("claim", currentTimestamp, claimPlusWait)
+		return claimPlusWait > currentTimestamp;
+	}
+
+	getClaimTitle = (loss) => {
+		if(loss === "N/A") return "Awaiting validator exit to determine loss before claim";
+		return "make a claim for a covered validator, who has been slashed";
+	}
+
+	getPayoutTitle = (claimPlusWait) => {
+		if(this.isPayoutDisabled(claimPlusWait)) return "There is a 2 week holding period before payout";
+		return "Receieve your slashing insurance payout";
+	}
+
 	displayClaim = (item) => {
 		if(item){
-			if(item.slashed)
-				return <div title={"make a claim for a covered validator, who has been slashed"}>
-							<Button logo={displayLogo("ETH")} text={"Make Claim"} /*disabled={isDisabled}*/ callback={() => {}}/>
+			console.log("validatorId", item.validatorId)
+			if(item.beneStatus === "ACTIVE" && item.slashed && item.claim === "N/A"){
+				return <div title={this.getClaimTitle(item.loss)}>
+							<Button logo={displayLogo("ETH")} text={"Make Claim"} disabled={this.isClaimDisabled(item.loss)} callback={async() => await this.claim(item.validatorId, item.loss)}/>
 						</div>
-				}
+			}
+			else if(item.slashed && item.claim !== "N/A" && item.loss !== 0){
+				return <div title={this.getPayoutTitle(item.claimPlusWait)}>
+							<Button logo={displayLogo("ETH")} text={"Payout"} disabled={this.isPayoutDisabled(item.claimPlusWait)} callback={() => {}}/>
+						</div>
+			}
+		}
 	}
+
 	toggleCardOpen = () => {
 		this.setState({
 			open: !this.state.open
@@ -181,6 +212,20 @@ class Card extends Component {
 		}
 		return <p style={{color: "green"}}>{"No"}</p>
 	}
+
+	getStatus = (slashed, status) => {
+		if(slashed){
+			return <p style={{color: "red"}}>{"SLASHED"}</p>
+		}
+		return <p>{status}</p>
+	}
+
+	getBal = (slashed, value) =>{
+		if(slashed){
+			return <p>{"-"}</p>;
+		}
+		return <p>{value}</p>;
+	}
 	createValidatorInfo = () => {
 		//if (!acceptedTokenInfo) return '';
 		if (!this.props.depositorValIds[this.props.idx]) return '';
@@ -204,7 +249,7 @@ class Card extends Component {
 								<p>{"Validator Status"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250px"}}>
-								<p>{item.beaconInfo.status}</p>
+								{this.getStatus(item.slashed, item.beaconInfo.status)}
 							</div>
 						</div>
 						<div title="policy status" style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
@@ -287,7 +332,7 @@ class Card extends Component {
 								<p>{"Balance"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250px"}}>
-								<p>{item.beaconInfo.balance}</p>
+								{this.getBal(item.slashed, item.beaconInfo.balance)}
 							</div>
 						</div>
 						<div title={"earned 1 day in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
@@ -295,7 +340,7 @@ class Card extends Component {
 								<p>{"Day"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.beaconInfo.performance1d}</p>
+								{this.getBal(item.slashed, item.beaconInfo.performance1d)}
 							</div>
 						</div>
 						<div title={"earned 7 days in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
@@ -303,7 +348,7 @@ class Card extends Component {
 								<p>{"Week"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.beaconInfo.performance7d}</p>
+								{this.getBal(item.slashed, item.beaconInfo.performance7d)}
 							</div>
 						</div>
 
@@ -312,7 +357,7 @@ class Card extends Component {
 								<p>{"Month"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.beaconInfo.performance31d}</p>
+								{this.getBal(item.slashed, item.beaconInfo.performance31d)}
 							</div>
 						</div>
 
@@ -321,7 +366,7 @@ class Card extends Component {
 								<p>{"Year"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.beaconInfo.performance365d}</p>
+								{this.getBal(item.slashed, item.beaconInfo.performance365d)}
 							</div>
 						</div>
 						<div title={"overall earned in ETH"} style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
@@ -329,7 +374,7 @@ class Card extends Component {
 								<p>{"Total"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p>{item.beaconInfo.performancetotal}</p>
+								{this.getBal(item.slashed, item.beaconInfo.performancetotal)}
 							</div>
 						</div>
 						<div style={{marginRight: "auto"}}>
@@ -389,19 +434,17 @@ class Card extends Component {
 
 	getClaimModal = () => {
 		if(this.props.claim){
-			//let modal = <SmallModal isOpen={true}><ClaimModal claimInfo={this.props.claim}/></SmallModal>
-			return ""// modal;
+			let modal = <SmallModal isOpen={true}><ClaimModal claimInfo={this.props.claim}/></SmallModal>
+			return modal;
 		}
 	}
 
-	claim = async(poolAddress, tokenAddress, unclaimedInterest) => {
+	claim = async(validatorId, loss) => {
 		await this.props.updateClaim('');
-		console.log('claim interest clicked', poolAddress);
+		console.log('claim interest clicked');
 		try{
 			const activeAccount = this.props.activeAccount;
-			const tokenString = Object.keys(this.props.tokenMap).find(key => this.props.tokenMap[key].address === tokenAddress);
-
-			await this.props.updateClaim({tokenString: tokenString, tokenAddress: tokenAddress, poolAddress: poolAddress, activeAccount: activeAccount, unclaimedInterest: unclaimedInterest});
+			await this.props.updateClaim({tokenString: "ETH", activeAccount: activeAccount, validatorId: validatorId, loss: loss});
 
 		}
 		catch (error) {
@@ -555,6 +598,7 @@ class Card extends Component {
 				<div className="card__bar"/>
 				{this.getDepositAmountModal()}
 				{this.getWithdrawAmountModal()}
+				{this.getClaimModal()}
 				{this.getApproveModal()}
 				{this.getShareModal()}
       		</div>

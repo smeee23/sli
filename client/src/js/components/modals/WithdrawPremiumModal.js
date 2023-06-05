@@ -179,7 +179,7 @@ class WithdrawPremiumModal extends Component {
 					<p>{displayLogo(withdrawInfo.tokenString)}{ withdrawInfo.userBalance} {withdrawInfo.tokenString}</p>
 				</div>
 				<div style={{marginLeft: "auto", marginTop:"auto", paddingBottom:"32px"}}>
-					<Button style={{marginLeft: "auto", marginTop:"auto"}} text={"Withdraw "+withdrawInfo.premiumDeposit} callback={() => this.setAmount(withdrawInfo)}/>
+					<Button style={{marginLeft: "auto", marginTop:"auto"}} text={"Withdraw "+withdrawInfo.premiumDeposit+" ETH"} callback={() => this.setAmount(withdrawInfo)}/>
 				</div>
 			</div>
         </ModalCtas>

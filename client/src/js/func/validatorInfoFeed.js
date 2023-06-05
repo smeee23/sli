@@ -11,19 +11,18 @@ export const getValidatorInfo = async(validatorId) => {
         data = {}
         data["pubkey"] = "0x0"//response.data.data["pubkey"];
         data["slashed"] = response_aws.data["slashed"];
-        data["loss"] = response_aws.data["loss"];
         let withdrawAddress = response_aws.data["withdrawAddress"];
         data["withdrawAddress"] = withdrawAddress.substring(0, 4) == "0x01" ? "0x"+withdrawAddress.substring(withdrawAddress.length - 40) : "0x0";
 
         const beaconInfo = localStorage.getItem("beaconInfo"+validatorId);
-        if(beaconInfo){
-
-        }
         data["beaconInfo"] = beaconInfo ? JSON.parse(beaconInfo) : await getBeaconInfo(validatorId);
+        data["loss"] = response_aws.data["loss"];
+        console.log("data", data, data["loss"], response_aws.data["loss"])
     }
     catch (error) {
         console.error(error);
     }
+    console.log("data check", data);
     return data;
 }
 

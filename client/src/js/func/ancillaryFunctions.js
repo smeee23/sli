@@ -46,6 +46,15 @@ export const convertSolidityTimestamp = (timestamp) => {
     // Create a readable date and time string
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+export const addTwoWeeksToTimestamp = (timestamp) => {
+  // Convert the Solidity timestamp to milliseconds
+  const timestampInMillis = timestamp * 1000;
+  // Create a new Date object using the timestamp in milliseconds
+  const date = new Date(timestampInMillis);
+  return date.setDate(date.getDate() + 14);
+}
+
 export const linkedInShare = (purl, ptitle, poolAddress, psummary) => {
   let url = 'http://www.linkedin.com/shareArticle?mini=true';
   url += '&url=' + encodeURIComponent(purl)+poolAddress;

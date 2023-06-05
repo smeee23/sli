@@ -9,7 +9,7 @@ import { getIpfsData } from "./ipfs";
 import { tempFixForDescriptions } from "./verifiedPoolMap";
 
 import { getValidatorInfo } from "./validatorInfoFeed";
-import { convertSolidityTimestamp } from "./ancillaryFunctions";
+import { convertSolidityTimestamp, addTwoWeeksToTimestamp } from "./ancillaryFunctions";
 import Reserve from "../../contracts/Reserve.json";
 import Web3 from "web3";
 
@@ -49,9 +49,9 @@ export const getBeneficiaryStatus = async(validatorId, reserveAddress) => {
 	else if(status == 1) status = 'ACTIVE';
 	else if(status == 2) status = 'AWAIT_APPLICATION';
 	else if(status == 3) status = 'AWAIT_DEPOSIT';
-	else if(status == 5) status = 'AWAIT_CLAIM_RESPONSE';
-	else if(status == 6) status = 'CLAIM_WAIT_PERIOD';
-	else if(status == 7) status = 'CLOSED';
+	else if(status == 4) status = 'AWAIT_CLAIM_RESPONSE';
+	else if(status == 5) status = 'CLAIM_WAIT_PERIOD';
+	else if(status == 6) status = 'CLOSED';
 	else status = 'CLAIM PAUSED';
 	console.log("Apply test", validatorId, status, withdrawAddress, loss, claimTimestamp, applyTimestamp)
 	return {status, withdrawAddress, loss, claimTimestamp, applyTimestamp};
@@ -76,12 +76,14 @@ export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => 
 		const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorIds[i], reserveAddress);
 		//data["withdrawAddress"] = withdrawAddress.substring(0, 4) == "0x01" ? "0x"+withdrawAddress.substring(withdrawAddress.length - 40) : "0x0";
 		let info = await getValidatorInfo(validatorIds[i]);
-		console.log("info", info)
+		console.log("info___", info)
 		info["beneStatus"] = status;
 		info["withdrawAddress"] = withdrawAddress;
-		info["apply"] = applyTimestamp == 0 ? "N/A" : convertSolidityTimestamp(applyTimestamp);
-		info["claim"] = claimTimestamp == 0 ? "N/A" : convertSolidityTimestamp(claimTimestamp);
-		info["loss"] = loss == 0 ? "N/A" : await convertWeiToETH(loss);
+		info["apply"] = applyTimestamp === "0" ? "N/A" : convertSolidityTimestamp(applyTimestamp);
+		info["claim"] = claimTimestamp === "0" ? "N/A" : convertSolidityTimestamp(claimTimestamp);
+		info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addTwoWeeksToTimestamp(claimTimestamp);
+		const lossFromAws = await convertWeiToETH(info["loss"].toString());
+		info["loss"] = lossFromAws === "0" ? "N/A" : lossFromAws;
 		info["validatorId"] = validatorIds[i];
 		validatorInfo[i] = info;
 	}

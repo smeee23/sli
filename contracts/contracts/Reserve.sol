@@ -272,7 +272,7 @@ contract Reserve is ReentrancyGuard, Authenticator{
     {
         address withdrawAddress = beneficiaries[_validatorIndex]
             .withdrawAddress;
-        uint loss = beneficiaries[_validatorIndex].loss;
+        uint payout = beneficiaries[_validatorIndex].loss + IPremiumGenerator(generatorPool).premiumDeposit();
         _processOutflow(
             withdrawAddress,
             beneficiaries[_validatorIndex].loss

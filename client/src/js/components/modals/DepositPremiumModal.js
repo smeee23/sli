@@ -135,7 +135,7 @@ class DepositPremiumModal extends Component {
 			<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Ethereum Validators can face slashing penalties for certain actions, such as double signing. Accidental slashing can occur due to technical issues or human error."}</p>
 			<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Slashing insurance can help validators protect themselves financially against such accidental slashing incidents."}</p>
 			<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Premiums are supplied to Aave lending pools to generate interest for slashing claims. The deposit is redeemable in full at any time, and coverage discontinued."}</p>
-			<p>{"Premium Depsot: "+premiumDeposit}</p>
+			<p style={{marginLeft:"2%", marginRight:"0%"}}>{"Premium Depsot: "+premiumDeposit+" ETH"}</p>
 		</div>
 	)
 
