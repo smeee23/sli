@@ -201,7 +201,6 @@ contract("Reserve", async (accounts) => {
             - accepts application if match oracle
             - will revert if prev application approval
         addBeneficiary:
-            - fails if minimum reserve not met
             - fails if validator index is not approved
             - fails if tx not from withdrawAddress
             - fails if sender is not a pool
@@ -230,17 +229,6 @@ contract("Reserve", async (accounts) => {
             await expectRevert(
                 this.reserve.applyForCoverage("210", {from: validator_1}),
                 "not eligible to apply"
-            );
-
-            await this.reserve.provideInsurance({from: insurer_1, value: HALF_ETH});
-            await expectRevert(
-                this.premiumGeneratorAaveV2.deposit("210", {from: validator_1, value: premiumDeposit}),
-                "minimum reserve not met"
-            );
-
-            await expectRevert(
-                this.premiumGeneratorAaveV2.deposit("210", {from: validator_1, value: premiumDeposit}),
-                "minimum reserve not met"
             );
 
             await this.reserve.provideInsurance({from: insurer_1, value: TWO_ETH});

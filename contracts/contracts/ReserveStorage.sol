@@ -1,13 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
+/**
+ * @title ReserveStorage
+ * @author SLI
+ * @notice Ethereum Slashing Insurance (SLI) ReserveStorage contract
+ **/
 contract ReserveStorage {
-address immutable wethGatewayAddr;
+    //address of the FunctionsConsumer contract
     address oracle;
     address public oracleGateway;
-    uint256 public constant WAIT_PERIOD = 2 weeks;
+
+    //Aave WETHGateway
+    address immutable wethGatewayAddr;
+
+    // window after claim approved before payout
+    uint256 public constant WAIT_PERIOD = 1 days;//shorter for testnet
+
+    // window for deposit after application accepted
     uint256 public constant APPLY_WINDOW = 2 days;
 
+    //stages in the Policy process
     enum Status {
         NOT_ACTIVE,
         ACTIVE,
@@ -19,6 +32,7 @@ address immutable wethGatewayAddr;
         CLAIM_PAUSED
     }
 
+    //stores info about each covered validator
     struct Beneficiary {
         Status status;
         address withdrawAddress;
@@ -29,17 +43,19 @@ address immutable wethGatewayAddr;
 
     //maps validator index to Beneficiary obj
     mapping(uint => Beneficiary) beneficiaries;
-    //maps withdraw address to validator Ids
+    //maps all incoming applications to validatorIds
     mapping(address => uint[]) depositors;
 
     address public immutable generatorPool;
 
+    //multiSig with
     address public immutable multiSig;
+
+    //minimum amount of ETH that ben be provided to Claims Fund
     uint public minimumProvide;
-    //minimum required for withdrawals and accepting claims
+    //minimum required for withdrawing ETH for sliETH
     uint public minimumReserve;
-    //minimum pure ETH to hold in Reserve
-    //uint public minimumPureHoldings;
+    //maximum slashing loss that can be automatically dispersed
     uint public maxClaim;
 
     /**

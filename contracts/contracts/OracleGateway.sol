@@ -34,6 +34,7 @@ contract OracleGateway {
     * @param _reserve address of reserve.
     **/
     function setReserve(address _reserve) external onlyMultiSig {
+        //commented out for testnet
         //require(reserve == address(0), "reserve already set");
         reserve = _reserve;
     }
@@ -46,6 +47,11 @@ contract OracleGateway {
         oracle = _oracle;
     }
 
+    /**
+     * @dev calls FunctionsConsumer sending source code,
+     * args, subId, gasLimit etc.
+    * @param _index validator index for the .
+    **/
     function callOracle(string memory _index) external onlyReserve {
         string memory source =
             ("const validatorIndex = args[0]\n\

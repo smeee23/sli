@@ -2,7 +2,6 @@
 pragma solidity 0.8.9;
 
 interface IPremiumGenerator {
-
     function deposit() external payable;
     function withdraw() external;
     function withdrawInterest() external returns(uint256);
@@ -16,6 +15,7 @@ interface IPremiumGenerator {
     function setPremiumDeposit(uint _premiumDeposit) external;
     function getClaimedInterest() external view returns (uint256);
     function isBeneficiary(address beneficiary) external view returns(bool);
+    function premiumDeposit() external view returns(uint);
 
     /**
     * @notice Returns asset specific pool information

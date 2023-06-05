@@ -104,9 +104,6 @@ class Header extends Component {
           <NavLink className="theme--white" exact to={"/howitworks"}>
             <TextLink className="theme--white" text="How it works"/>
           </NavLink>
-          <a className="theme--white" href="https://docs.justcause.finance/" target="_blank" rel="noopener noreferrer">
-            <TextLink text="Docs"/>
-          </a>
         </Fragment>
       )
     }
@@ -124,10 +121,6 @@ class Header extends Component {
             <TextLink text="Bond ETH" navOn={this.state.index === 1 ? "on" : "off"} callback={() => this.resetNavIns()}/>
             </div>
           </NavLink>
-
-          <a className="theme--white" title="user documentation" href="https://docs.justcause.finance/" target="_blank" rel="noopener noreferrer">
-            <TextLink text="Docs"/>
-          </a>
         </Fragment>
       )
     }

@@ -192,8 +192,6 @@ contract("Reserve", async (accounts) => {
         //CLAIM_WAIT_PERIOD == 5
         assert.strictEqual("5", status, "The pool name did not return the correct address");
 
-        await time.increase(time.duration.weeks(1));
-
         await expectRevert(
             this.reserve.payClaim("210", {from: validator_1}),
             "Cannot withdraw claim until timeout passed"
@@ -226,7 +224,8 @@ contract("Reserve", async (accounts) => {
         const valBal_2 = await web3.eth.getBalance(validator_1);
 
         let diff = new BN(valBal_2).sub(new BN(valBal_1));
-        assert.strictEqual(diff.toString(), ONE_ETH, "validator not paid claim");
+        let payout = new BN(ONE_ETH).add(new BN(premiumDeposit));
+        assert.strictEqual(diff.toString(), payout.toString(), "validator not paid claim");
 
         status = (await this.reserve.getBeneficiaryStatus("210")).toString();
         //CLOSED == 6

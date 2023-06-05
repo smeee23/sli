@@ -10,21 +10,10 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 /**
  * @title PremiumGenerator contract
  * @author smeee
- * This is a contract for lossless insurance premiums using Aave v3
+ * This is a contract for lossless insurance premiums using Aave v2 and v3
 
-   Aave is used to generate interest for insurance applications
-
-   Beneficiaries deposit tokens into PremiumGenerator which deposit
-   them into Aave lending protocol
-
-   The interest earned is directed to the reserve associated with
-   the PremiumGenerator
-
-   Beneficiaries can claim their funds (and terminate their policy) at any time.
-
-   Functions withdraw() and withdrawInterest() directly call the aave Pool
-
-   Deposits are done through the Reserve contract to minimize approvals for ERC20's
+   This contract acts as the core layer of interaction with Aave and
+   is inherited by both the v2 and v3 PremiumGenerator contracts.
 
  * @dev To be covered by a proxy contract
  * @dev deposits, withdraws, withdrawInterest controlled by the Reserve contract
@@ -33,12 +22,9 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 contract PremiumGeneratorCore is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    uint public interestWithdrawn;
     uint public deposits;
     uint public premiumDeposit;
 
-    //address immutable lendingPoolAddressesProviderAddr;
-    //address immutable dataProviderAddr;
     address immutable wethGatewayAddr;
     address immutable wethAddress;
     address public reserve;
@@ -46,8 +32,7 @@ contract PremiumGeneratorCore is ReentrancyGuard {
 
 
     /**
-    * @dev Only tokens that are on the accepted list can be passed
-    * to functions marked by this modifier.
+    * @dev msg.value must be equal to the premiumDeposit.
     **/
     modifier correctValue(){
         require(msg.value == premiumDeposit, "value sent must be equal to premium deposit");
@@ -87,10 +72,10 @@ contract PremiumGeneratorCore is ReentrancyGuard {
     }
 
     /**
-    * @notice Only called by PoolTracker.
-    * @dev Function updates total deposits.
-    * @param _poolAddr aave lending pool address
-    **/
+     * @dev Internal function to deposit funds to the lending pool.
+     * @param _poolAddr The address of the lending pool.
+     * @param _validatorIndex The index of the validator.
+     */
     function _deposit(address _poolAddr, uint _validatorIndex) internal correctValue{
         deposits += premiumDeposit;
         IWETHGateway(wethGatewayAddr).depositETH{value: msg.value}(_poolAddr, address(this), 0);
@@ -98,19 +83,11 @@ contract PremiumGeneratorCore is ReentrancyGuard {
     }
 
     /**
-    * @notice Only called by PoolTracker.
-    * @dev Function updates total deposits.
-    * @param _poolAddr aave lending pool address
-    **/
-    function _reserveDeposit(address _poolAddr) internal {
-        IWETHGateway(wethGatewayAddr).depositETH{value: msg.value}(_poolAddr, reserve, 0);
-    }
-
-    /**
-    * @notice Only called by Beneficiary reserve tokens for beneficiary.
-    * @param _poolAddr aave lending pool address
-    * @param _aTokenAddress aave atoken address for aWETH
-    **/
+     * @dev Internal function to withdraw funds from the lending pool.
+     * @param _poolAddr The address of the lending pool.
+     * @param _aTokenAddress The address of the aToken.
+     * @param _validatorIndex The index of the validator.
+     */
     function _withdraw(address _poolAddr, address _aTokenAddress, uint _validatorIndex) internal {
         deposits -= premiumDeposit;
         IERC20(_aTokenAddress).safeApprove(wethGatewayAddr, 0);
@@ -120,10 +97,10 @@ contract PremiumGeneratorCore is ReentrancyGuard {
     }
 
     /**
-    * @dev Function claims amount of interest for reserve. Calls Aave pools exchanging this
-    * contracts aTokens for reserve tokens for interestEarned amount.
-    * @param _aTokenAddress aave atoken address for aWETH
-    **/
+     * @dev Internal function to withdraw accumulated interest to the Reserve.
+     * @param _aTokenAddress The address of the aToken.
+     * @return interestEarned The amount of interest earned and withdrawn.
+     */
     function _withdrawInterest(address _aTokenAddress) internal returns(uint256){
         uint256 aTokenBalance = IERC20(_aTokenAddress).balanceOf(address(this));
         uint256 interestEarned = aTokenBalance - deposits;
@@ -134,17 +111,11 @@ contract PremiumGeneratorCore is ReentrancyGuard {
     }
 
     /**
-    * @notice Only called by Reserve.
-    * @dev Function claims interest for reserve. Calls Aave pools exchanging this
-    * contracts aTokens for reserve tokens for interestEarned amount.
-    **/
-    function setPremiumDeposit(uint _premiumDeposit)external onlyMultiSig {
-        premiumDeposit = _premiumDeposit;
-    }
-
-    /**
-    * @param _reserve address of reserve.
-    **/
+     * @dev Sets the reserve address.
+     * @param _reserve The address of the reserve contract.
+     * @dev Only the multi-signature wallet is allowed to call this function.
+     * @dev This function can only be called once to set the reserve address.
+     */
     function setReserve(address _reserve) external onlyMultiSig {
         require(reserve == address(0), "reserve already set");
         reserve = _reserve;
@@ -152,8 +123,10 @@ contract PremiumGeneratorCore is ReentrancyGuard {
 
 
     /**
-    * @return unclaimedInterest accrued interest that has not yet been claimed
-    **/
+     * @dev Returns the unclaimed interest for the given aToken address.
+     * @param _aTokenAddress The address of the aToken contract.
+     * @return The amount of unclaimed interest.
+     */
     function _getUnclaimedInterest(address _aTokenAddress) internal view returns (uint256){
         uint256 aTokenBalance = IERC20(_aTokenAddress).balanceOf(address(this));
         if(aTokenBalance == 0) return 0;
@@ -161,15 +134,10 @@ contract PremiumGeneratorCore is ReentrancyGuard {
     }
 
     /**
-    * @return claimedInterest interest that has been claimed (no longer in contract)
-    **/
-    function getClaimedInterest() public view returns (uint256){
-        return interestWithdrawn;
-    }
-
-    /**
-    * @return aTokenBalance Pool balance of aToken for the asset
-    **/
+     * @dev Returns the balance of aToken for the given aToken address.
+     * @param _aTokenAddress The address of the aToken contract.
+     * @return The balance of aToken.
+     */
     function _getATokenBalance(address _aTokenAddress) public view returns (uint256){
         return IERC20(_aTokenAddress).balanceOf(address(this));
     }

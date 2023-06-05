@@ -2,6 +2,7 @@
 pragma solidity 0.8.9;
 
 interface IPremiumGeneratorCore {
+    
     function _deposit(address _poolAddr) external payable;
     function _withdraw(address _poolAddr, address _aTokenAddress) external;
     function _withdrawInterest(address _poolAddr, address _aTokenAddress, uint _requested) external returns(uint256);

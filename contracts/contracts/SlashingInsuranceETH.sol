@@ -27,12 +27,11 @@ contract SlashingInsuranceETH is ERC20 {
         reserve = msg.sender;
     }
 
-    // Receive an ETH deposit and reroute to reserve
-    /*receive() external payable {
-        IReserve(reserve).depositETHViaSLI{value: msg.value}(msg.sender);
-        emit ETHDeposited(msg.sender, msg.value, block.timestamp);
-    }*/
-
+    /**
+     * @dev Returns the equivalent ETH value for a given amount of sliETH.
+     * @param _sliETHAmount The amount of sliETH.
+     * @return The equivalent ETH value.
+     */
     function getETHValue(uint256 _sliETHAmount) public view returns (uint256) {
         // Get network balances
         uint256 reserveETH = getReserveBalance();
@@ -43,7 +42,11 @@ contract SlashingInsuranceETH is ERC20 {
         return (_sliETHAmount * reserveETH) / sliETHSupply;
     }
 
-    // Calculate the amount of sliETH backed by an amount of ETH
+    /**
+     * @dev Calculates the amount of sliETH backed by a given amount of ETH.
+     * @param _ethAmount The amount of ETH.
+     * @return The amount of sliETH.
+     */
     function getSliETHValue(uint256 _ethAmount) public view returns (uint256) {
         // Get network balances
         uint256 reserveETH = getReserveBalance() - _ethAmount;
@@ -56,7 +59,10 @@ contract SlashingInsuranceETH is ERC20 {
         return (_ethAmount * sliETHSupply ) / reserveETH;
     }
 
-    // Calculate the amount of ETH backing 1 slashing insurance ETH
+    /**
+     * @dev Calculates the amount of ETH backing 1 slashing insurance ETH.
+     * @return The amount of ETH per sliETH.
+     */
     function getETHValuePerSliETH() public view returns (uint256) {
         // Get network balances
         uint256 reserveETH = getReserveBalance();
@@ -65,8 +71,12 @@ contract SlashingInsuranceETH is ERC20 {
         return ((1 ether) * reserveETH ) / sliETHSupply;
     }
 
-    // Mint sliETH
-    // Only accepts calls from the Reserve contract
+    /**
+     * @dev Mints slashing insurance ETH (sliETH) tokens for a given amount of ETH.
+     * @dev Only the reserve contract is allowed to call this function.
+     * @param _to The address to mint sliETH tokens to.
+     * @param _ethAmount The amount of ETH to be converted into sliETH tokens.
+     */
     function mint(address _to, uint256 _ethAmount) external onlyReserve {
         // Get sliETH amount
         uint256 sliETHAmount = getSliETHValue(_ethAmount);
@@ -78,8 +88,12 @@ contract SlashingInsuranceETH is ERC20 {
         emit TokensMinted(_to, sliETHAmount, _ethAmount, block.timestamp);
     }
 
-    // Burn sliETH for ETH
-    // Only accepts calls from the Reserve contract
+    /**
+     * @dev Burns slashing insurance ETH (sliETH) tokens to receive the equivalent amount of ETH.
+     * Only the reserve contract is allowed to call this function.
+     * @param _from The address to burn sliETH tokens from.
+     * @param _sliETHAmount The amount of sliETH tokens to burn.
+     */
     function burn(address _from, uint256 _sliETHAmount) external onlyReserve {
         // Check sliETH amount
         require(_sliETHAmount > 0, "Invalid token burn amount");
@@ -92,6 +106,10 @@ contract SlashingInsuranceETH is ERC20 {
         emit TokensBurned(msg.sender, _sliETHAmount, ethAmount, block.timestamp);
     }
 
+    /**
+     * @dev Retrieves the balance of the reserve in the protocol, which includes the balance of ETH and other tokens.
+     * @return The balance of the reserve in the protocol.
+     */
     function getReserveBalance() public view returns(uint){
         return IReserve(reserve).getProtocolBalance();
     }
