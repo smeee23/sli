@@ -55,7 +55,7 @@ node --version
 To run locally clone this repository with command:
 
 ```
-git clone https://github.com/smeee23/just_cause.git
+git clone https://github.com/smeee23/sli/tree/master
 ```
 
 To install dependencies, from the client directory enter the command:
