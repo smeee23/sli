@@ -37,3 +37,50 @@ With lending protocols like Aave risk exists because the financial value behind 
 # Learn More
 
 The easiest way to familiarize yourself with SLI is through our [dapp](tbd) hosted on IPFS (InterPlanetary File System). Connect your wallet and start experimenting with our proof of concept Dapp running on the Matic Mumbai testnet.
+
+# Setup
+
+The app uses Truffle as a development environment for testing and deployment tasks. Truffle requires updated versions of node and npm to function correctly. To check the versions enter command:
+
+```
+truffle --version
+
+npm --version
+
+node --version
+```
+(Installation: [Downloading and installing Node.js and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and [Truffle Suite)](https://trufflesuite.com/docs/truffle/getting-started/installation/)
+
+
+To run locally clone this repository with command:
+
+```
+git clone https://github.com/smeee23/just_cause.git
+```
+
+To install dependencies, from the client directory enter the command:
+
+```
+npm install
+```
+
+After installing dependencies, to start a local instance of the dapp enter the command:
+
+```
+npm start
+```
+
+# Test
+
+In order to run the full smart contract testing suite open the truffle developer console by entering the command:
+
+```
+truffle develop
+```
+
+This provides your own private Ethereum blockchain sandbox. Once in the developer console enter the command:
+
+```
+test
+```
+
