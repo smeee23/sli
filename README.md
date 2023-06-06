@@ -64,23 +64,9 @@ To install dependencies, from the client directory enter the command:
 npm install
 ```
 
-After installing dependencies, to start a local instance of the dapp enter the command:
+After installing dependencies, to start a local instance of the dapp enter the command from the client directory:
 
 ```
 npm start
-```
-
-# Test
-
-In order to run the full smart contract testing suite open the truffle developer console by entering the command:
-
-```
-truffle develop
-```
-
-This provides your own private Ethereum blockchain sandbox. Once in the developer console enter the command:
-
-```
-test
 ```
 
