@@ -16,7 +16,7 @@ import { updateUserDepositPoolInfo } from "../../actions/userDepositPoolInfo";
 import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
 
-import { getAllowance, addPoolToPoolInfo, getContractInfo, getDirectFromPoolInfo,  convertWeiToETH  } from '../../func/contractInteractions';
+import { getAllowance, addPoolToPoolInfo, getContractInfo, getDirectFromPoolInfo, getNewDepositorValidatorIds,  convertWeiToETH  } from '../../func/contractInteractions';
 import { delay, getTokenBaseAmount, displayLogo, addNewPoolInfo, checkPoolInPoolInfo } from '../../func/ancillaryFunctions';
 
 class DepositPremiumModal extends Component {
@@ -72,13 +72,13 @@ class DepositPremiumModal extends Component {
 					PremiumGeneratorAaveV2.abi,
 					this.props.reserveAddress.premiumGenerator,
 				);
-
-				txInfo = {txHash: '', success: '', amount: premiumDeposit, tokenString: tokenString, type:"PREMIUM_DEPOSIT", poolName: "Premium Deposit", networkId: this.props.networkId};
+				const premiumDepositInETH = await convertWeiToETH(premiumDeposit);
+				txInfo = {txHash: '', success: '', amount: premiumDepositInETH, tokenString: tokenString, type:"PREMIUM DEPOSIT", poolName: "Premium Deposit", networkId: this.props.networkId};
 
 				result = await PremiumGeneratorAaveV2Instance.methods.deposit(validatorId).send(parameter, async(err, transactionHash) => {
 					console.log('Transaction Hash :', transactionHash);
 					if(!err){
-						let info = {txHash: transactionHash, amount: premiumDeposit, tokenString: tokenString, type:"PREMIUM_DEPOSIT", poolName: "Premium Deposit", networkId: this.props.networkId, status:"pending"};
+						let info = {txHash: transactionHash, amount: premiumDepositInETH, tokenString: tokenString, type:"PREMIUM DEPOSIT", poolName: "Premium Deposit", networkId: this.props.networkId, status:"pending"};
 						let pending = [...this.props.pendingTxList];
 						pending.push(info);
 						await this.props.updatePendingTxList(pending);
@@ -92,32 +92,13 @@ class DepositPremiumModal extends Component {
 				});
 				txInfo.success = true;
 
-				/*let newInfo;
-				let newDepositInfo;
-				if(checkPoolInPoolInfo(poolAddress, this.props.userDepositPoolInfo)){
-					newInfo = await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					newDepositInfo = addNewPoolInfo([...this.props.userDepositPoolInfo], newInfo);
-				}
-				else{
-					console.log("POOL NOT FOUND IN DEPOSITS, ADDING POOL");
-					newDepositInfo = await addPoolToPoolInfo(poolAddress, this.props.activeAccount, this.props.reserveAddress.reserve, this.props.tokenMap, this.props.userDepositPoolInfo);
-				}
-				await this.props.updateUserDepositPoolInfo(newDepositInfo);
-				localStorage.setItem("userDepositPoolInfo", JSON.stringify(newDepositInfo));
-
-				if(checkPoolInPoolInfo(poolAddress, this.props.ownerPoolInfo)){
-					newInfo = newInfo ? newInfo : await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					const newOwnerInfo = addNewPoolInfo([...this.props.ownerPoolInfo], newInfo);
-					await this.props.updateOwnerPoolInfo(newOwnerInfo);
-					localStorage.setItem("ownerPoolInfo", JSON.stringify(newOwnerInfo));
-				}
-
-				if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
-					newInfo = newInfo ? newInfo : await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					const newVerifiedInfo = addNewPoolInfo([...this.props.verifiedPoolInfo], newInfo);
-					await this.props.updateDepositorValIds(newVerifiedInfo);
-					localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
-				}*/
+				let valIds = await getNewDepositorValidatorIds(
+					this.props.reserveAddress.reserve,
+					validatorId,
+					[...this.props.depositorValIds]
+				);
+				await this.props.updateDepositorValIds(valIds);
+				
 			}
 			catch (error) {
 				console.error(error);
@@ -201,6 +182,7 @@ const mapStateToProps = state => ({
 	networkId: state.networkId,
 	pendingTxList: state.pendingTxList,
 	sliETHInfo: state.sliETHInfo,
+	depositorValIds: state.depositorValIds,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -210,7 +192,6 @@ const mapDispatchToProps = dispatch => ({
 	updateDepositorValIds: (infoArray) => dispatch(updateDepositorValIds(infoArray)),
 	updateUserDepositPoolInfo: (infoArray) => dispatch(updateUserDepositPoolInfo(infoArray)),
 	updateOwnerPoolInfo: (infoArray) => dispatch(updateOwnerPoolInfo(infoArray)),
-
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(DepositPremiumModal)

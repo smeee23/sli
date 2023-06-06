@@ -58,12 +58,12 @@ class ClaimModal extends Component {
 					this.props.reserveAddress.reserve,
 				);
 
-				txInfo = {txHash: '', success: '', tokenString: "ETH", type:"CLAIM", poolName: "Submit Slashing Claim", networkId: this.props.networkId};
+				txInfo = {txHash: '', success: '', tokenString: "ETH", type:"CLAIM", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId};
 
 				result = await ReserveInstance.methods.makeClaim(validatorId).send(parameter, async(err, transactionHash) => {
 					console.log('Transaction Hash :', transactionHash);
 					if(!err){
-						let info = {txHash: transactionHash, tokenString: "ETH", type:"CLAIM", poolName: "Submit Slashing Claim", networkId: this.props.networkId, status:"pending"};
+						let info = {txHash: transactionHash, tokenString: "ETH", type:"CLAIM", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, status:"pending"};
 						let pending = [...this.props.pendingTxList];
 						pending.push(info);
 						await this.props.updatePendingTxList(pending);
@@ -76,14 +76,22 @@ class ClaimModal extends Component {
 					}
 				});
 				txInfo.success = true;
+
+				let pending = [...this.props.pendingTxList];
+				pending.forEach((e, i) =>{
+					if(e.txHash === txInfo.transactionHash){
+						e.status = "complete"
+					}
+				});
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+				pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
+				await this.props.updatePendingTxList(pending);
 			}
 			catch (error) {
 				console.error(error);
 				txInfo = "";
-			}
-
-			if(txInfo){
-				this.displayTxInfo(txInfo);
 			}
 	}
 

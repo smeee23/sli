@@ -106,10 +106,10 @@ class ProvideInsurance extends Component {
                         <section className="page-section horizontal-padding">
                             <div style={{margin:'auto'}} className="grid">
                                 <div className="grid__item--col-6 grid__item--col-12-medium">
-                                    <p className="mr">JustCause allows you to leverage the power of decentralized finance (Defi) to fund causes that are important to you. We use an innovative funding mechanism to allow users to contribute to public goods, charitable organizations, DAOs, local/global/personal injustice, and much more! Create and fund pools with your friends and JustCause smart contracts donate funds while preserving your initial deposit.</p>
+                                    <p className="mr">sliETH represents a share of the SLI claims fund. Deposits in the insurance contract, combined with premium deposits, generate interest in Aave. This interest serves two main purposes. First, it covers slashing insurance claims, which are infrequent (around 250 occurrences since December 2020) and average penalties of 1-2 ETH each (can be higher depending on network conditions).</p>
                                 </div>
                                 <div className="grid__item--col-6 grid__item--col-12-medium">
-                                    <p className="mr">Users participate as Contributors or Pool Creators. Pool Creators generate JustCause Pools which represent a cause in need of funding. Contributors deposit tokens into JustCause Pools which in turn deposit them into lending protocols. The interest earned is donated to the cause associated with the Pool. When Contributors need access to their funds they simply withdraw their original deposit and the interest accrued is left behind for the cause.</p>
+                                    <p className="mr">Second, any surplus interest earned beyond the insurance claim requirements is accrued to sliETH holders. This surplus interest acts as a reward, increasing the value of sliETH tokens and benefiting those who hold them. The surplus interest serves as a mechanism for sliETH holders to participate in the positive performance of the underlying deposits in the protocol.</p>
                                 </div>
                             </div>
                         </section>

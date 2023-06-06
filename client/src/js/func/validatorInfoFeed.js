@@ -1,7 +1,7 @@
 import { convertGweiToETH } from './contractInteractions';
 const axios = require('axios');
 
-export const getValidatorInfo = async(validatorId) => {
+export const getValidatorInfo = async(validatorId, forceBeaconCall) => {
     let data;
     try{
         let url = `https://flask-servicecors.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/status/${validatorId}`;
@@ -14,8 +14,13 @@ export const getValidatorInfo = async(validatorId) => {
         let withdrawAddress = response_aws.data["withdrawAddress"];
         data["withdrawAddress"] = withdrawAddress.substring(0, 4) == "0x01" ? "0x"+withdrawAddress.substring(withdrawAddress.length - 40) : "0x0";
 
-        const beaconInfo = localStorage.getItem("beaconInfo"+validatorId);
-        data["beaconInfo"] = beaconInfo ? JSON.parse(beaconInfo) : await getBeaconInfo(validatorId);
+        if(forceBeaconCall){
+            data["beaconInfo"] = await getBeaconInfo(validatorId);
+        }
+        else{
+            const beaconInfo = localStorage.getItem("beaconInfo"+validatorId);
+            data["beaconInfo"] = beaconInfo ? JSON.parse(beaconInfo) : await getBeaconInfo(validatorId);
+        }
         data["loss"] = response_aws.data["loss"];
         console.log("data", data, data["loss"], response_aws.data["loss"])
     }

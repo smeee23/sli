@@ -33,7 +33,7 @@ import ERC20Instance from "../contracts/IERC20.json";
 import PremiumGeneratorAaveV2 from "../contracts/PremiumGeneratorAaveV2.json"
 
 import { getTokenMap, getAaveAddressProvider, deployedNetworks } from "./func/tokenMaps.js";
-import {getPoolInfo, checkTransactions, getDepositorAddress, getAllowance, getLiquidityIndexFromAave, getAavePoolAddress, getBalances, getSliStats, getDepositorValidatorIds} from './func/contractInteractions.js';
+import {getPoolInfo, checkTransactions, getDepositorAddress, getAllowance, getLiquidityIndexFromAave, getNewDepositorValidatorIds, getAavePoolAddress, getBalances, getSliStats, getDepositorValidatorIds} from './func/contractInteractions.js';
 import {getPriceFromCoinGecko} from './func/priceFeeds.js'
 import {precise, delay, checkLocationForAppDeploy, filterOutVerifieds} from './func/ancillaryFunctions';
 
@@ -279,13 +279,30 @@ class App extends Component {
 		.on('error', err => console.log("EVENT err", err))
 		.on('connected', str => console.log("EVENT str", str))
 
+
+		this.ReserveInstance.events.DenyApplication(options)
+		.on('data', async(event) => {
+			console.log("EVENT data", event)
+			if(this.props.activeAccount === event.returnValues.withdrawAddress){
+				console.log(this.props.activeAccount, event, "MATCH");
+				let txInfo = {txHash: '', success: false, type:"ORACLE APPLICATION ", poolName: "application approved", networkId: this.props.networkId};
+				await this.displayTxInfo(txInfo);
+			}
+			console.log("ApproveApplication event", event);
+		})
+		.on('changed', changed => console.log("EVENT changed", changed))
+		.on('error', err => console.log("EVENT err", err))
+		.on('connected', str => console.log("EVENT str", str))
+
+
 		this.ReserveInstance.events.ApproveApplication(options)
 		.on('data', async(event) => {
 			console.log("EVENT data", event)
 			if(this.props.activeAccount === event.returnValues.withdrawAddress){
 				console.log(this.props.activeAccount, event, "MATCH");
-				let txInfo = {txHash: '', success: true,tokenString: "ETH", type:"APPLICATION APPROVAL", poolName: "application approved", networkId: this.props.networkId};
+				let txInfo = {txHash: '', success: true, type:"ORACLE APPLICATION APPROVAL", poolName: "application approved", networkId: this.props.networkId};
 				await this.displayTxInfo(txInfo);
+				this.setDepositorValIds(await getDepositorValidatorIds(this.ReserveAddress, this.props.activeAccount));
 			}
 			console.log("ApproveApplication event", event);
 		})
@@ -297,7 +314,27 @@ class App extends Component {
 		.on('data', async(event) => {
 			if(this.props.activeAccount === event.returnValues.withdrawAddress){
 				console.log(this.props.activeAccount, event, "MATCH");
-				let txInfo = {txHash: '', success: true,tokenString: "ETH", type:"CLAIM APPROVAL", poolName: "claim submission approved", networkId: this.props.networkId};
+				let txInfo = {txHash: '', success: true, type:"ORACLE CLAIM APPROVAL", poolName: "claim submission approved", networkId: this.props.networkId};
+				await this.displayTxInfo(txInfo);
+
+				let valIds = await getNewDepositorValidatorIds(
+					this.props.reserveAddress.reserve,
+					event.returnValues.validatorIndex,
+					[...this.props.depositorValIds]
+				);
+				await this.props.updateDepositorValIds(valIds);
+			}
+			console.log("ProcessClaim", event);
+		})
+		.on('changed', changed => console.log("EVENT changed", changed))
+		.on('error', err => console.log("EVENT err", err))
+		.on('connected', str => console.log("EVENT str", str))
+
+		this.ReserveInstance.events.DenyClaim(options)
+		.on('data', async(event) => {
+			if(this.props.activeAccount === event.returnValues.withdrawAddress){
+				console.log(this.props.activeAccount, event, "MATCH");
+				let txInfo = {txHash: '', success: false, type:"ORACLE CLAIM ", poolName: "claim submission approved", networkId: this.props.networkId};
 				await this.displayTxInfo(txInfo);
 			}
 			console.log("ProcessClaim", event);

@@ -69,7 +69,7 @@ class Homepage extends Component {
 					<section className="page-section horizontal-padding">
 						<div style={{margin:'auto'}} className="grid">
 							<div className="grid__item--col-6 grid__item--col-12-medium">
-								<p className="mr">Protect your staked assets with Ethereum Slashing Insurance (SLI) protocol, the cutting-edge slashing insurance protocol designed specifically for validators on blockchain networks. We understand the risks that honest validators face in the ever-evolving crypto landscape, and we're here to provide you with peace of mind and financial protection.</p>
+								<p className="mr">Protect your staked assets with Ethereum Slashing Insurance (SLI) protocol, the cutting-edge slashing insurance protocol designed specifically for validators on Ethereum. We understand the risks that honest validators face in the ever-evolving crypto landscape, and we're here to provide you with peace of mind and financial protection.</p>
 							</div>
 							<div className="grid__item--col-6 grid__item--col-12-medium">
 								<p className="mr">Validators participate by depositing their premiums into the SLI contracts, which, in turn, deposit them into Aave. The interest earned is set aside to pay out future slashing claims. When validators no longer require coverage (e.g., they exit the validator, no longer desire coverage, or get slashed), they simply withdraw their premium deposit, and the accrued interest remains reserved for future claims.</p>

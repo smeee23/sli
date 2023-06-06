@@ -56,6 +56,36 @@ export const getBeneficiaryStatus = async(validatorId, reserveAddress) => {
 	console.log("Apply test", validatorId, status, withdrawAddress, loss, claimTimestamp, applyTimestamp)
 	return {status, withdrawAddress, loss, claimTimestamp, applyTimestamp};
 }
+
+export const getNewDepositorValidatorIds = async(reserveAddress, newValifatorId, oldDepositorValidatorIds) => {
+	const web3 = await getWeb3();
+
+	const ReserveInstance = new web3.eth.Contract(
+		Reserve.abi,
+		reserveAddress,
+	);
+
+	for(let i = 0; i < oldDepositorValidatorIds.length; i++){
+
+		const validatorId = oldDepositorValidatorIds[i].validatorId;
+		if(newValifatorId === validatorId){
+			const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorId, reserveAddress);
+			let info = await getValidatorInfo(validatorId, true);
+			console.log("info___", info)
+			info["beneStatus"] = status;
+			info["withdrawAddress"] = withdrawAddress;
+			info["apply"] = applyTimestamp === "0" ? "N/A" : convertSolidityTimestamp(applyTimestamp);
+			info["claim"] = claimTimestamp === "0" ? "N/A" : convertSolidityTimestamp(claimTimestamp);
+			info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addTwoWeeksToTimestamp(claimTimestamp);
+			const lossFromAws = await convertWeiToETH(info["loss"].toString());
+			info["loss"] = lossFromAws === "0" ? "N/A" : lossFromAws;
+			info["validatorId"] = validatorId;
+			oldDepositorValidatorIds[i] = info;
+		}
+	}
+	return oldDepositorValidatorIds;
+}
+
 export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => {
 	const web3 = await getWeb3();
 
@@ -74,7 +104,6 @@ export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => 
 	for(let i = 0; i < validatorIds.length; i++){
 
 		const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorIds[i], reserveAddress);
-		//data["withdrawAddress"] = withdrawAddress.substring(0, 4) == "0x01" ? "0x"+withdrawAddress.substring(withdrawAddress.length - 40) : "0x0";
 		let info = await getValidatorInfo(validatorIds[i]);
 		console.log("info___", info)
 		info["beneStatus"] = status;

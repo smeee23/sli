@@ -63,12 +63,12 @@ class ApplyModal extends Component {
 					this.props.reserveAddress.reserve,
 				);
 
-				txInfo = {txHash: '', success: '', type:"APPLY", poolName: "apply for coverage", networkId: this.props.networkId, validatorId: validatorId};
+				txInfo = {txHash: '', success: '', type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
 
 				result = await ReserveInstance.methods.applyForCoverage(validatorId).send(parameter, async(err, transactionHash) => {
 					console.log('Transaction Hash :', transactionHash);
 					if(!err){
-						let info = {txHash: transactionHash, status:"pending", type:"APPLY", poolName: "apply for coverage", networkId: this.props.networkId, validatorId: validatorId};
+						let info = {txHash: transactionHash, status:"pending", type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
 						let pending = [...this.props.pendingTxList];
 						pending.push(info);
 						await this.props.updatePendingTxList(pending);

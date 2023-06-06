@@ -26,66 +26,10 @@ class TxResultModal extends Component {
     return 'FAILED'
   }
 
-  displayLogo = (acceptedTokenString) => {
-    let logo = '';
-    if(acceptedTokenString === 'ETH'){
-      logo = <EthLogo/>;
-    }
-    else if (acceptedTokenString === 'USDT'){
-      logo = <TetherLogo/>;
-    }
-    else if (acceptedTokenString === 'USDC'){
-      logo = <UsdcLogo/>;
-    }
-    else if (acceptedTokenString === 'WBTC'){
-      logo = <WbtcLogo/>;
-    }
-    else if (acceptedTokenString === 'DAI'){
-      logo = <DaiLogo/>;
-    }
-    else if (acceptedTokenString === 'AAVE'){
-      logo = <AaveLogo/>;
-    }
-    else if(acceptedTokenString === 'WETH'){
-      logo = <WEthLogo/>;
-    }
-    else if(acceptedTokenString === 'MATIC'){
-      logo = <MaticLogo/>;
-    }
-    else if(acceptedTokenString === 'LINK'){
-      logo = <LinkLogo/>;
-    }
-    else if(acceptedTokenString === 'DPI'){
-      logo = <DpiLogo/>;
-    }
-    else{
-      logo = <Logo/>
-    }
-
-    return logo;
-  }
-
-
-  share = async(poolAddress, name, txDetails) => {
-		await this.props.updateShare("");
-		await this.props.updateShare({poolAddress: poolAddress, name: name, txDetails: txDetails});
-	}
-
-  getShareButton = (txDetails) => {
-    if(txDetails.type === "DEPOSIT"){
-      return(
-        <div title={"share your donation"} style={{display:"flex", flex:"flex-wrap", gap:"16px", paddingBottom:"32px"}}>
-          <h4 style={{fontSize: 15, marginBottom: "auto", marginTop: "auto"}}>Proud of your donation? Share it</h4>
-          <Button isLogo="share_d" callback={async() => await this.share(txDetails.poolAddress, txDetails.poolName, txDetails )} />
-        </div>
-      );
-    }
-    if(txDetails.type === "CLAIM"){
-      return(
-        <div title={"share"} style={{display:"flex", flex:"flex-wrap", gap:"16px", paddingBottom:"32px"}}>
-          <h4 style={{fontSize: 15, marginBottom: "auto", marginTop: "auto"}}>Thank you for harvesting donations for {txDetails.poolName}!</h4>
-          <Button isLogo="share_d" callback={async() => await this.share(txDetails.poolAddress, txDetails.poolName, txDetails)}/>
-        </div>
+  getTxHash = (txHash, networkId) => {
+    if(txHash){
+      return (
+        <div title={"view transaction on block explorer"}><Button text={ "TX HASH       => "+txHash.slice(0, 6) + "..."+txHash.slice(-4)} callback={() => redirectWindowBlockExplorer(txHash, 'tx', networkId)}/></div>
       );
     }
   }
@@ -95,12 +39,11 @@ class TxResultModal extends Component {
 		return (
       <Fragment>
       <ModalHeader>
-        <h2 className="mb0">{txDetails.type === "CLAIM" ? "HARVEST" : txDetails.type} {txDetails.amount} {this.displayLogo(txDetails.tokenString)} {txDetails.tokenString}  {this.successOrFail(txDetails.success)}</h2>
+        <h2 className="mb0">{txDetails.type} {txDetails.amount} {txDetails.tokenString}  {this.successOrFail(txDetails.success)}</h2>
       </ModalHeader>
       <ModalBodyTx>
-        {this.getShareButton(txDetails)}
-        <div title={"view transaction on block explorer"}><Button text={ "TX HASH       => "+txDetails.txHash.slice(0, 6) + "..."+txDetails.txHash.slice(-4)} callback={() => redirectWindowBlockExplorer(txDetails.txHash, 'tx', txDetails.networkId)}/></div>
-        </ModalBodyTx>
+        {this.getTxHash(txDetails.txInfo, txDetails.networkId)}
+      </ModalBodyTx>
     </Fragment>
 		);
 	}
