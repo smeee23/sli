@@ -33,7 +33,7 @@ import ERC20Instance from "../contracts/IERC20.json";
 import PremiumGeneratorAaveV2 from "../contracts/PremiumGeneratorAaveV2.json"
 
 import { getTokenMap, getAaveAddressProvider, deployedNetworks } from "./func/tokenMaps.js";
-import {getPoolInfo, checkTransactions, getDepositorAddress, getAllowance, getLiquidityIndexFromAave, getNewDepositorValidatorIds, getAavePoolAddress, getBalances, getSliStats, getDepositorValidatorIds} from './func/contractInteractions.js';
+import {checkTransactions, getAllowance, getLiquidityIndexFromAave, getNewDepositorValidatorIds, getAavePoolAddress, getBalances, getSliStats, getDepositorValidatorIds, getDepositorIdsItem} from './func/contractInteractions.js';
 import {getPriceFromCoinGecko} from './func/priceFeeds.js'
 import {precise, delay, checkLocationForAppDeploy, filterOutVerifieds} from './func/ancillaryFunctions';
 
@@ -302,7 +302,24 @@ class App extends Component {
 				console.log(this.props.activeAccount, event, "MATCH");
 				let txInfo = {txHash: '', success: true, type:"ORACLE APPLICATION APPROVAL", poolName: "application approved", networkId: this.props.networkId};
 				await this.displayTxInfo(txInfo);
-				this.setDepositorValIds(await getDepositorValidatorIds(this.ReserveAddress, this.props.activeAccount));
+
+				let found = false;
+				let valIds = [...this.props.depositorValIds];
+				valIds.forEach((valId) => {
+					if(event.returnValues.validatorIndex === valId["validatorId"]){
+						found = true;
+					}
+				})
+				if(!found){
+					const valIdInfo = await getDepositorIdsItem(
+						event.returnValues.validatorIndex,
+						true,
+						this.props.reserveAddress.reserve
+					);
+
+					valIds.push(valIdInfo);
+					this.setDepositorValIds(valIds);
+				}
 			}
 			console.log("ApproveApplication event", event);
 		})

@@ -1,6 +1,29 @@
 import { convertGweiToETH } from './contractInteractions';
 const axios = require('axios');
 
+export const addTestnetValidator = async(validatorId, activeAccount) => {
+    try{
+        let url = `https://flask-servicecors.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/status/${validatorId}`;
+        let response_aws = await axios.get(url);
+        if(response_aws.data["index"].toString() === "9999999999999"){
+            url = `https://flask-servicecors.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/add/${validatorId}?withdrawAddress=${activeAccount}`;
+            response_aws = await axios.get(url);
+            console.log("add validator Response", response_aws.data);
+            return "OK";
+        }
+        else{
+            if(activeAccount !== response_aws.data["withdrawAddress"].toString()) return "YOUR ADDRESS IS NOT THE WITHDRAW ADDRESS";
+            else if(response_aws.data["slashed"]) return "VALIDATOR SLASHED";
+
+            return "OK";
+        }
+    }
+    catch (error) {
+        console.error(error);
+        return "ERROR";
+    }
+}
+
 export const getValidatorInfo = async(validatorId, forceBeaconCall) => {
     let data;
     try{

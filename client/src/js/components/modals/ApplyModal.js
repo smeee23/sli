@@ -19,6 +19,8 @@ import {upload} from '../../func/ipfs';
 
 import { delay, displayLogo } from '../../func/ancillaryFunctions';
 
+import { addTestnetValidator } from "../../func/validatorInfoFeed";
+
 class ApplyModal extends Component {
 
 	constructor(props) {
@@ -48,78 +50,59 @@ class ApplyModal extends Component {
 				const activeAccount = this.props.activeAccount;
 
 				this.props.updatePendingTx('');
+				const addValMsg = await addTestnetValidator(validatorId, activeAccount);
 
-				const gasPrice = (await web3.eth.getGasPrice()).toString();
+				if(addValMsg === "OK"){
+					const gasPrice = (await web3.eth.getGasPrice()).toString();
 
-				let parameter = {};
-				parameter = {
-					from: activeAccount,
-					gas: web3.utils.toHex(3000000),
-					gasPrice: web3.utils.toHex(gasPrice)
-				};
+					let parameter = {};
+					parameter = {
+						from: activeAccount,
+						gas: web3.utils.toHex(3000000),
+						gasPrice: web3.utils.toHex(gasPrice)
+					};
 
-				let ReserveInstance = new web3.eth.Contract(
-					Reserve.abi,
-					this.props.reserveAddress.reserve,
-				);
+					let ReserveInstance = new web3.eth.Contract(
+						Reserve.abi,
+						this.props.reserveAddress.reserve,
+					);
 
-				txInfo = {txHash: '', success: '', type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
+					txInfo = {txHash: '', success: '', type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
 
-				result = await ReserveInstance.methods.applyForCoverage(validatorId).send(parameter, async(err, transactionHash) => {
-					console.log('Transaction Hash :', transactionHash);
-					if(!err){
-						let info = {txHash: transactionHash, status:"pending", type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
-						let pending = [...this.props.pendingTxList];
-						pending.push(info);
-						await this.props.updatePendingTxList(pending);
-						localStorage.setItem("pendingTxList", JSON.stringify(pending));
-						txInfo.txHash = transactionHash;
+					result = await ReserveInstance.methods.applyForCoverage(validatorId).send(parameter, async(err, transactionHash) => {
+						console.log('Transaction Hash :', transactionHash);
+						if(!err){
+							let info = {txHash: transactionHash, status:"pending", type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
+							let pending = [...this.props.pendingTxList];
+							pending.push(info);
+							await this.props.updatePendingTxList(pending);
+							localStorage.setItem("pendingTxList", JSON.stringify(pending));
+							txInfo.txHash = transactionHash;
 
-					}
-					else{
-						txInfo = "";
-					}
-				});
-				txInfo.success = true;
+						}
+						else{
+							txInfo = "";
+						}
+					});
+					txInfo.success = true;
 
-				let pending = [...this.props.pendingTxList];
-				pending.forEach((e, i) =>{
-					if(e.txHash === txInfo.transactionHash){
-						e.status = "complete"
-					}
-				});
-				await this.props.updatePendingTxList(pending);
-				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+					let pending = [...this.props.pendingTxList];
+					pending.forEach((e, i) =>{
+						if(e.txHash === txInfo.transactionHash){
+							e.status = "complete"
+						}
+					});
+					await this.props.updatePendingTxList(pending);
+					localStorage.setItem("pendingTxList", JSON.stringify(pending));
 
-				pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
-				await this.props.updatePendingTxList(pending);
-
-				/*let newInfo;
-				let newDepositInfo;
-				if(checkPoolInPoolInfo(poolAddress, this.props.userDepositPoolInfo)){
-					newInfo = await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					newDepositInfo = addNewPoolInfo([...this.props.userDepositPoolInfo], newInfo);
+					pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
+					await this.props.updatePendingTxList(pending);
 				}
 				else{
-					console.log("POOL NOT FOUND IN DEPOSITS, ADDING POOL");
-					newDepositInfo = await addPoolToPoolInfo(poolAddress, this.props.activeAccount, this.props.reserveAddress.reserve, this.props.tokenMap, this.props.userDepositPoolInfo);
-				}
-				await this.props.updateUserDepositPoolInfo(newDepositInfo);
-				localStorage.setItem("userDepositPoolInfo", JSON.stringify(newDepositInfo));
-
-				if(checkPoolInPoolInfo(poolAddress, this.props.ownerPoolInfo)){
-					newInfo = newInfo ? newInfo : await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					const newOwnerInfo = addNewPoolInfo([...this.props.ownerPoolInfo], newInfo);
-					await this.props.updateOwnerPoolInfo(newOwnerInfo);
-					localStorage.setItem("ownerPoolInfo", JSON.stringify(newOwnerInfo));
+					const txInfo = {txHash: '', success: false, type:`${addValMsg}: APPLY`, poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
+					this.displayTxInfo(txInfo);
 				}
 
-				if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
-					newInfo = newInfo ? newInfo : await getDirectFromPoolInfo(poolAddress, this.props.tokenMap, this.props.activeAccount, tokenAddress);
-					const newVerifiedInfo = addNewPoolInfo([...this.props.verifiedPoolInfo], newInfo);
-					await this.props.updateDepositorValIds(newVerifiedInfo);
-					localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
-				}*/
 			}
 			catch (error) {
 				console.error(error);

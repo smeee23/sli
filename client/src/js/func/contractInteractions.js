@@ -57,6 +57,21 @@ export const getBeneficiaryStatus = async(validatorId, reserveAddress) => {
 	return {status, withdrawAddress, loss, claimTimestamp, applyTimestamp};
 }
 
+export const getDepositorIdsItem = async(validatorId, forceBeacon, reserveAddress) => {
+	const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorId, reserveAddress);
+	let info = await getValidatorInfo(validatorId, forceBeacon);
+	console.log("info___", info)
+	info["beneStatus"] = status;
+	info["withdrawAddress"] = withdrawAddress;
+	info["apply"] = applyTimestamp === "0" ? "N/A" : convertSolidityTimestamp(applyTimestamp);
+	info["claim"] = claimTimestamp === "0" ? "N/A" : convertSolidityTimestamp(claimTimestamp);
+	info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addTwoWeeksToTimestamp(claimTimestamp);
+	const lossFromAws = await convertWeiToETH(info["loss"].toString());
+	info["loss"] = lossFromAws === "0" ? "N/A" : lossFromAws;
+	info["validatorId"] = validatorId;
+
+	return info;
+}
 export const getNewDepositorValidatorIds = async(reserveAddress, newValifatorId, oldDepositorValidatorIds) => {
 	const web3 = await getWeb3();
 
@@ -69,17 +84,7 @@ export const getNewDepositorValidatorIds = async(reserveAddress, newValifatorId,
 
 		const validatorId = oldDepositorValidatorIds[i].validatorId;
 		if(newValifatorId === validatorId){
-			const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorId, reserveAddress);
-			let info = await getValidatorInfo(validatorId, true);
-			console.log("info___", info)
-			info["beneStatus"] = status;
-			info["withdrawAddress"] = withdrawAddress;
-			info["apply"] = applyTimestamp === "0" ? "N/A" : convertSolidityTimestamp(applyTimestamp);
-			info["claim"] = claimTimestamp === "0" ? "N/A" : convertSolidityTimestamp(claimTimestamp);
-			info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addTwoWeeksToTimestamp(claimTimestamp);
-			const lossFromAws = await convertWeiToETH(info["loss"].toString());
-			info["loss"] = lossFromAws === "0" ? "N/A" : lossFromAws;
-			info["validatorId"] = validatorId;
+			const info = await getDepositorIdsItem(validatorId, true, reserveAddress);
 			oldDepositorValidatorIds[i] = info;
 		}
 	}
@@ -102,18 +107,7 @@ export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => 
 
 	let validatorInfo = [];
 	for(let i = 0; i < validatorIds.length; i++){
-
-		const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorIds[i], reserveAddress);
-		let info = await getValidatorInfo(validatorIds[i]);
-		console.log("info___", info)
-		info["beneStatus"] = status;
-		info["withdrawAddress"] = withdrawAddress;
-		info["apply"] = applyTimestamp === "0" ? "N/A" : convertSolidityTimestamp(applyTimestamp);
-		info["claim"] = claimTimestamp === "0" ? "N/A" : convertSolidityTimestamp(claimTimestamp);
-		info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addTwoWeeksToTimestamp(claimTimestamp);
-		const lossFromAws = await convertWeiToETH(info["loss"].toString());
-		info["loss"] = lossFromAws === "0" ? "N/A" : lossFromAws;
-		info["validatorId"] = validatorIds[i];
+		const info = await getDepositorIdsItem(validatorIds[i], false, reserveAddress);
 		validatorInfo[i] = info;
 	}
 
