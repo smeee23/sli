@@ -9,6 +9,8 @@ import Takeover from "./Takeover";
 
 import { redirectWindowBlockExplorer } from '../func/ancillaryFunctions';
 
+import { updatePendingTxList } from "../actions/pendingTxList";
+
 class PendingTx extends Component {
     constructor(props) {
         super(props);
@@ -20,11 +22,18 @@ class PendingTx extends Component {
     showSlice = (str) => {
         return (str.slice(0, 6) + " . . . "+str.slice(-4));
     }
-    toggleCardOpen = () => {
+
+    toggleCardOpen = async(txHash) => {
 		this.setState({
 			open: !this.state.open
 		})
+
+        let pending = [...this.props.pendingTxList];
+        pending = (pending).filter(e => !(e.txHash === txHash));
+        await this.props.updatePendingTxList(pending);
+        localStorage.setItem("pendingTxList", JSON.stringify(pending));
 	}
+
     getHeader = (status) => {
         if(status === 'pending'){
             return <h2 style={{fontSize: 16,  marginBottom: "2px", marginTop: "2px", marginLeft: "4px", marginRight: "4px"}}>Pending Transaction</h2>
@@ -40,7 +49,7 @@ class PendingTx extends Component {
                 <div className={cn} >
                     <div style={{display: "flex", flexDirection: "wrap"}}>
                         {this.getHeader(txInfo.status)}
-                        <div className="tx__open-button" style={{marginLeft:"auto", marginRight:"1px"}} onClick={this.toggleCardOpen}>
+                        <div className="tx__open-button" style={{marginLeft:"auto", marginRight:"1px"}} onClick={async() => await this.toggleCardOpen(txInfo.txHash)}>
                             <Icon name={"plus"} size={8} color="black"/>
                         </div>
                     </div>
@@ -70,4 +79,8 @@ const mapStateToProps = state => ({
     pendingTxList: state.pendingTxList,
 })
 
-export default connect(mapStateToProps)(PendingTx)
+const mapDispatchToProps = dispatch => ({
+	updatePendingTxList: (tx) => dispatch(updatePendingTxList(tx)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(PendingTx)
