@@ -573,7 +573,7 @@ class App extends Component {
 		if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
 			history = this.props.history;
 		} else {
-			history = createHashHistory({ basename: '/just_cause' })
+			history = createHashHistory({ basename: '/sli' })
 			//history = createBrowserHistory({ basename: '/just_cause' })
 		}
 

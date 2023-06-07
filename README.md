@@ -36,7 +36,7 @@ With lending protocols like Aave risk exists because the financial value behind 
 
 # Learn More
 
-The easiest way to familiarize yourself with SLI is through our [dapp](tbd) hosted on IPFS (InterPlanetary File System). Connect your wallet and start experimenting with our proof of concept Dapp running on the Matic Mumbai testnet.
+The easiest way to familiarize yourself with SLI is through our [dapp](https://royal-wave-9150.on.fleek.co/#/) hosted on IPFS (InterPlanetary File System). Connect your wallet and start experimenting with our proof of concept Dapp running on the Matic Mumbai testnet.
 
 # Setup
 

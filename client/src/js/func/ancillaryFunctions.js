@@ -294,7 +294,7 @@ export const displayLogo = (acceptedTokenString) => {
 export const checkLocationForAppDeploy = () => {
   const urls = ["https://royal-wave-9150.on.fleek.co/#/", "https://royal-wave-9150.on.fleek.co/#/howitworks"];
 
-  const pathnames = ["/howitworks", "/just_cause", "/"]
+  const pathnames = ["/howitworks", "/sli", "/"]
   const url = window.location.href;
   if(urls.includes(url) || (pathnames.includes(window.location.pathname) && !url.includes("#"))) return "outsideApp";
 
