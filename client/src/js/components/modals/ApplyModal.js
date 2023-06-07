@@ -80,23 +80,8 @@ class ApplyModal extends Component {
 							txInfo.txHash = transactionHash;
 
 						}
-						else{
-							txInfo = "";
-						}
 					});
 					txInfo.success = true;
-
-					let pending = [...this.props.pendingTxList];
-					pending.forEach((e, i) =>{
-						if(e.txHash === txInfo.transactionHash){
-							e.status = "complete"
-						}
-					});
-					await this.props.updatePendingTxList(pending);
-					localStorage.setItem("pendingTxList", JSON.stringify(pending));
-
-					pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
-					await this.props.updatePendingTxList(pending);
 				}
 				else{
 					const txInfo = {txHash: '', success: false, type:`${addValMsg}: APPLY`, poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
@@ -106,12 +91,7 @@ class ApplyModal extends Component {
 			}
 			catch (error) {
 				console.error(error);
-				txInfo = "";
 			}
-
-			/*if(txInfo){
-				this.displayTxInfo(txInfo);
-			}*/
 	}
 
 	displayTxInfo = async(txInfo) => {

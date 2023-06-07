@@ -212,8 +212,8 @@ export const getHeaderValuesInUSD = (acceptedTokenInfo, tokenMap) => {
   return {userBalance, interestEarned, totalBalance}
 }
 
-export const getConnection = (tokenMap, networkId) => {
-  if(tokenMap){
+export const getConnection = (networkId) => {
+  if(networkId){
     let netName;
     if(networkId === 80001) netName = 'Mumbai Testnet';
     else if (networkId === 137) netName = 'Polygon';

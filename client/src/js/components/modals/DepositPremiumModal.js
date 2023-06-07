@@ -98,7 +98,7 @@ class DepositPremiumModal extends Component {
 					[...this.props.depositorValIds]
 				);
 				await this.props.updateDepositorValIds(valIds);
-				
+
 			}
 			catch (error) {
 				console.error(error);
@@ -107,6 +107,21 @@ class DepositPremiumModal extends Component {
 
 			if(txInfo){
 				this.displayTxInfo(txInfo);
+
+				let pending = [...this.props.pendingTxList];
+				pending.forEach((e, i) =>{
+					if(e.txHash === txInfo.transactionHash){
+						e.status = "complete"
+					}
+				});
+
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+				await delay(2000);
+				pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
 	}
 

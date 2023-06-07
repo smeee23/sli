@@ -38,9 +38,9 @@ class TxResultModal extends Component {
       const { txDetails } = this.props;
 		return (
       <Fragment>
-      <ModalHeader>
-        <h2 className="mb0">{txDetails.type} {txDetails.amount} {txDetails.tokenString}  {this.successOrFail(txDetails.success)}</h2>
-      </ModalHeader>
+        <div style={{display: "flex", alignItems: "center", justifyContent:"center", textAlign: "center"}}>
+          <h2>{txDetails.type} {txDetails.amount} {txDetails.tokenString}  {this.successOrFail(txDetails.success)}</h2>
+        </div>
       <ModalBodyTx>
         {this.getTxHash(txDetails.txInfo, txDetails.networkId)}
       </ModalBodyTx>

@@ -71,27 +71,11 @@ class ClaimModal extends Component {
 						txInfo.txHash = transactionHash;
 
 					}
-					else{
-						txInfo = "";
-					}
 				});
 				txInfo.success = true;
-
-				let pending = [...this.props.pendingTxList];
-				pending.forEach((e, i) =>{
-					if(e.txHash === txInfo.transactionHash){
-						e.status = "complete"
-					}
-				});
-				await this.props.updatePendingTxList(pending);
-				localStorage.setItem("pendingTxList", JSON.stringify(pending));
-
-				pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
-				await this.props.updatePendingTxList(pending);
 			}
 			catch (error) {
 				console.error(error);
-				txInfo = "";
 			}
 	}
 

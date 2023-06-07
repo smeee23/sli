@@ -209,7 +209,7 @@ class Header extends Component {
           { nav }
         </Takeover>
         {this.getHomeLink()}
-          {getConnection(this.props.tokenMap, this.props.networkId)}
+          {getConnection(this.props.networkId)}
           <nav className="app-bar__items__left">
           { nav }
         </nav>

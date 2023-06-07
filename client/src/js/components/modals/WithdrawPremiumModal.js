@@ -86,9 +86,6 @@ class WithdrawPremiumModal extends Component {
 						txInfo.txHash = transactionHash;
 
 					}
-					else{
-						txInfo = "";
-					}
 				});
 				txInfo.success = true;
 
@@ -101,11 +98,25 @@ class WithdrawPremiumModal extends Component {
 			}
 			catch (error) {
 				console.error(error);
-				txInfo = "";
 			}
 
 			if(txInfo){
 				this.displayTxInfo(txInfo);
+
+				let pending = [...this.props.pendingTxList];
+				pending.forEach((e, i) =>{
+					if(e.txHash === txInfo.transactionHash){
+						e.status = "complete"
+					}
+				});
+
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+				await delay(2000);
+				pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
 	}
 

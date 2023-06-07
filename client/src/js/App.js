@@ -203,6 +203,8 @@ class App extends Component {
 		console.log("events", this.ReserveInstance.events);
 
 		/*
+
+		RESERVE EVENTS
 		event DenyApplication(uint validatorIndex,address withdrawAddress,uint8 reason);
 		event ApproveApplication( uint validatorIndex, address withdrawAddress);
 		event WithdrawInsurance(address depositor, uint ethAmount, uint sliETHAmount);
@@ -212,6 +214,7 @@ class App extends Component {
 		event WithdrawBeneficiary(uint validatorIndex, address withdrawAddress);
 		event MakeClaim(uint validatorIndex);
 		event ProcessClaim(address beneficiary, uint amount, uint8 result);
+		
 		*/
 		this.ReserveInstance.events.ProvideInsurance(options)
 			.on('data', async(event) => {
@@ -287,6 +290,19 @@ class App extends Component {
 				console.log(this.props.activeAccount, event, "MATCH");
 				let txInfo = {txHash: '', success: false, type:"ORACLE APPLICATION ", poolName: "application approved", networkId: this.props.networkId};
 				await this.displayTxInfo(txInfo);
+				let pending = [...this.props.pendingTxList];
+				pending.forEach((e, i) =>{
+					if(e.type === "APPLY"){
+						e.status = "complete"
+					}
+				});
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+				await delay(2000);
+				pending = (pending).filter(e => !(e.type === "APPLY"));
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
 			console.log("ApproveApplication event", event);
 		})
@@ -320,6 +336,20 @@ class App extends Component {
 					valIds.push(valIdInfo);
 					this.setDepositorValIds(valIds);
 				}
+
+				let pending = [...this.props.pendingTxList];
+				pending.forEach((e, i) =>{
+					if(e.type === "APPLY"){
+						e.status = "complete"
+					}
+				});
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+				await delay(2000);
+				pending = (pending).filter(e => !(e.type === "APPLY"));
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
 			console.log("ApproveApplication event", event);
 		})
@@ -340,6 +370,20 @@ class App extends Component {
 					[...this.props.depositorValIds]
 				);
 				await this.props.updateDepositorValIds(valIds);
+
+				let pending = [...this.props.pendingTxList];
+				pending.forEach((e, i) =>{
+					if(e.type === "CLAIM"){
+						e.status = "complete"
+					}
+				});
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+				await delay(2000);
+				pending = (pending).filter(e => !(e.type === "CLAIM"));
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
 			console.log("ProcessClaim", event);
 		})
@@ -353,6 +397,20 @@ class App extends Component {
 				console.log(this.props.activeAccount, event, "MATCH");
 				let txInfo = {txHash: '', success: false, type:"ORACLE CLAIM ", poolName: "claim submission approved", networkId: this.props.networkId};
 				await this.displayTxInfo(txInfo);
+
+				let pending = [...this.props.pendingTxList];
+				pending.forEach((e, i) =>{
+					if(e.type === "CLAIM"){
+						e.status = "complete"
+					}
+				});
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+				await delay(2000);
+				pending = (pending).filter(e => !(e.type === "CLAIM"));
+				await this.props.updatePendingTxList(pending);
+				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
 			console.log("ProcessClaim", event);
 		})
@@ -362,78 +420,11 @@ class App extends Component {
 
 		this.ReserveInstance.events.ProcessClaim(options)
 		.on('data', async(event) => {
-			/*if(this.props.activeAccount === event.returnValues.withdrawAddress){
-				console.log(this.props.activeAccount, event, "MATCH");
-				let txInfo = {txHash: '', success: true,tokenString: "ETH", type:"APPLICATION APPROVAL", poolName: "application approved", networkId: this.props.networkId};
-				await this.displayTxInfo(txInfo);
-			}*/
 			console.log("ProcessClaim", event);
 		})
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
 		.on('connected', str => console.log("EVENT str", str))
-		/*poolTrackerInstance.events.AddPool(options)
-		.on('data', async(event) => {
-			console.log("EVENT data", event)
-			let pending = [...this.props.pendingTxList];
-			pending.forEach((e, i) =>{
-				if(e.txHash === event.transactionHash){
-					e.status = "complete"
-				}
-			});
-			await this.props.updatePendingTxList(pending);
-			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-
-			await delay(3000);
-			pending = (pending).filter(e => !(e.txHash === event.transactionHash));
-			await this.props.updatePendingTxList(pending);
-			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-		})
-			.on('changed', changed => console.log("EVENT changed", changed))
-			.on('error', err => console.log("EVENT err", err))
-			.on('connected', str => console.log("EVENT str", str))
-
-		poolTrackerInstance.events.AddDeposit(options)
-		.on('data', async(event) => {
-			console.log("EVENT data", event)
-			let pending = [...this.props.pendingTxList];
-			pending.forEach((e, i) =>{
-				if(e.txHash === event.transactionHash){
-					e.status = "complete"
-				}
-			});
-			await this.props.updatePendingTxList(pending);
-			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-
-			await delay(3000);
-			pending = (pending).filter(e => !(e.txHash === event.transactionHash));
-			await this.props.updatePendingTxList(pending);
-			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-		})
-			.on('changed', changed => console.log("EVENT changed", changed))
-			.on('error', err => console.log("EVENT err", err))
-			.on('connected', str => console.log("EVENT str", str))
-
-		poolTrackerInstance.events.WithdrawDeposit(options)
-		.on('data', async(event) => {
-			console.log("EVENT data", event)
-			let pending = [...this.props.pendingTxList];
-			pending.forEach((e, i) =>{
-				if(e.txHash === event.transactionHash){
-					e.status = "complete"
-				}
-			});
-			await this.props.updatePendingTxList(pending);
-			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-
-			await delay(3000);
-			pending = (pending).filter(e => !(e.txHash === event.transactionHash));
-			await this.props.updatePendingTxList(pending);
-			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-		})
-			.on('changed', changed => console.log("EVENT changed", changed))
-			.on('error', err => console.log("EVENT err", err))
-			.on('connected', str => console.log("EVENT str", str))*/
 
 		console.log("pending TX List", this.props.pendingTxList);
 	}
