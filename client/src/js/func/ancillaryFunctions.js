@@ -55,14 +55,12 @@ export const addTwoWeeksToTimestamp = (timestamp) => {
   return date.setDate(date.getDate() + 14);
 }
 
-export const linkedInShare = (purl, ptitle, poolAddress, psummary) => {
-  let url = 'http://www.linkedin.com/shareArticle?mini=true';
-  url += '&url=' + encodeURIComponent(purl)+poolAddress;
-  url += '&title=' + encodeURIComponent(ptitle);
-  url += '&summary=' + encodeURIComponent(psummary);
-  url += '&source=' + encodeURIComponent("https://www.justcause.finance/#/");
-
-  window.open(url, "_blank");
+export const addOneDayToTimestamp = (timestamp) => {
+  // Convert the Solidity timestamp to milliseconds
+  const timestampInMillis = timestamp * 1000;
+  // Create a new Date object using the timestamp in milliseconds
+  const date = new Date(timestampInMillis);
+  return date.setDate(date.getDate() + 1);
 }
 
 export const twitterShare = (purl, ptitle, poolAddress) => {
@@ -220,7 +218,14 @@ export const getConnection = (tokenMap, networkId) => {
     if(networkId === 80001) netName = 'Mumbai Testnet';
     else if (networkId === 137) netName = 'Polygon';
 
-    return netName;
+    return(
+      <div style={{display:"flex"}}>
+        <h2 title="connected" className="mb0 horizontal-padding-sm" style={{fontSize:10, paddingRight: "0px", marginTop:"6px", color: "#2A5ADA"}}> {netName} </h2>
+        <div style={{marginBottom: "6px"}}>
+          <LinkLogo/>
+        </div>
+      </div>
+    );
   }
 }
 
@@ -287,14 +292,11 @@ export const displayLogo = (acceptedTokenString) => {
 }
 
 export const checkLocationForAppDeploy = () => {
-  const urls = ["https://www.justcause.finance/#/", "https://www.justcause.finance/#/just_cause/howitworks", "https://www.justcause.finance/#/just_cause/",
-              "https://www.justcause.finance/#/just_cause"];
+  const urls = ["https://royal-wave-9150.on.fleek.co/#/", "https://royal-wave-9150.on.fleek.co/#/howitworks"];
 
   const pathnames = ["/howitworks", "/just_cause", "/"]
   const url = window.location.href;
   if(urls.includes(url) || (pathnames.includes(window.location.pathname) && !url.includes("#"))) return "outsideApp";
-
-  else if((window.location.href).includes("search?address=")) return "inSearch"
 
   return "inApp";
 }

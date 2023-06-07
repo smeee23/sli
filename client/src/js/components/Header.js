@@ -11,9 +11,9 @@ import Takeover from "./Takeover";
 import { updateActiveAccount } from "../actions/activeAccount"
 import { updateConnect } from "../actions/connect"
 import { checkLocationForAppDeploy, displayTVL, getConnection, redirectWindowBlockExplorer } from "../func/ancillaryFunctions"
-import { EthWhiteLogo } from "./cryptoLogos/EthWhiteLogo"
+import LinkLogo from "./cryptoLogos/LinkLogo"
 
-import { web3Modal } from "../App"
+import { web3Modal } from "../App";
 
 class Header extends Component {
 
@@ -209,7 +209,7 @@ class Header extends Component {
           { nav }
         </Takeover>
         {this.getHomeLink()}
-          <h2 title="connected" className="mb0 horizontal-padding-sm" style={{fontSize:15, paddingRight: "0px", color: "green"}}> {getConnection(this.props.tokenMap, this.props.networkId)} </h2>
+          {getConnection(this.props.tokenMap, this.props.networkId)}
           <nav className="app-bar__items__left">
           { nav }
         </nav>

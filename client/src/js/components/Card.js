@@ -21,7 +21,7 @@ import { updateShare } from  "../actions/share";
 import { updateNewAbout } from  "../actions/newAbout";
 import { updatePendingTx } from "../actions/pendingTx";
 
-import { getBalance, convertGweiToETH, convertWeiToETH, getPremiumDeposit} from '../func/contractInteractions';
+import { getBalance, convertGweiToETH, convertWeiToETH, getPremiumDeposit, getNewDepositorValidatorIds} from '../func/contractInteractions';
 import { precise, delay, getHeaderValuesInUSD, getFormatUSD, displayLogo, displayLogoLg, redirectWindowBlockExplorer, redirectWindowUrl, numberWithCommas, copyToClipboard, checkPoolInPoolInfo, addNewPoolInfoAllTokens } from '../func/ancillaryFunctions';
 import { verifiedPoolMap } from '../func/verifiedPoolMap';
 import { Modal, SmallModal, LargeModal } from "../components/Modal";
@@ -32,6 +32,7 @@ import PendingTxModal from "../components/modals/PendingTxModal";
 import DeployTxModal from "../components/modals/DeployTxModal";
 import ShareModal from "../components/modals/ShareModal";
 import ClaimModal from "../components/modals/ClaimModal";
+import PayoutModal from "../components/modals/PayoutModal";
 
 class Card extends Component {
 	interval = 0;
@@ -116,7 +117,7 @@ class Card extends Component {
 	}
 
 	getPayoutTitle = (claimPlusWait) => {
-		if(this.isPayoutDisabled(claimPlusWait)) return "There is a 2 week holding period before payout";
+		if(this.isPayoutDisabled(claimPlusWait)) return "There is a 24 hour holding period before payout";
 		return "Receieve your slashing insurance payout";
 	}
 
@@ -130,7 +131,7 @@ class Card extends Component {
 			}
 			else if(item.slashed && item.claim !== "N/A" && item.loss !== 0){
 				return <div title={this.getPayoutTitle(item.claimPlusWait)}>
-							<Button logo={displayLogo("ETH")} text={"Payout"} disabled={this.isPayoutDisabled(item.claimPlusWait)} callback={() => {}}/>
+							<Button logo={displayLogo("ETH")} text={"Payout"} /*disabled={this.isPayoutDisabled(item.claimPlusWait)}*/ callback={async() => await this.payout(item.validatorId, item.loss)}/>
 						</div>
 			}
 		}
@@ -226,6 +227,13 @@ class Card extends Component {
 		}
 		return <p>{value}</p>;
 	}
+
+	getBeaconChainLink = (validatorId) => {
+		const url = `https://beaconcha.in/validator/${validatorId}`;
+		return(
+				<Button isLogo="link" callback={() => redirectWindowUrl(url)}/>
+		);
+}
 	createValidatorInfo = () => {
 		//if (!acceptedTokenInfo) return '';
 		if (!this.props.depositorValIds[this.props.idx]) return '';
@@ -319,12 +327,15 @@ class Card extends Component {
 
 				<div style={{display: "grid", width: "210px", flex: "0 0 210"}}>
 					<div id="animated" className="card__body__column__nine">
-						<div title="validator info" style={{display: "grid", gridTemplateColumns:"70px 1fr"}}>
+						<div title="validator info" style={{display: "grid", gridTemplateColumns:"70px 40px 1fr"}}>
 							<div style={{gridColumn: 1}}>
 								<p style={{fontSize: 14}}>{"Returns"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-							<p style={{fontSize: 14}}>{"ETH"}</p>
+								<p style={{fontSize: 14}}>{"ETH"}</p>
+							</div>
+							<div title="view validator on beaconcha.in (may not match testnet info)">
+								{this.getBeaconChainLink(item.validatorId)}
 							</div>
 						</div>
 						<div title="validator balance" style={{display: "grid", gridTemplateColumns:"70px 1fr", marginTop:"-10px"}}>
@@ -378,7 +389,6 @@ class Card extends Component {
 							</div>
 						</div>
 						<div style={{marginRight: "auto"}}>
-							{/*this.displayWithdraw()*/}
 							{this.displayDepositApplyWithdraw(item)}
 							{this.displayClaim(item)}
 						</div>
@@ -433,7 +443,7 @@ class Card extends Component {
 	}
 
 	getClaimModal = () => {
-		if(this.props.claim){
+		if(this.props.claim.type === "claim"){
 			let modal = <SmallModal isOpen={true}><ClaimModal claimInfo={this.props.claim}/></SmallModal>
 			return modal;
 		}
@@ -441,10 +451,10 @@ class Card extends Component {
 
 	claim = async(validatorId, loss) => {
 		await this.props.updateClaim('');
-		console.log('claim interest clicked');
+		console.log('claim clicked');
 		try{
 			const activeAccount = this.props.activeAccount;
-			await this.props.updateClaim({tokenString: "ETH", activeAccount: activeAccount, validatorId: validatorId, loss: loss});
+			await this.props.updateClaim({tokenString: "ETH", activeAccount: activeAccount, validatorId: validatorId, loss: loss, type: "claim"});
 
 		}
 		catch (error) {
@@ -452,6 +462,25 @@ class Card extends Component {
 		}
 	}
 
+	getPayoutModal = () => {
+		if(this.props.claim.type === "payout"){
+			let modal = <SmallModal isOpen={true}><PayoutModal claimInfo={this.props.claim}/></SmallModal>
+			return modal;
+		}
+	}
+	payout = async(validatorId, loss) => {
+		await this.props.updateClaim('');
+		console.log('payout clicked');
+		try{
+			const activeAccount = this.props.activeAccount;
+			const premiumDeposit =  await getPremiumDeposit(this.props.reserveAddress.premiumGenerator);
+			await this.props.updateClaim({tokenString: "ETH", activeAccount: activeAccount, validatorId: validatorId, loss: loss, premiumDeposit: premiumDeposit, type: "payout"});
+
+		}
+		catch (error) {
+			console.error(error);
+		}
+	}
 	getApproveModal = () => {
 		if(this.props.approve){
 			let modal = <SmallModal isOpen={true}><ApproveModal approveInfo={this.props.approve}/></SmallModal>
@@ -512,48 +541,25 @@ class Card extends Component {
 	getHeaderValues = () => {
 		return getHeaderValuesInUSD(this.state.tokenInfo, this.props.tokenMap);
 	}
-	/*refresh = async(poolAddress) =>{
+	refresh = async(validatorId) =>{
 		this.setState({loading: true});
 
-		let newInfoAllTokens = await getDirectFromPoolInfoAllTokens(this.props.address, this.props.tokenMap, this.props.activeAccount);
-		console.log("update all tokens", newInfoAllTokens);
-
-		if(checkPoolInPoolInfo(poolAddress, this.props.userDepositPoolInfo)){
-			const newDepositInfo = addNewPoolInfoAllTokens([...this.props.userDepositPoolInfo], newInfoAllTokens);
-			await this.props.updateUserDepositPoolInfo(newDepositInfo);
-			localStorage.setItem("userDepositPoolInfo", JSON.stringify(newDepositInfo));
-		}
-
-		if(checkPoolInPoolInfo(poolAddress, this.props.ownerPoolInfo)){
-			const newOwnerInfo = addNewPoolInfoAllTokens([...this.props.ownerPoolInfo], newInfoAllTokens);
-			await this.props.updateOwnerPoolInfo(newOwnerInfo);
-			localStorage.setItem("ownerPoolInfo", JSON.stringify(newOwnerInfo));
-		}
-
-		if(checkPoolInPoolInfo(poolAddress, this.props.verifiedPoolInfo)){
-			const newVerifiedInfo = addNewPoolInfoAllTokens([...this.props.verifiedPoolInfo], newInfoAllTokens);
-			await this.props.updateDepositorValIds(newVerifiedInfo);
-			localStorage.setItem("verifiedPoolInfo", JSON.stringify(newVerifiedInfo));
-		}
-
-		let tempInfo = this.props.acceptedTokenInfo;
-		for(let i = 0; i < this.props.acceptedTokenInfo.length; i++){
-			const tokenInfo = newInfoAllTokens.newTokenInfo && newInfoAllTokens.newTokenInfo[this.props.acceptedTokenInfo[i].address];
-			tempInfo[i].unclaimedInterest = tokenInfo.unclaimedInterest;
-			tempInfo[i].claimedInterest = tokenInfo.claimedInterest;
-			tempInfo[i].userBalance = tokenInfo.userBalance;
-			tempInfo[i].totalBalance = tokenInfo.totalBalance;
-		}
+		let valIds = await getNewDepositorValidatorIds(
+			this.props.reserveAddress.reserve,
+			validatorId,
+			[...this.props.depositorValIds]
+		);
+		await this.props.updateDepositorValIds(valIds);
 
 		this.resetAnimation();
-		this.setState({ tokenInfo: tempInfo, loading: false });
-	}*/
+		this.setState({ loading: false });
+	}
 
 	getRefreshButton = (poolAddress) => {
 		if(!this.state.open) return;
 		const logo = this.state.loading ? "refresh_pending" : "refresh";
 		return(
-			<div title="refresh pool balances" style={{marginRight:"-16px"}}>
+			<div title="refresh validator info" style={{marginRight:"-16px"}}>
 				<Button isLogo={logo} callback={async() => await this.refresh(poolAddress)} />
 			</div>
 
@@ -591,7 +597,8 @@ class Card extends Component {
 					</p>
 
 					<div className="card__header--right">
-									<div className="card__open-button" onClick={this.toggleCardOpen}><Icon name={"plus"} size={32}/></div>
+						{this.getRefreshButton(validator.validatorId)}
+						<div className="card__open-button" onClick={this.toggleCardOpen}><Icon name={"plus"} size={32}/></div>
 					</div>
 				</div>
 				{validatorInfo}
@@ -599,6 +606,7 @@ class Card extends Component {
 				{this.getDepositAmountModal()}
 				{this.getWithdrawAmountModal()}
 				{this.getClaimModal()}
+				{this.getPayoutModal()}
 				{this.getApproveModal()}
 				{this.getShareModal()}
       		</div>

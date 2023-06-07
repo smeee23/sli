@@ -49,7 +49,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -62,7 +63,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -75,7 +77,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -88,7 +91,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -101,7 +105,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -127,7 +132,8 @@
       "name": "deposit",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -166,7 +172,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -179,7 +186,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -192,7 +200,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -205,7 +214,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -218,7 +228,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -231,7 +242,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -279,7 +291,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_lendingPoolAddressesProviderAddr\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_dataProviderAddr\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_multiSig\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_wethGatewayAddr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_premiumDeposit\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_aTokenAddress\",\"type\":\"address\"}],\"name\":\"_getATokenBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_validatorIndex\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"deposits\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getATokenAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getATokenBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAaveLiquidityIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"liquidityIndex\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getLendingPoolAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"poolAddr\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPoolInfo\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getReserveNormalizedIncome\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getUnclaimedInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"multiSig\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"premiumDeposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"reserve\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_reserve\",\"type\":\"address\"}],\"name\":\"setReserve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_validatorIndex\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"smeee This is a contract for lossless insurance premiums using Aave v2 Aave is used to generate interest for insurance applications Beneficiaries deposit tokens into PremiumGenerator which deposit them into Aave lending protocol The interest earned is directed to the reserve associated with the PremiumGenerator Beneficiaries can claim their funds (and terminate their policy) at any time. Functions deposit(), withdraw() and withdrawInterest() handle Aave interaction.*\",\"kind\":\"dev\",\"methods\":{\"_getATokenBalance(address)\":{\"details\":\"Returns the balance of aToken for the given aToken address.\",\"params\":{\"_aTokenAddress\":\"The address of the aToken contract.\"},\"returns\":{\"_0\":\"The balance of aToken.\"}},\"constructor\":{\"details\":\"Constructor.\"},\"deposit(uint256)\":{\"details\":\"Allows a user to deposit funds for a specific validator index.\",\"params\":{\"_validatorIndex\":\"The index of the validator.\"}},\"getATokenAddress()\":{\"details\":\"Returns the address of the Aave aToken associated with the WETH reserve.\",\"returns\":{\"_0\":\"The address of the aToken.\"}},\"getATokenBalance()\":{\"details\":\"Returns the balance of aToken held by the contract.\",\"returns\":{\"_0\":\"The balance of aToken.\"}},\"getAaveLiquidityIndex()\":{\"details\":\"Returns the Aave liquidity index of the reserve.\",\"returns\":{\"liquidityIndex\":\"The Aave liquidity index of the reserve.\"}},\"getLendingPoolAddress()\":{\"details\":\"Returns the address of the Aave lending pool.\",\"returns\":{\"poolAddr\":\"The address of the lending pool.\"}},\"getPoolInfo()\":{\"returns\":{\"_0\":\"reserve address of reserve\",\"_1\":\"deposits amount of ETH/WETH deposited in contract\",\"_2\":\"premiumDeposit amount of ETH required for a deposit\",\"_3\":\"liquidityIndex reserve's liquidity index\",\"_4\":\"normalizedIncome reserve's normalized income\",\"_5\":\"aTokenBalance Pool balance of aToken for the asset\",\"_6\":\"unclaimedInterest accrued interest that has not yet been claimed\",\"_7\":\"aTokenAddress address of Aave's aToken for asset\"}},\"getReserveNormalizedIncome()\":{\"details\":\"Returns the normalized income of the reserve.\",\"returns\":{\"_0\":\"The normalized income of the reserve.\"}},\"getUnclaimedInterest()\":{\"details\":\"Returns the amount of unclaimed interest for the contract from the specified aToken.\",\"returns\":{\"_0\":\"unclaimed The amount of unclaimed interest.\"}},\"setReserve(address)\":{\"details\":\"Sets the reserve address.Only the multi-signature wallet is allowed to call this function.This function can only be called once to set the reserve address.\",\"params\":{\"_reserve\":\"The address of the reserve contract.\"}},\"withdraw(uint256)\":{\"details\":\"Allows a user to withdraw funds for a specific validator index.\",\"params\":{\"_validatorIndex\":\"The index of the validator.\"}},\"withdrawInterest()\":{\"details\":\"Allows the contract to withdraw interest in the form of aTokens to the reserve.\",\"returns\":{\"_0\":\"The amount of interest claimed.\"}}},\"title\":\"PremiumGenerator contract\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"getPoolInfo()\":{\"notice\":\"Returns asset specific pool information\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/contracts/PremiumGeneratorAaveV2.sol\":\"PremiumGeneratorAaveV2\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/security/ReentrancyGuard.sol\":{\"keccak256\":\"0x0e9621f60b2faabe65549f7ed0f24e8853a45c1b7990d47e8160e523683f3935\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://287a2f8d5814dd0f05f22b740f18ca8321acc21c9bd03a6cb2203ea626e2f3f2\",\"dweb:/ipfs/QmZRQv9iuwU817VuqkA2WweiaibKii69x9QxYBBEfbNEud\"]},\"project:/contracts/contracts/PremiumGeneratorAaveV2.sol\":{\"keccak256\":\"0x74a114293acaad23f3b2cd9ae7199a4a2dbeae3db594d339a603cbdb6a49472b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d0c559abf2fecf352348c8848cea516513b1fc4231258aea8ac4cb32089fa643\",\"dweb:/ipfs/QmY8bxEr3qKYnWbbL7VM68qCqi1kBV3S8KNgTnEwFUzRh7\"]},\"project:/contracts/contracts/PremiumGeneratorCore.sol\":{\"keccak256\":\"0x938ee8b898491b3c343d09bdd6b3d262fe20e1cc730fb48a96b1472aedb765d6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ee3e6e9a5217b7ca022386fd014643950162ddfecbeb36a47e43be57054afcae\",\"dweb:/ipfs/QmXZ7ruiYDrZ82mYfFSsvdc7SMYn6ZuTQmAEtCSrvNDEBL\"]},\"project:/contracts/contracts/interfaces/aave/ILendingPool.sol\":{\"keccak256\":\"0xa5d955949211b9a291b7355fee69b0aa83d10be5eb0f31c702894026cb003a52\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4a0ac63f9a499fca20568e3d613012805a5fe452d5e0468a4e2adf213269a2fe\",\"dweb:/ipfs/QmZkkzDqtiosDMo2qKrn2GnaTj1P44FRyRBjgozMYNwMSt\"]},\"project:/contracts/contracts/interfaces/aave/ILendingPoolAddressesProvider.sol\":{\"keccak256\":\"0x771377309fabcd0a40e2295cd8896367ae4b3719eabebf5f7ea341c2f9f6e833\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c407276080332c6b059401d51919c9942d58d1f719dc403dadeaa57d3a5272f7\",\"dweb:/ipfs/QmZKH9Xqv12YoqmeaR4SQhGhURwxfhG6t3egVTUohSf5mk\"]},\"project:/contracts/contracts/interfaces/aave/IProtocolDataProvider.sol\":{\"keccak256\":\"0x72096fa37867ab8dcb98070d7b7080405d724dbfda8cd5ad077e723e8656dbf5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://85a52530e68d575cb77108de1d931b3e77c01c73d25c15d32576cf3fdff40852\",\"dweb:/ipfs/QmcciKSsCDUsttdozsyLavHLBNCiykTAb1yw6PCN826QVe\"]},\"project:/contracts/contracts/interfaces/aave/IWETHGateway.sol\":{\"keccak256\":\"0x6d10729f1d6946ec483196b415e11336932d1af3a59f0e056b9a060e8007a36c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ad48f9d665b7e3567e15669f8305e727aedaa329ca0f4c7f4fbd4b22ac08418f\",\"dweb:/ipfs/QmaZqSx76VnMSkMc5GdaEtQzNXppvJ1mUqthQ3QE9Wn5Gv\"]},\"project:/contracts/contracts/interfaces/other/IERC20.sol\":{\"keccak256\":\"0x82288cbf7f69794d95166c0833ad127aefb4587807d1ed94f1b7a744e4cad182\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3bc829b9069e56956ad9915cad2525b63adc0ceb43d24c2df4b8d5cb49b31bf0\",\"dweb:/ipfs/QmWGj5XjifKFhfyBseJbxe1tfyU9tryrv7nBYm8QrL8z5s\"]},\"project:/contracts/contracts/interfaces/protocol/IReserve.sol\":{\"keccak256\":\"0x91c1ed7a181cd7abf2c50d916917aa971ebd05f281576d4e5fdf0968adbf1aac\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c0b36dee4bcffa5f72741fe5847c773e35e6b0668a4a8f1e877bb678c6dc2932\",\"dweb:/ipfs/QmfX4MV84q6otLWnd8RaGzftBjeWKyEJ7AQJsWrEqvbagp\"]},\"project:/contracts/contracts/libraries/Address.sol\":{\"keccak256\":\"0x9a26dc3fbfd6c23cb684906f019ee96dc6e15d3062b7083dc4fddfccc46f67b4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9d1069f5b5262d233492dc4282305050c7a8baab073c629e21e7b0c8744a4f38\",\"dweb:/ipfs/QmeXAugzNq16MJeZUvANWCqCVP7LZT7jarhpXaRmEaTCkj\"]},\"project:/contracts/contracts/libraries/DataTypes.sol\":{\"keccak256\":\"0xa8d9476da60aea1fb63242a58abb8fdf9c3d9e112bb4d0c08d63ebba729e6764\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2c55e95a977668f5ddd13dd746e36722c83f08ec2dec5b536f3c9a3c47f453bb\",\"dweb:/ipfs/QmeVCRoopwnjvi7YAiobJwiyXaN98KSx8zWkpHmVoQ9aLe\"]},\"project:/contracts/contracts/libraries/SafeERC20.sol\":{\"keccak256\":\"0xb43c80a4b19810c938755f3702e3f5dc9c94adb75727e272c9dc87fa744194be\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fc55621f81e7ed2331acd16ae819739f550493c49649eeeff857dbdb72ed15de\",\"dweb:/ipfs/QmRMSAghwnAJ5r4eUwHCvPFEujSkVqMDJkdrTvW6VFmnju\"]},\"project:/contracts/contracts/libraries/SafeMath.sol\":{\"keccak256\":\"0xf79290bc69f80868d4347b0f425d71899bb7557876b76fbbe315b58095e31ded\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b6ff0cf1470271f6c4e41cc70916e24794a117f642a0406436d6c1c522d59945\",\"dweb:/ipfs/QmNN2quQxqHjNvQwarBNjM7bqZVqrgYW2jNj61siY6xsnw\"]}},\"version\":1}",
@@ -13812,12 +13825,13 @@
     "80001": {
       "events": {},
       "links": {},
-      "address": "0xf999C4Ff9cF18F872d370fACf18a9D32d8Ac20B9",
-      "transactionHash": "0xff560c7a8626a8aa23aac7bb76608608e6c266aaac29b2cf85eb2f498e0d40a5"
+      "address": "0xd6f1dC01E5600112f8514Db78De1b02CfB9f62e2",
+      "transactionHash": "0xda2f0dded68f133bebbf3e004a73e131003f2952dbc864c79bc00f13dc0872eb"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2023-06-05T18:27:36.059Z",
+  "updatedAt": "2023-06-06T17:13:29.399Z",
+  "networkType": "ethereum",
   "devdoc": {
     "author": "smeee This is a contract for lossless insurance premiums using Aave v2 Aave is used to generate interest for insurance applications Beneficiaries deposit tokens into PremiumGenerator which deposit them into Aave lending protocol The interest earned is directed to the reserve associated with the PremiumGenerator Beneficiaries can claim their funds (and terminate their policy) at any time. Functions deposit(), withdraw() and withdrawInterest() handle Aave interaction.*",
     "kind": "dev",

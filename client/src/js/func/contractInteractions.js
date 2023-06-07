@@ -1,5 +1,4 @@
 import getWeb3 from "../../getWeb3NotOnLoad";
-import JCPool from "../../contracts/JustCausePool.json";
 import PoolTracker from "../../contracts/PoolTracker.json";
 import ERC20Instance from "../../contracts/IERC20.json";
 import PremiumGeneratorAaveV2 from "../../contracts/PremiumGeneratorAaveV2.json";
@@ -9,7 +8,7 @@ import { getIpfsData } from "./ipfs";
 import { tempFixForDescriptions } from "./verifiedPoolMap";
 
 import { getValidatorInfo } from "./validatorInfoFeed";
-import { convertSolidityTimestamp, addTwoWeeksToTimestamp } from "./ancillaryFunctions";
+import { convertSolidityTimestamp, addTwoWeeksToTimestamp, addOneDayToTimestamp } from "./ancillaryFunctions";
 import Reserve from "../../contracts/Reserve.json";
 import Web3 from "web3";
 
@@ -65,7 +64,8 @@ export const getDepositorIdsItem = async(validatorId, forceBeacon, reserveAddres
 	info["withdrawAddress"] = withdrawAddress;
 	info["apply"] = applyTimestamp === "0" ? "N/A" : convertSolidityTimestamp(applyTimestamp);
 	info["claim"] = claimTimestamp === "0" ? "N/A" : convertSolidityTimestamp(claimTimestamp);
-	info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addTwoWeeksToTimestamp(claimTimestamp);
+	//info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addTwoWeeksToTimestamp(claimTimestamp);
+	info["claimPlusWait"] = claimTimestamp === "0" ? "N/A" : addOneDayToTimestamp(claimTimestamp);
 	const lossFromAws = await convertWeiToETH(info["loss"].toString());
 	info["loss"] = lossFromAws === "0" ? "N/A" : lossFromAws;
 	info["validatorId"] = validatorId;

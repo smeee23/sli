@@ -25,7 +25,7 @@ class Homepage extends Component {
 
 	share = async() => {
 		await this.props.updateShare("");
-		await this.props.updateShare({poolAddress: "homepage", name: "JustCause"});
+		await this.props.updateShare({poolAddress: "homepage"});
 	}
 	render() {
 		return (
@@ -39,13 +39,13 @@ class Homepage extends Component {
 								<div style={{display:"flex", flexDirection: "wrap", alignItems:"center", justifyContent:"center"}}>
 									<div style={{display:"flex", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
 
-										<h1 style={{marginBottom: "-15px", fontSize: 400}} >SLI</h1>
+										<h1 style={{marginBottom: "-15px", fontSize: 310}} >SLI</h1>
 										<h2 style={{marginBottom: "5px", fontSize:30}} >Ethereum Slashing Insurance</h2>
 										<div style={{marginBottom: "5px", display:"flex", flexDirection: "wrap", alignItems:"left", justifyContent:"left"}}>
 											<a title="source code" href="https://github.com/smeee23/sli/tree/master" target="_blank" rel="noopener noreferrer"><Button isLogo="github"/></a>
-											<a title="Twitter" style={{marginLeft: "20px"}} href="https://github.com/smeee23/sli/tree/master" target="_blank" rel="noopener noreferrer"><Button isLogo="tweet"/></a>
-											{<a title="Discord" style={{marginLeft: "20px"}} href="https://github.com/smeee23/sli/tree/master" target="_blank"><Button isLogo="discord"/></a>}
-											<div title="share JustCause" style={{marginLeft: "20px"}}>
+											<a title="Twitter" style={{marginLeft: "20px"}} href="" target="_blank" rel="noopener noreferrer"><Button isLogo="tweet"/></a>
+											{<a title="Discord" style={{marginLeft: "20px"}} href="" target="_blank"><Button isLogo="discord"/></a>}
+											<div title="share SLI" style={{marginLeft: "20px"}}>
 												<Button isLogo="share" callback={async() => await this.share()}/>
 											</div>
 										</div>

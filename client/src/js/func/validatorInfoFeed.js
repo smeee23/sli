@@ -57,7 +57,7 @@ export const getValidatorInfo = async(validatorId, forceBeaconCall) => {
 const getBeaconInfo = async(validatorId) =>{
     let data
     try{
-        let url = `https://beaconcha.in/api/v1/validator/${validatorId}/performance?apikey=b0lSTDd2TTBlZmlQRksvUWNuNDEu`;
+        let url = `https://beaconcha.in/api/v1/validator/${validatorId}/performance?apikey=cGpLZkxyT1BmVUdKeWNsalhaenpJTXpZRmFLSQ`;
         let response = await axios.get(url);
         console.log('beaconcha.in data for:', response.data.data);
         data = response.data["data"][0];

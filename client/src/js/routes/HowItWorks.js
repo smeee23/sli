@@ -98,9 +98,6 @@ class Homepage extends Component {
 							</div>
 						</div>
 					</section>
-					<section style={{alignItems:"center", justifyContent:"center"}}  className="page-section bw0 horizontal-padding">
-						<a href="https://docs.justcause.finance/" target="_blank" rel="noopener noreferrer">LEARN MORE AT OUR DOCS PAGE</a>
-					</section>
 				</article>
 			</Fragment>
 		);

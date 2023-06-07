@@ -146,9 +146,9 @@ class ApplyModal extends Component {
 			<p style={{marginTop: "-10px"}}>{"1) The application and deposit transactions originate from the withdrawal address associated with the validator index."}</p>
 			<p style={{marginTop: "-10px"}}>{"2) The validator associated with the index has not already been slashed."}</p>
 			<p style={{marginTop: "-10px"}}>{"Once approved the deposit must occur within 48 hours, or the applicant will have to reapply."}</p>
+			<p style={{marginTop: "-10px", color:'#2A5ADA'}}>{"*note for Chainlink hackathon, pick a validator index and if it does not already exist you will be automatically added and approved by the oracle"}</p>
 		</div>
 	)
-
   }
   getValidatorInput = (validatorId) => {
 	if(!validatorId) return <TextField ref="id" label="Validator Index" id="poolName" placeholder="Provide the validator index number"/>

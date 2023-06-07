@@ -109,7 +109,7 @@ class ProvideInsurance extends Component {
                                     <p className="mr">sliETH represents a share of the SLI claims fund. Deposits in the insurance contract, combined with premium deposits, generate interest in Aave. This interest serves two main purposes. First, it covers slashing insurance claims, which are infrequent (around 250 occurrences since December 2020) and average penalties of 1-2 ETH each (can be higher depending on network conditions).</p>
                                 </div>
                                 <div className="grid__item--col-6 grid__item--col-12-medium">
-                                    <p className="mr">Second, any surplus interest earned beyond the insurance claim requirements is accrued to sliETH holders. This surplus interest acts as a reward, increasing the value of sliETH tokens and benefiting those who hold them. The surplus interest serves as a mechanism for sliETH holders to participate in the positive performance of the underlying deposits in the protocol.</p>
+                                    <p className="mr">Second, any surplus interest earned beyond the insurance claim requirements is accrued to sliETH holders. This surplus interest acts as a reward, increasing the value of sliETH tokens and benefiting those who hold them. The surplus interest serves as a mechanism for sliETH holders to participate in the positive performance of the underlying protocol.</p>
                                 </div>
                             </div>
                         </section>
