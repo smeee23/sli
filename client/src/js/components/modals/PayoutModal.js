@@ -112,6 +112,7 @@ class PayoutModal extends Component {
             <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Your Payment will consist of the following amounts:"}</p>
 			<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Slashing Loss: "+loss+ " ETH"}</p>
             <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Premium Deposit: "+premiumDeposit+ " ETH"}</p>
+			<p style={{color:'#2A5ADA'}}>{"*note for Mumbai testnet, due to liquidity issues on testnet with the native token (MATIC) withdrawals through Aave can fail intermittently"}</p>
 		</div>
 	)
 

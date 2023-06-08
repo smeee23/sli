@@ -138,7 +138,7 @@ class DepositModal extends Component {
 				<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Deposits receive sliETH based on the conversion rate. Each sliETH token represents a user's share of the total ETH deposited in the Claims Fund. These sliETH tokens are transferable and can be held or traded like any other ERC-20 token."}</p>
 				<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"As the Claims Fund generates interest from validator premiums and bonded ETH, these rewards are distributed proportionally to sliETH holders."}</p>
 				<p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">{"Users can withdraw their sliETH tokens and convert them back into ETH at any time. The conversion rate depends on the current value of ETH held in the Claims Fund and the total supply of sliETH tokens."}</p>
-				<p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12, marginTop: "8px", marginBottom: "0px"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
+				<p style={{marginLeft:"2%", marginRight:"0%"}} >Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
 			</div>
 		)
 
@@ -187,7 +187,7 @@ class DepositModal extends Component {
 
 				</div>
 				<div style={{marginLeft: "auto", marginTop:"auto"}}>
-					<TextField ref="myField" label="amount to deposit:" value={this.state.val} />
+					<TextField ref="myField" label="amount to deposit:" onChange={this.handle} value={this.state.val} />
 				</div>
 			</div>
 			<div style={{marginLeft: "auto", marginTop:"auto", paddingBottom:"32px"}}>

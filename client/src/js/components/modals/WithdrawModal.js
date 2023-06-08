@@ -124,7 +124,8 @@ class WithdrawModal extends Component {
       <div style={{maxWidth: "300px", fontSize: 9, display:"flex", flexDirection: "column", alignItems:"left", justifyContent:"left"}}>
         <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">Your Deposit into the SLI Claims Fund is available to be withdrawn in full.</p>
         <p style={{marginLeft:"2%", marginRight:"0%"}} className="mr">Withdrawing will swap your sliETH for ETH at the current conversion rate. Withdrawn ETH will no longer earn rewards.</p>
-        <p style={{alignItems:"center", justifyContent:"center", marginRight:"0%", marginTop: "8px", marginBottom: "0px"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
+        <p style={{marginLeft:"2%", marginRight:"0%"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
+        <p style={{marginLeft:"2%", marginRight:"0%", color:'#2A5ADA'}}>{"*note for Mumbai testnet, due to liquidity issues on testnet with the native token (MATIC) withdrawals through Aave can fail intermittently"}</p>
       </div>
     )
 
@@ -159,6 +160,20 @@ class WithdrawModal extends Component {
     }
   }
 
+  handleChange = (event) => {
+    console.log("event", event)
+    const newValue = event.target.value; // Get the new value from the event
+    this.setState({ val: newValue }); // Update the state with the new value
+  };
+
+  handleFocus = (event) => {
+    console.log("event", event)
+  };
+
+  handleBlur = (event) => {
+    console.log("event", event)
+  };
+
   render() {
         const { withdrawInfo } = this.props;
 
@@ -173,13 +188,13 @@ class WithdrawModal extends Component {
             <div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
               <p>{displayLogo("ETH_WHITE")}{withdrawInfo.tokenString}: {withdrawInfo.userBalance}</p>
               <ButtonExtraSmall text="MAX" callback={() => this.refs.myField.replaceValue(withdrawInfo.userBalance)}/>
-
+              <ButtonExtraSmall text="sliETH Conversion" callback={() => this.refs.myField.replaceValue(withdrawInfo.userBalance)}/>
             </div>
             <div style={{marginLeft: "auto", marginTop:"auto"}}>
-              <TextField ref="myField" label="amount to withdraw:" value={this.state.val} />
+              <TextField ref="myField" label="amount to withdraw:" onFocus={this.handleFocus} onBlur={this.handleBlur} value={this.state.val} />
             </div>
             <div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
-              <p>{this.getValue(this.refs.myField)}</p>
+              <p>{this.state.val}</p>
             </div>
           </div>
           <div style={{marginLeft: "auto", marginTop:"auto", paddingBottom:"31px"}}>

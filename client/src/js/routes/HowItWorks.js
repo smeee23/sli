@@ -29,7 +29,7 @@ class Homepage extends Component {
 
 					<div style={{gridColumn: "3",marginRight: "20px", gridRow: "2", display: "flex", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
 						<h1 style={{fontSize: 150}} >SLI</h1>
-						<h3 style={{marginTop: "-45px"}} className="mb0">Reserve</h3>
+						<h3 style={{marginTop: "-15px"}} className="mb0">Reserve</h3>
 						<h3 style={{marginTop: "5px"}} className="mb0">Contracts</h3>
 					</div>
 					<div style={{gridColumn: "4", gridRow: "2", display: "flex", flexDirection: "column", alignItems:"center", justifyContent:"center", marginRight:"20px"}}>
@@ -39,7 +39,7 @@ class Homepage extends Component {
 					</div>
 					<div style={{gridColumn: "5", gridRow: "2", display: "flex", flexDirection: "column", alignItems:"center", justifyContent:"center", marginRight:"20px"}}>
 						<AaveLogo/>
-						<h3 style={{marginTop: "5px"}} className="mb0">AAVE</h3>
+						<h3 style={{marginTop: "35px"}} className="mb0">AAVE</h3>
 						<h3 style={{marginTop: "5px"}} className="mb0">Contracts</h3>
 					</div>
 					<div style={{gridColumn: "6", gridRow: "2", display: "flex", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
@@ -49,7 +49,7 @@ class Homepage extends Component {
 					</div>
 					<div style={{gridColumn: "7", gridRow: "2", display: "flex", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
 						<MaleOne/>
-						<h3 style={{marginTop: "5px"}} className="mb0">Slashed</h3>
+						<h3 style={{marginTop: "35px"}} className="mb0">Slashed</h3>
 						<h3 style={{marginTop: "5px"}} className="mb0">Validator</h3>
 					</div>
 				</div>
