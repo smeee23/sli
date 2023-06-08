@@ -125,8 +125,6 @@ class PayoutModal extends Component {
 
   render() {
         const { claimInfo } = this.props;
-
-		console.log("claim:", claimInfo, this.props)
 		return (
       <Fragment>
         <ModalHeader>

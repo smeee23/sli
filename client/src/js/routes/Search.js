@@ -34,7 +34,6 @@ class Search extends Component {
 	}
 
 	componentDidUpdate = () => {
-		console.log('component did update');
 	}
 
 	getTxResultModal = () => {

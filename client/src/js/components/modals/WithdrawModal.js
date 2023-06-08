@@ -115,8 +115,6 @@ class WithdrawModal extends Component {
 				pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
-
-        console.log(this.props.sliETHInfo)
     }
 	}
 
@@ -152,8 +150,6 @@ class WithdrawModal extends Component {
   getConvertedValue = (value) => {
 
     const rate = this.props.sliETHInfo["sliConversion"];
-
-    console.log("CONVERSION ",typeof(rate), rate, typeof(value.getValue()), value.getValue())
     return rate;
 
   }
@@ -161,7 +157,6 @@ class WithdrawModal extends Component {
     if(value){
       return this.getConvertedValue(value.getValue());
     }
-    console.log(value)
   }
 
   render() {

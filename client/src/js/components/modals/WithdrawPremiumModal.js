@@ -157,8 +157,6 @@ class WithdrawPremiumModal extends Component {
 
   render() {
         const { withdrawInfo } = this.props;
-
-		console.log("withdrawInfo:", withdrawInfo)
 		return (
       <Fragment>
         <ModalHeader>

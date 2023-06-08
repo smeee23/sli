@@ -32,7 +32,6 @@ class PendingTxList extends Component {
         let txInfo = []
 		if(pending){
 			pending.forEach((e, i) =>{
-				console.log("TX", e, i);
 				txInfo.push(
                     <PendingTx key={i} txInfo={e}/>
                 );

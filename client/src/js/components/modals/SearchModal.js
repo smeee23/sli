@@ -25,7 +25,6 @@ class SearchModal extends Component {
   }
 
   setValue = async(searchTerm) => {
-	  console.log('searchTerm', searchTerm);
     this.setState({
       pending: true
     });

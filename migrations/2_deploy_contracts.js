@@ -17,7 +17,6 @@ module.exports = async function(deployer, network, accounts){
   let poolAddressesProviderAddr;
   let wethGatewayAddr;
   let multiSig;
-  console.log('network', network);
 
   if(["matic_mumbai"].includes(network) ){
 

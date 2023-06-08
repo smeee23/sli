@@ -70,7 +70,7 @@ class ApplyModal extends Component {
 					txInfo = {txHash: '', success: '', type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
 
 					result = await ReserveInstance.methods.applyForCoverage(validatorId).send(parameter, async(err, transactionHash) => {
-						console.log('Transaction Hash :', transactionHash);
+
 						if(!err){
 							let info = {txHash: transactionHash, status:"pending", type:"APPLY", poolName: "After Tx Await Oracle Response", networkId: this.props.networkId, validatorId: validatorId};
 							let pending = [...this.props.pendingTxList];
@@ -137,7 +137,6 @@ class ApplyModal extends Component {
   }
   render() {
     const { txDetails } = this.props
-	console.log("valID", txDetails.validatorId, this.props)
 		return (
 			<Fragment>
 				<ModalHeader>

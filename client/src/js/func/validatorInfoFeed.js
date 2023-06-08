@@ -8,7 +8,6 @@ export const addTestnetValidator = async(validatorId, activeAccount) => {
         if(response_aws.data["index"].toString() === "9999999999999"){
             url = `https://flask-servicecors.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/add/${validatorId}?withdrawAddress=${activeAccount}`;
             response_aws = await axios.get(url);
-            console.log("add validator Response", response_aws.data);
             return "OK";
         }
         else{
@@ -29,7 +28,6 @@ export const getValidatorInfo = async(validatorId, forceBeaconCall) => {
     try{
         let url = `https://flask-servicecors.rfqbhr834qlno.us-east-2.cs.amazonlightsail.com/status/${validatorId}`;
         const response_aws = await axios.get(url);
-        console.log("aws", response_aws.data);
 
         data = {}
         data["pubkey"] = "0x0"//response.data.data["pubkey"];
@@ -45,12 +43,10 @@ export const getValidatorInfo = async(validatorId, forceBeaconCall) => {
             data["beaconInfo"] = beaconInfo ? JSON.parse(beaconInfo) : await getBeaconInfo(validatorId);
         }
         data["loss"] = response_aws.data["loss"];
-        console.log("data", data, data["loss"], response_aws.data["loss"])
     }
     catch (error) {
         console.error(error);
     }
-    console.log("data check", data);
     return data;
 }
 
@@ -59,12 +55,10 @@ const getBeaconInfo = async(validatorId) =>{
     try{
         let url = `https://beaconcha.in/api/v1/validator/${validatorId}/performance?apikey=cGpLZkxyT1BmVUdKeWNsalhaenpJTXpZRmFLSQ`;
         let response = await axios.get(url);
-        console.log('beaconcha.in data for:', response.data.data);
         data = response.data["data"][0];
 
         url = `https://beaconcha.in/api/v1/validator/${validatorId}?apikey=b0lSTDd2TTBlZmlQRksvUWNuNDEu`
         response = await axios.get(url);
-        console.log('beaconcha.in data for status:', response.data.data);
 
         data["pubkey"] = response.data.data["pubkey"];
         data["status"] = response.data.data["status"].toUpperCase();

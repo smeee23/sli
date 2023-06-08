@@ -43,7 +43,6 @@ class ProvideInsurance extends Component {
 
     withdrawDeposit = async() => {
 		this.props.updateWithdrawAmount('');
-		console.log('withdraw clicked');
 		try{
 			const activeAccount = this.props.activeAccount;
             const userBalance = await convertWeiToETH(this.props.activeBalances.sliETHBalance);
@@ -56,10 +55,8 @@ class ProvideInsurance extends Component {
 
     depositETH = async() => {
 		await this.props.updateDepositAmount('');
-		console.log('deposit clicked', this.props.depositAmount);
 		try{
 			const activeAccount = this.props.activeAccount;
-            console.log(this.props.activeBalances)
 			const userBalance = await convertWeiToETH(this.props.activeBalances.ethBalance);
 			//const contractInfo = await getContractInfo(poolAddress);
 			await this.props.updateDepositAmount({tokenString: "ETH", userBalance: userBalance, activeAccount: activeAccount, amount: ''});

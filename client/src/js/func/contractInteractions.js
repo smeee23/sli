@@ -52,14 +52,12 @@ export const getBeneficiaryStatus = async(validatorId, reserveAddress) => {
 	else if(status == 5) status = 'CLAIM_WAIT_PERIOD';
 	else if(status == 6) status = 'CLOSED';
 	else status = 'CLAIM PAUSED';
-	console.log("Apply test", validatorId, status, withdrawAddress, loss, claimTimestamp, applyTimestamp)
 	return {status, withdrawAddress, loss, claimTimestamp, applyTimestamp};
 }
 
 export const getDepositorIdsItem = async(validatorId, forceBeacon, reserveAddress) => {
 	const {status, withdrawAddress, loss, claimTimestamp, applyTimestamp} = await getBeneficiaryStatus(validatorId, reserveAddress);
 	let info = await getValidatorInfo(validatorId, forceBeacon);
-	console.log("info___", info)
 	info["beneStatus"] = status;
 	info["withdrawAddress"] = withdrawAddress;
 	info["apply"] = applyTimestamp === "0" ? "N/A" : convertSolidityTimestamp(applyTimestamp);
@@ -100,7 +98,6 @@ export const getDepositorValidatorIds = async(reserveAddress, activeAccount) => 
 	);
 
 	let validatorIds = await ReserveInstance.methods.getDepositorValidatorIds(activeAccount).call();
-	console.log("validatorIds", validatorIds);
 
 	const set = new Set(validatorIds);
 	validatorIds = Array.from(set);
@@ -121,7 +118,6 @@ export const getPremiumDeposit = async(premiumGeneratorAddr) => {
         PremiumGeneratorAaveV2.abi,
         premiumGeneratorAddr,
     );
-		console.log("premium Deposit ", await PremiumGeneratorAaveV2Instance.methods.premiumDeposit().call())
     return (await convertWeiToETH(await PremiumGeneratorAaveV2Instance.methods.premiumDeposit().call()));
   }
 
@@ -135,7 +131,6 @@ export const getBalances = async(reserveAddress, activeAccount) => {
 
 	const sliETHBalance = await ReserveInstance.methods.getSlashingInsuranceETHBalance(activeAccount).call();
 	const ethBalance = await web3.eth.getBalance(activeAccount);
-	console.log("sliETHBalance", sliETHBalance, ethBalance)
 	return {sliETHBalance, ethBalance}
 }
 
@@ -217,7 +212,6 @@ export const getAavePoolAddress = async(poolAddressesProviderAddress) => {
 				truePendings.push(x);
 			}
 		});
-		console.log("truePendings", truePendings)
 		return truePendings;
 	}
 

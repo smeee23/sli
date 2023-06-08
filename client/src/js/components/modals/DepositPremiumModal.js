@@ -162,8 +162,6 @@ class DepositPremiumModal extends Component {
 
   render() {
         const { depositInfo } = this.props;
-
-		console.log("depositInfo:", depositInfo)
 		return (
       <Fragment>
         <ModalHeader>

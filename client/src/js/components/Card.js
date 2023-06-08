@@ -107,7 +107,6 @@ class Card extends Component {
 
 	isPayoutDisabled = (claimPlusWait) => {
 		const currentTimestamp = Date.now();
-		console.log("claim", currentTimestamp, claimPlusWait)
 		return claimPlusWait > currentTimestamp;
 	}
 
@@ -123,7 +122,6 @@ class Card extends Component {
 
 	displayClaim = (item) => {
 		if(item){
-			console.log("validatorId", item.validatorId)
 			if(item.beneStatus === "ACTIVE" && item.slashed && item.claim === "N/A"){
 				return <div title={this.getClaimTitle(item.loss)}>
 							<Button logo={displayLogo("ETH")} text={"Make Claim"} disabled={this.isClaimDisabled(item.loss)} callback={async() => await this.claim(item.validatorId, item.loss)}/>
@@ -408,10 +406,8 @@ class Card extends Component {
 
 	depositETH = async(validatorId) => {
 		await this.props.updateDepositAmount('');
-		console.log('deposit clicked', this.props.depositAmount);
 		try{
 			const activeAccount = this.props.activeAccount;
-            console.log(this.props.activeBalances)
 			const userBalance = await convertWeiToETH(this.props.activeBalances.ethBalance);
 			const premiumDeposit =  await getPremiumDeposit(this.props.reserveAddress.premiumGenerator);
 			await this.props.updateDepositAmount({tokenString: "ETH", userBalance: userBalance, activeAccount: activeAccount, validatorId: validatorId, premiumDeposit: premiumDeposit});
@@ -430,7 +426,6 @@ class Card extends Component {
 	}
 	withdrawDeposit = async(validatorId) => {
 		this.props.updateWithdrawAmount('');
-		console.log('withdraw clicked');
 		try{
 			const activeAccount = this.props.activeAccount;
 			const userBalance = await convertWeiToETH(this.props.activeBalances.ethBalance);
@@ -451,7 +446,6 @@ class Card extends Component {
 
 	claim = async(validatorId, loss) => {
 		await this.props.updateClaim('');
-		console.log('claim clicked');
 		try{
 			const activeAccount = this.props.activeAccount;
 			await this.props.updateClaim({tokenString: "ETH", activeAccount: activeAccount, validatorId: validatorId, loss: loss, type: "claim"});
@@ -470,7 +464,6 @@ class Card extends Component {
 	}
 	payout = async(validatorId, loss) => {
 		await this.props.updateClaim('');
-		console.log('payout clicked');
 		try{
 			const activeAccount = this.props.activeAccount;
 			const premiumDeposit =  await getPremiumDeposit(this.props.reserveAddress.premiumGenerator);
@@ -489,7 +482,6 @@ class Card extends Component {
 	}
 
 	approve = async(tokenAddress, tokenString, poolAddress) => {
-		console.log("approve clicked");
 		this.props.updateApprove('');
 		try{
 			const activeAccount = this.props.activeAccount;

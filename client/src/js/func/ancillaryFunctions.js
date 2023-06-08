@@ -350,7 +350,6 @@ export const addNewPoolInfoAllTokens = (prevInfo, newInfo) => {
 
       Object.keys(prevInfo[key].acceptedTokenInfo).forEach( (i) => {
           const tokenInfo = newInfo.newTokenInfo && newInfo.newTokenInfo[prevInfo[key].acceptedTokenInfo[i].address];
-          console.log("tokenInfo", tokenInfo);
           prevInfo[key].acceptedTokenInfo[i].totalDeposits = tokenInfo.totalDeposits;
           prevInfo[key].acceptedTokenInfo[i].userBalance = tokenInfo.userBalance;
           prevInfo[key].acceptedTokenInfo[i].unclaimedInterest = tokenInfo.unclaimedInterest;
@@ -359,7 +358,6 @@ export const addNewPoolInfoAllTokens = (prevInfo, newInfo) => {
       );
     }
   });
-  console.log("newInfo_____", prevInfo);
   return prevInfo;
 }
 

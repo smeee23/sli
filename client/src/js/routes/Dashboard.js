@@ -78,7 +78,6 @@ class Insurance extends Component {
 	}
 
 	componentDidUpdate = () => {
-		console.log('component did update');
 	}
 
 	getTxResultModal = () => {
@@ -236,8 +235,6 @@ class Insurance extends Component {
 
 	render() {
 		const cardHolder = this.createCardInfo();
-
-		console.log("pendingTx", this.props.pendingTxList);
 
 		return (
 			<Fragment>

@@ -259,7 +259,6 @@ class App extends Component {
 
 		this.ReserveInstance.events.DenyApplication(options)
 		.on('data', async(event) => {
-			console.log("EVENT data", event)
 			if(this.props.activeAccount === event.returnValues.withdrawAddress){
 				console.log(this.props.activeAccount, event, "MATCH");
 				let txInfo = {txHash: '', success: false, type:"ORACLE APPLICATION ", poolName: "application approved", networkId: this.props.networkId};
@@ -278,7 +277,6 @@ class App extends Component {
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
-			console.log("ApproveApplication event", event);
 		})
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
@@ -287,7 +285,6 @@ class App extends Component {
 
 		this.ReserveInstance.events.ApproveApplication(options)
 		.on('data', async(event) => {
-			console.log("EVENT data", event)
 			if(this.props.activeAccount === event.returnValues.withdrawAddress){
 				console.log(this.props.activeAccount, event, "MATCH");
 				let txInfo = {txHash: '', success: true, type:"ORACLE APPLICATION APPROVAL", poolName: "application approved", networkId: this.props.networkId};
@@ -325,7 +322,6 @@ class App extends Component {
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
-			console.log("ApproveApplication event", event);
 		})
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
@@ -334,7 +330,6 @@ class App extends Component {
 		this.ReserveInstance.events.AcceptClaim(options)
 		.on('data', async(event) => {
 			if(this.props.activeAccount === event.returnValues.withdrawAddress){
-				console.log(this.props.activeAccount, event, "MATCH");
 				let txInfo = {txHash: '', success: true, type:"ORACLE CLAIM APPROVAL", poolName: "claim submission approved", networkId: this.props.networkId};
 				await this.displayTxInfo(txInfo);
 
@@ -359,7 +354,6 @@ class App extends Component {
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
-			console.log("ProcessClaim", event);
 		})
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
@@ -368,7 +362,6 @@ class App extends Component {
 		this.ReserveInstance.events.DenyClaim(options)
 		.on('data', async(event) => {
 			if(this.props.activeAccount === event.returnValues.withdrawAddress){
-				console.log(this.props.activeAccount, event, "MATCH");
 				let txInfo = {txHash: '', success: false, type:"ORACLE CLAIM ", poolName: "claim submission approved", networkId: this.props.networkId};
 				await this.displayTxInfo(txInfo);
 
@@ -386,7 +379,6 @@ class App extends Component {
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
 			}
-			console.log("ProcessClaim", event);
 		})
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
