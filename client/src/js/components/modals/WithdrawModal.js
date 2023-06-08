@@ -188,13 +188,9 @@ class WithdrawModal extends Component {
             <div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
               <p>{displayLogo("ETH_WHITE")}{withdrawInfo.tokenString}: {withdrawInfo.userBalance}</p>
               <ButtonExtraSmall text="MAX" callback={() => this.refs.myField.replaceValue(withdrawInfo.userBalance)}/>
-              <ButtonExtraSmall text="sliETH Conversion" callback={() => this.refs.myField.replaceValue(withdrawInfo.userBalance)}/>
             </div>
             <div style={{marginLeft: "auto", marginTop:"auto"}}>
               <TextField ref="myField" label="amount to withdraw:" onFocus={this.handleFocus} onBlur={this.handleBlur} value={this.state.val} />
-            </div>
-            <div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
-              <p>{this.state.val}</p>
             </div>
           </div>
           <div style={{marginLeft: "auto", marginTop:"auto", paddingBottom:"31px"}}>
