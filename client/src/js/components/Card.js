@@ -131,7 +131,7 @@ class Card extends Component {
 			}
 			else if(item.slashed && item.claim !== "N/A" && item.loss !== 0){
 				return <div title={this.getPayoutTitle(item.claimPlusWait)}>
-							<Button logo={displayLogo("ETH")} text={"Payout"} /*disabled={this.isPayoutDisabled(item.claimPlusWait)}*/ callback={async() => await this.payout(item.validatorId, item.loss)}/>
+							<Button logo={displayLogo("ETH")} text={"Payout"} disabled={this.isPayoutDisabled(item.claimPlusWait)} callback={async() => await this.payout(item.validatorId, item.loss)}/>
 						</div>
 			}
 		}

@@ -83,10 +83,6 @@ class ProvideInsurance extends Component {
 			//return modal;
 		}
 	}
-
-    getSliStats = async() => {
-        console.log(await getSliStats());
-    }
     render() {
             return (
                     <Fragment>

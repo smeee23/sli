@@ -17,7 +17,7 @@ import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
 import { updateSliETHInfo } from "../../actions/sliETHInfo";
 
-import { getAllowance, addPoolToPoolInfo, getContractInfo, getDirectFromPoolInfo,  convertWeiToETH , getSliStats } from '../../func/contractInteractions';
+import { getAllowance, addPoolToPoolInfo, getContractInfo, getDirectFromPoolInfo,  convertWeiToETH , getSliStats, getBalances} from '../../func/contractInteractions';
 import { delay, getTokenBaseAmount, displayLogo, addNewPoolInfo, checkPoolInPoolInfo } from '../../func/ancillaryFunctions';
 
 class DepositModal extends Component {
@@ -96,7 +96,16 @@ class DepositModal extends Component {
 					}
 				});
 				txInfo.success = true;
+
+				const oldBalance = this.props.activeBalances.sliETHBalance;
+
 				this.setSliETHInfo(await getSliStats(this.props.reserveAddress.reserve));
+
+				const newBalance = (await getBalances(this.props.reserveAddress.reserve, this.props.activeAccount)).sliETHBalance;
+
+				const diff = web3.utils.toBN(newBalance).sub(web3.utils.toBN(oldBalance)).toString();
+				txInfo["balanceGain"] = await convertWeiToETH(diff);
+				txInfo["gainToken"] = "sliETH";
 			}
 			catch (error) {
 				console.error(error);
@@ -202,6 +211,7 @@ const mapStateToProps = state => ({
 	networkId: state.networkId,
 	pendingTxList: state.pendingTxList,
 	sliETHInfo: state.sliETHInfo,
+	activeBalances: state.activeBalances,
 })
 
 const mapDispatchToProps = dispatch => ({

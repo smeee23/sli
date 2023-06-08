@@ -34,12 +34,15 @@ class TxResultModal extends Component {
     }
   }
 
+  getGained = (balanceGain, token) => {
+    if(balanceGain) return "FOR "+balanceGain+" "+token;
+  }
   render() {
       const { txDetails } = this.props;
 		return (
       <Fragment>
         <div style={{display: "flex", alignItems: "center", justifyContent:"center", textAlign: "center"}}>
-          <h2>{txDetails.type} {txDetails.amount} {txDetails.tokenString}  {this.successOrFail(txDetails.success)}</h2>
+          <h2>{txDetails.type} {txDetails.amount} {txDetails.tokenString} {this.getGained(txDetails.balanceGain, txDetails.gainToken)} {this.successOrFail(txDetails.success)}</h2>
         </div>
       <ModalBodyTx>
         {this.getTxHash(txDetails.txInfo, txDetails.networkId)}

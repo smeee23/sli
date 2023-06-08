@@ -15,7 +15,7 @@ import { updateDepositorValIds } from "../../actions/depositorValIds";
 import { updateOwnerPoolInfo } from "../../actions/ownerPoolInfo";
 import { updateSliETHInfo } from "../../actions/sliETHInfo";
 
-import {getDirectFromPoolInfo, getContractInfo, getSliStats } from '../../func/contractInteractions';
+import {getDirectFromPoolInfo, getContractInfo, getSliStats, getBalances, convertWeiToETH } from '../../func/contractInteractions';
 import {delay, getTokenBaseAmount, displayLogo, addNewPoolInfo, checkPoolInPoolInfo } from '../../func/ancillaryFunctions';
 
 class WithdrawModal extends Component {
@@ -53,8 +53,6 @@ class WithdrawModal extends Component {
         let result;
         try{
             const web3 = await getWeb3();
-            const tokenString = this.props.withdrawAmount.tokenString;
-            const isETH = (tokenString === 'ETH' || tokenString === 'MATIC');
             const activeAccount = this.props.activeAccount;
 
             const amount = this.props.withdrawAmount.amount;
@@ -72,11 +70,11 @@ class WithdrawModal extends Component {
               Reserve.abi,
               this.props.reserveAddress.reserve,
             );
-            txInfo = {txHash: '', success: false, amount: amount, tokenString: tokenString, type:"WITHDRAW", poolName: "Unbond ETH", networkId: this.props.networkId};
+            txInfo = {txHash: '', success: false, amount: amount, tokenString: "sliETH", type:"WITHDRAW", poolName: "Unbond ETH", networkId: this.props.networkId};
             result = await ReserveInstance.methods.withdrawInsurance(amountInBase).send(parameter , async(err, transactionHash) => {
                 console.log('Transaction Hash :', transactionHash);
                 if(!err){
-                  let info = {txHash: transactionHash, amount: amount, tokenString: tokenString, type:"WITHDRAW", poolName: "Unbond ETH", networkId: this.props.networkId, status:"pending"};
+                  let info = {txHash: transactionHash, amount: amount, tokenString: "sliETH", type:"WITHDRAW", poolName: "Unbond ETH", networkId: this.props.networkId, status:"pending"};
 						      let pending = [...this.props.pendingTxList];
                   if(!pending) pending = [];
                   pending.push(info);
@@ -86,8 +84,15 @@ class WithdrawModal extends Component {
                 }
             });
             txInfo.success = true;
+
+            const oldBalance = this.props.activeBalances.ethBalance;
+
             this.setSliETHInfo(await getSliStats(this.props.reserveAddress.reserve));
 
+            const newBalance = (await getBalances(this.props.reserveAddress.reserve, this.props.activeAccount)).ethBalance;
+            const diff = web3.utils.toBN(newBalance).sub(web3.utils.toBN(oldBalance)).toString();
+            txInfo["balanceGain"] = await convertWeiToETH(diff);
+            txInfo["gainToken"] = "ETH";
 		}
     catch (error) {
       console.error(error);
@@ -110,6 +115,8 @@ class WithdrawModal extends Component {
 				pending = (pending).filter(e => !(e.txHash === txInfo.transactionHash));
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
+
+        console.log(this.props.sliETHInfo)
     }
 	}
 
@@ -141,6 +148,22 @@ class WithdrawModal extends Component {
     else if(this.state.isValidInput === 'bal') return this.state.amount + " exceeds your balance";
     else if(this.state.isValidInput === 'zero') return " amount cannot be zero";
   }
+
+  getConvertedValue = (value) => {
+
+    const rate = this.props.sliETHInfo["sliConversion"];
+
+    console.log("CONVERSION ",typeof(rate), rate, typeof(value.getValue()), value.getValue())
+    return rate;
+
+  }
+  getValue = (value) => {
+    if(value){
+      return this.getConvertedValue(value.getValue());
+    }
+    console.log(value)
+  }
+
   render() {
         const { withdrawInfo } = this.props;
 
@@ -159,6 +182,9 @@ class WithdrawModal extends Component {
             </div>
             <div style={{marginLeft: "auto", marginTop:"auto"}}>
               <TextField ref="myField" label="amount to withdraw:" value={this.state.val} />
+            </div>
+            <div style={{display:"flex", fontSize: 9, flexDirection: "wrap", gap: "10px", alignItems:"right", justifyContent:"center"}}>
+              <p>{this.getValue(this.refs.myField)}</p>
             </div>
           </div>
           <div style={{marginLeft: "auto", marginTop:"auto", paddingBottom:"31px"}}>
@@ -184,6 +210,7 @@ const mapStateToProps = state => ({
     ownerPoolInfo: state.ownerPoolInfo,
     pendingTxList: state.pendingTxList,
     sliETHInfo: state.sliETHInfo,
+    activeBalances: state.activeBalances,
 })
 
 const mapDispatchToProps = dispatch => ({

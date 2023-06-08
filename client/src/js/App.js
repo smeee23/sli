@@ -83,18 +83,15 @@ class App extends Component {
 							const truePending = await checkTransactions(JSON.parse(pendingTxList));
 							this.props.updatePendingTxList(truePending);
 							localStorage.setItem("pendingTxList", JSON.stringify(truePending));
-							console.log("pendingTx from storage", truePending);
 						}
 						const depositorValIds = localStorage.getItem("depositorValIds");
 						if(depositorValIds){
 							await this.props.updateDepositorValIds(JSON.parse(depositorValIds));
-							console.log("depositorValIds from storage", JSON.parse(depositorValIds));
 						}
 
 						const tokenMap = localStorage.getItem("tokenMap");
 						if(tokenMap){
 							await this.props.updateTokenMap(JSON.parse(tokenMap));
-							console.log("tokenMap from storage", JSON.parse(tokenMap));
 						}
 
 						await this.getAccounts();
@@ -147,18 +144,11 @@ class App extends Component {
 		//const premiumGeneratorAddr = await this.ReserveInstance.methods.premiumGenerator().call();
 
 		this.setReserveAddress({reserve: this.ReserveAddress, premiumGenerator: this.PremiumGeneratorAddress});
-		console.log("reserve test", this.props.reserveAddress)
 		this.setSliETHInfo(await getSliStats(this.ReserveAddress));
-		console.log("sli test", this.props.sliETHInfo, this.props.activeAccount);
 
 		this.setDepositorValIds(await getDepositorValidatorIds(this.ReserveAddress, this.props.activeAccount))
-		console.log("depositor valids test", (this.props.depositorValIds));
 
 		this.setActiveBalances(await getBalances(this.ReserveAddress, this.props.activeAccount));
-		console.log("balances test", (this.props.activeBalances));
-		//await this.setTokenMapState(tokenMap);
-		//await this.setBurnPitBalances(tokenMap);
-		//await this.setPoolStateAll(this.props.activeAccount);
 		const aaveAddressesProvider = getAaveAddressProvider(this.networkId);
 		this.setAavePoolAddress(aaveAddressesProvider);
 
@@ -186,13 +176,6 @@ class App extends Component {
 	}
 
 	subscribeToInfura = async() => {
-		//this.ReserveAddress = Reserve.networks[this.networkId] && Reserve.networks[this.networkId].address;
-		/*this.ReserveInstance = new this.web3.eth.Contract(
-			Reserve.abi,
-			this.ReserveAddress,
-		);*/
-
-
 		let options = {
 			filter: {
 				value: [],
@@ -200,10 +183,7 @@ class App extends Component {
 			fromBlock: 0
 		};
 
-		console.log("events", this.ReserveInstance.events);
-
 		/*
-
 		RESERVE EVENTS
 		event DenyApplication(uint validatorIndex,address withdrawAddress,uint8 reason);
 		event ApproveApplication( uint validatorIndex, address withdrawAddress);
@@ -214,11 +194,10 @@ class App extends Component {
 		event WithdrawBeneficiary(uint validatorIndex, address withdrawAddress);
 		event MakeClaim(uint validatorIndex);
 		event ProcessClaim(address beneficiary, uint amount, uint8 result);
-		
+
 		*/
 		this.ReserveInstance.events.ProvideInsurance(options)
 			.on('data', async(event) => {
-				console.log("EVENT data", event)
 				let pending = [...this.props.pendingTxList];
 				pending.forEach((e, i) =>{
 					if(e.txHash === event.transactionHash){
@@ -232,7 +211,6 @@ class App extends Component {
 				pending = (pending).filter(e => !(e.txHash === event.transactionHash));
 				await this.props.updatePendingTxList(pending);
 				localStorage.setItem("pendingTxList", JSON.stringify(pending));
-				console.log("event", event.returnValues);
 			})
 			.on('changed', changed => console.log("EVENT changed", changed))
 			.on('error', err => console.log("EVENT err", err))
@@ -240,7 +218,6 @@ class App extends Component {
 
 		this.ReserveInstance.events.WithdrawInsurance(options)
 		.on('data', async(event) => {
-			console.log("EVENT data", event)
 			let pending = [...this.props.pendingTxList];
 			pending.forEach((e, i) =>{
 				if(e.txHash === event.transactionHash){
@@ -254,7 +231,6 @@ class App extends Component {
 			pending = (pending).filter(e => !(e.txHash === event.transactionHash));
 			await this.props.updatePendingTxList(pending);
 			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-			console.log("event", event);
 		})
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
@@ -262,7 +238,6 @@ class App extends Component {
 
 		this.ReserveInstance.events.AddBeneficiary(options)
 		.on('data', async(event) => {
-			console.log("EVENT data", event)
 			let pending = [...this.props.pendingTxList];
 			pending.forEach((e, i) =>{
 				if(e.txHash === event.transactionHash){
@@ -276,7 +251,6 @@ class App extends Component {
 			pending = (pending).filter(e => !(e.txHash === event.transactionHash));
 			await this.props.updatePendingTxList(pending);
 			localStorage.setItem("pendingTxList", JSON.stringify(pending));
-			console.log("event", event);
 		})
 		.on('changed', changed => console.log("EVENT changed", changed))
 		.on('error', err => console.log("EVENT err", err))
