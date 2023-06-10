@@ -80,10 +80,22 @@ class ProvideInsurance extends Component {
 			//return modal;
 		}
 	}
+
+	getSliETHStats = () => {
+		if(this.props.networkId){
+			return(
+				<div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+					<p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12, marginTop: "8px", marginBottom: "0px"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
+					<p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12, marginBottom: "0px"}}>Total Supply: {this.props.sliETHInfo["sliTotalSupply"]} sliETH</p>
+					<p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12}}>Reserve Value: {this.props.sliETHInfo["protocolBalance"]} ETH</p>
+				</div>
+			);
+		}
+	}
     render() {
             return (
                     <Fragment>
-                        <section className="page-section horizontal-padding" style={{paddingBottom: "8px", alignItems: "center", justifyContent: "center"}}>
+                        <section className="page-section horizontal-padding" style={{paddingBottom: "8px", alignItems: "center", justifyContent: "center", height: "380px"}}>
                                 <div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
                                     <h2 style={{fontSize: 60, alignItems:"center", justifyContent:"center", marginRight:"0%"}}>Bond ETH</h2>
                                     <h2 style={{alignItems:"center", justifyContent:"center", marginRight:"0%", marginTop: "-40px", fontSize: 30}}>Deposit ETH to Claim Fund</h2>
@@ -91,9 +103,7 @@ class ProvideInsurance extends Component {
                                     <div title={"exchange sliETH back to ETH"}><Button logo={displayLogo("ETH_WHITE")} text={"Withdraw sliETH"} /*disabled={isDisabled}*/ callback={async() => await this.withdrawDeposit()}/></div>
                                         <div title={"exchange ETH for sliETH and earn"}><Button logo={displayLogo("ETH")} text={"Deposit ETH"} /*disabled={isDisabled}*/ callback={async() => await this.depositETH()}/></div>
                                     </div>
-                                    <p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12, marginTop: "8px", marginBottom: "0px"}}>Conversion: 1 sliETH = {this.props.sliETHInfo["sliConversion"]} ETH</p>
-                                    <p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12, marginBottom: "0px"}}>Total Supply: {this.props.sliETHInfo["sliTotalSupply"]} sliETH</p>
-                                    <p style={{alignItems:"center", justifyContent:"center", marginRight:"0%",fontSize: 12}}>Reserve Value: {this.props.sliETHInfo["protocolBalance"]} ETH</p>
+									{this.getSliETHStats()}
                                 </div>
                         </section>
                         <section className="page-section horizontal-padding">
@@ -128,6 +138,7 @@ const mapStateToProps = state => ({
     pendingTxList: state.pendingTxList,
     pendingTx: state.pendingTx,
 	txResult: state.txResult,
+	networkId: state.networkId,
 })
 
 const mapDispatchToProps = dispatch => ({
