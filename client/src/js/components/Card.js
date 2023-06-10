@@ -309,7 +309,7 @@ class Card extends Component {
 								<p>{"Loss"}</p>
 							</div>
 							<div style={{gridColumn: 2, width: "250"}}>
-								{item.loss+" ETH"}
+								{item.loss === "N/A" ?item.loss : item.loss+" ETH"}
 							</div>
 						</div>
 						<div title={"date and time of claim"} style={{display: "grid", gridTemplateColumns:"150px 1fr", marginTop:"-10px"}}>
