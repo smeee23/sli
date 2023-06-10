@@ -33,11 +33,11 @@ class Homepage extends Component {
 				<Shapes/>
 
 
-					<section className="page-section_hero page-section--center page-section--home horizontal-padding">
-						<div style={{width:500, height:window.innerHeight/1.2, /*background: "#3FA7D6", border:"20px", borderRadius:"50%",*/ display:"flex", gap:"2", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
+					<section className="page-section_hero page-section--home horizontal-padding">
+						<div style={{width:500, height:window.innerHeight/1.2, display:"flex", gap:"2", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
 
 								<div style={{display:"flex", flexDirection: "wrap", alignItems:"center", justifyContent:"center"}}>
-									<div style={{display:"flex", flexDirection: "column", alignItems:"center", justifyContent:"center"}}>
+									<div style={{display:"flex", flexDirection: "column", alignItems:"center", textAlign:"center", justifyContent:"center"}}>
 
 										<h1 style={{marginBottom: "-15px", fontSize: 310}} >SLI</h1>
 										<h2 style={{marginBottom: "5px", fontSize:30}} >Ethereum Slashing Insurance</h2>

@@ -40,16 +40,12 @@ $baseclass: 'page-section';
 
   background-size: cover;
 	background-position: center;
-
+  text-align: center;
+  align-items: center;
 	transition: background-color $easing2 $duration-long;
 
   &:first-child {
     margin-top: ($rem-base * 8);
-  }
-
-  &--center {
-    text-align: center;
-    align-items: center;
   }
 }
 
