@@ -201,7 +201,7 @@ class Insurance extends Component {
 				<div style={{display:"flex", flexDirection: "column", alignItems:"left", justifyContent:"left"}}>
 
 					<a style={{ textDecoration: "none"}} title="New to Polygon? Follow link to learn more" href="https://polygon.technology/" target="_blank" rel="noopener noreferrer">
-						<h2 style={{marginBottom: "5px", fontSize:50, marginLeft: "20px", marginRight: "auto"}} >Connect to Polygon Mumbai Testnet to View Validators</h2>
+						<h2 style={{marginBottom: "5px", fontSize:40, marginLeft: "20px", marginRight: "auto"}} >Connect Wallet to Apply and View Validators</h2>
 					</a>
 				</div>
 			</div>
@@ -232,16 +232,21 @@ class Insurance extends Component {
 			</div>
 		);
 	}
+	getButton = () => {
+		if(this.props.networkId){
+			return <div title="apply for slashing protection for your validator"><Button text="Apply for Coverage" callback={async() => await this.openApplyModal()}/></div>
+		}
 
+	}
 	render() {
 		const cardHolder = this.createCardInfo();
 
 		return (
 			<Fragment>
 				<article>
-					<section  className="page-section page-section--center horizontal-padding bw0" style={{paddingBottom:"20px"}}>
+					<section  className="page-section page-section--center horizontal-padding bw0" style={{marginBottom:"20px"}}>
 						<h2 style={{fontSize: 60, marginBottom: "5px"}} >Ethereum Slashing Insurance</h2>
-						<div title="apply for slashing protection for your validator"><Button text="Apply for Coverage" callback={async() => await this.openApplyModal()}/></div>
+						{this.getButton()}
 					</section>
 					<section className="page-section_no_vert_padding horizontal-padding bw0">
 						{this.getApplyModal()}
@@ -277,6 +282,7 @@ const mapStateToProps = state => ({
 	deployInfo: state.deployInfo,
 	pendingTxList: state.pendingTxList,
 	depositorValIds: state.depositorValIds,
+	networkId: state.networkId,
 })
 
 const mapDispatchToProps = dispatch => ({
