@@ -201,7 +201,7 @@ class Insurance extends Component {
 				<div style={{display:"flex", flexDirection: "column", alignItems:"left", justifyContent:"left"}}>
 
 					<a style={{ textDecoration: "none"}} title="New to Polygon? Follow link to learn more" href="https://polygon.technology/" target="_blank" rel="noopener noreferrer">
-						<h2 style={{marginBottom: "5px", fontSize:40, marginLeft: "20px", marginRight: "auto"}} >Connect Wallet to Apply and View Validators</h2>
+						<h2 style={{marginBottom: "5px", fontSize:40, marginLeft: "20px", marginRight: "auto"}} >Connect Wallet to Mumbai Matic Network to Apply and View Validators</h2>
 					</a>
 				</div>
 			</div>

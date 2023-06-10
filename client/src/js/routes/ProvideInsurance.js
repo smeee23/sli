@@ -92,7 +92,7 @@ class ProvideInsurance extends Component {
 		}
 		return(
 			<div style={{display: "flex", flexDirection: "wrap", gap: "5px", height: "150px"}}>
-				<h2 style={{alignItems:"center", justifyContent:"center", marginRight:"0%", marginTop: "20px", fontSize: 30}}>Connect Wallet to Bond ETH</h2>
+				<h2 style={{alignItems:"center", justifyContent:"center", marginRight:"0%", marginTop: "20px", fontSize: 30}}>Connect Wallet to Mumbai Matic Network to Bond ETH</h2>
 			</div>
 		);
 	}
