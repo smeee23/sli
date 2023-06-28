@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 
 import Shapes from '../components/Shapes';
 
-import LogoCard from "../components/logos/LogoCard";
 import { Button } from '../components/Button';
 import ShareModal from "../components/modals/ShareModal";
 import {SmallModal } from "../components/Modal";

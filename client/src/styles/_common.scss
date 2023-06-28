@@ -6,6 +6,7 @@ $white-theme-baseclass: "theme--white";
 
 html, body, input, textarea {
 	background: $brand-grey-dark;
+	background-image: url(../images/background_1.jpg);
 	color: $brand-white;
 }
 
